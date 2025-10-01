@@ -1,4 +1,4 @@
-package com.example.LawFirmAPI.model;
+package com.example.LawFirmAPI.model.User;
 
 import jakarta.persistence.*;
 

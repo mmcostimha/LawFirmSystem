@@ -1,9 +1,8 @@
 package com.example.LawFirmAPI.service;
 
 import com.example.LawFirmAPI.exceptions.ResourceNotFound;
-import com.example.LawFirmAPI.model.User;
+import com.example.LawFirmAPI.model.User.User;
 import com.example.LawFirmAPI.repository.UserRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

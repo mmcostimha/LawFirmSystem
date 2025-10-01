@@ -1,6 +1,6 @@
 package com.example.LawFirmAPI.service;
 
-import com.example.LawFirmAPI.model.User;
+import com.example.LawFirmAPI.model.User.User;
 import com.example.LawFirmAPI.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
