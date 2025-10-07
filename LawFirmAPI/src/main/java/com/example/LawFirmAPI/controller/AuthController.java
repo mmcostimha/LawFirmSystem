@@ -3,6 +3,7 @@ package com.example.LawFirmAPI.controller;
 import com.example.LawFirmAPI.model.User.AuthenticationDTO;
 import com.example.LawFirmAPI.model.User.LoginResponseDTO;
 import com.example.LawFirmAPI.model.User.User;
+import com.example.LawFirmAPI.model.User.UserDTO;
 import com.example.LawFirmAPI.security.JwtUtil;
 import com.example.LawFirmAPI.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +31,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> postMethodName(@RequestBody Map<String,String> request){
-        String username = request.get("username");
-        String password = request.get("password");
-        String name = request.get("name");
-        String email = request.get("email");
-        String phone = request.get("phone");
-        boolean isAdmin = Boolean.parseBoolean(request.get("isAdmin"));
+    public ResponseEntity<?> postMethodName(@RequestBody UserDTO request){
 
-        User user = userService.newUser(username ,password ,name ,email ,phone,isAdmin);
+        User user = userService.newUser(request);
         return ResponseEntity.ok(user);
     }
 
@@ -52,6 +47,5 @@ public class AuthController {
 
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }
-
 
 }

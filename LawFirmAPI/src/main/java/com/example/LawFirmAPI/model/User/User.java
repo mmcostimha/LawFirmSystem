@@ -1,5 +1,6 @@
 package com.example.LawFirmAPI.model.User;
 
+import com.example.LawFirmAPI.model.Email.Email;
 import jakarta.persistence.*;
 
 @Entity
@@ -26,39 +27,49 @@ public class User {
     private String phone;
 
     @Column(nullable = false)
-    private boolean isAdmin;
+    private String role;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Email emailEntity;
 
     public User(){}
 
-    public User(String username ,String password ,String name ,String email ,String phone,boolean isAdmin){
-        this.username=username;
-        this.password=password;
-        this.name=name;
-        this.email=email;
-        this.phone=phone;
-        this.isAdmin= isAdmin;
+    public User(UserDTO user){
+        this.username=user.username();
+        this.password=user.password();
+        this.name=user.name();
+        this.email=user.email();
+        this.phone=user.phone();
+        this.role= user.role();
     }
     //get functions
-
     public Long getId() {
         return id;
     }
-
     public String getPassword() {
         return password;
     }
-
     public String getUsername() {
         return username;
     }
+    public String getRole() {
+        return role;
+    }
 
     //Set functions
-
     public void setPassword(String password) {
         this.password = password;
     }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
