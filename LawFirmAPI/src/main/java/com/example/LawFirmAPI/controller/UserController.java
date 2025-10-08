@@ -18,12 +18,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/clients")
+    @GetMapping("user/clients")
     public List<User> getClientsList(){
 
         return userService.getClientsList();
     }
-    @GetMapping("/admins")
+    @GetMapping("user/admins")
     public List<User> getAdminList(){
         return userService.getAdminsList();
     }

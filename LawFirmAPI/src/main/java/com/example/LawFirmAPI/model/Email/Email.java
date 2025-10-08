@@ -3,6 +3,8 @@ package com.example.LawFirmAPI.model.Email;
 import com.example.LawFirmAPI.model.User.User;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "emails")
 public class Email {
@@ -13,6 +15,9 @@ public class Email {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "email", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EmailSupervised> emailSupervised;
 
     @OneToOne
     @JoinColumn(name = "client_id", unique = true)
@@ -31,6 +36,11 @@ public class Email {
     public Long getClient_id() {
         return user.getId();
     }
+
+    public Long getId() {
+        return id;
+    }
+
     //setter
     public void setEmail(String email) {
         this.email = email;

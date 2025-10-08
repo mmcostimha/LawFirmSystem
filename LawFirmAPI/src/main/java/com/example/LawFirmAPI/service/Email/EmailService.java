@@ -1,4 +1,4 @@
-package com.example.LawFirmAPI.service;
+package com.example.LawFirmAPI.service.Email;
 
 import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.Email.Email;
@@ -6,8 +6,7 @@ import com.example.LawFirmAPI.model.Email.EmailDTO;
 import com.example.LawFirmAPI.model.User.User;
 import com.example.LawFirmAPI.repository.EmailRepository;
 import com.example.LawFirmAPI.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import com.example.LawFirmAPI.service.VaultPasswordService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +18,7 @@ public class EmailService {
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
 
+
     public  EmailService(UserRepository userRepository,
                          VaultPasswordService vaultPasswordService,
                          EmailRepository emailRepository)
@@ -27,16 +27,6 @@ public class EmailService {
         this.vaultPasswordService=  vaultPasswordService;
         this.emailRepository = emailRepository;
     }
-
-
-//    public void setEmail(EmailDTO newEmail){
-////        System.out.println("Before"+newEmail.client_id()+ " "+ newEmail.password());
-//        vaultPasswordService.storeEmailPassword(newEmail.client_id(),newEmail.password());
-//        System.out.println("Sended");
-//
-//        String passwordReceived = vaultPasswordService.getEmailPassword(newEmail.client_id());
-//        System.out.println("Email sended: " + newEmail.email()+" and password: "+ passwordReceived);
-//    }
 
     public Email newClientEmail(EmailDTO newEmail){
         //Check Client
@@ -57,16 +47,15 @@ public class EmailService {
         email.setEmail(newEmail.email());
         return email;
     }
-    public String getEmailByClientUsername(String username){
+    public Email getEmailByClientUsername(String username){
         User user = userRepository.findByUsername(username);
-        Email email = emailRepository.findByUser_Id(user.getId());
-        return email.getEmail();
+        return emailRepository.findByUser_Id(user.getId());
     }
 
-    public String getEmailByClientId(Long clientId){
-        Email email = emailRepository.findByUser_Id(clientId);
-        return email.getEmail();
+    public Email getEmailByClientId(Long clientId){
+        return emailRepository.findByUser_Id(clientId);
     }
+
 
 
 }

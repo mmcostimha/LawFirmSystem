@@ -34,18 +34,17 @@ public class VaultPasswordService {
     }
 
     public String getEmailPassword(Long emailID) {
+        System.out.println(clientPath+ emailID);
+
         VaultResponse response = vaultTemplate.read(clientPath+ emailID);
 
 
         if (response.getData() != null) {
-
             // Primeiro nível: data do Vault
             Map<String, Object> outerData = response.getData();
 
             // Segundo nível: dados do segredo
             Map<String, Object> innerData = (Map<String, Object>) outerData.get("data");
-
-            System.out.println("After"+innerData.get("password"));
             return (String) innerData.get("password");
         }
         throw new RuntimeException("Password not found for customer " + emailID);
