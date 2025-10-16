@@ -1,0 +1,5 @@
+ gcloud auth login
+
+ gcloud auth configure-docker europe-west2-docker.pkg.dev
+
+docker buildx build --platform linux/amd64,linux/arm64 -t europe-west2-docker.pkg.dev/lawfirm-474714/vaultlawfirm:latest --push .

@@ -4,33 +4,23 @@ import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
-import com.example.LawFirmAPI.service.VaultPasswordService;
-import jakarta.mail.Folder;
-import jakarta.mail.Message;
-import jakarta.mail.Session;
-import jakarta.mail.Store;
-import jakarta.mail.search.ComparisonTerm;
-import jakarta.mail.search.ReceivedDateTerm;
-import jakarta.mail.search.SearchTerm;
-import org.hibernate.annotations.DialectOverride;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class EmailSupervisorService {
 
     private final EmailSupervisorRepository emailSupervisorRepository;
-    private final EmailService emailService;
-    private final VaultPasswordService vaultPasswordService;
+    private final AsyncSupervisorService asyncSupervisorService;
 
-    public EmailSupervisorService(EmailSupervisorRepository emailSupervisorRepository,VaultPasswordService vaultPasswordService,EmailService emailService){
+    public EmailSupervisorService(EmailSupervisorRepository emailSupervisorRepository,
+                                  AsyncSupervisorService asyncSupervisorService){
         this.emailSupervisorRepository = emailSupervisorRepository;
-        this.vaultPasswordService = vaultPasswordService;
-        this.emailService=emailService;
+        this.asyncSupervisorService=asyncSupervisorService;
     }
 
     public EmailSupervised addToCheckList(Email email,String type){
@@ -56,80 +46,26 @@ public class EmailSupervisorService {
     }
 
     public List<EmailSupervised> getEmailSupervisedList(){
-       List<EmailSupervised> list= emailSupervisorRepository.findAll();
-
-       System.out.println("Created Emails: " + list);
-       return list;
+       return emailSupervisorRepository.findAll();
     }
 
     @Scheduled(cron = "${spring.task1.scheduling.cron}")
     public void checkEmails() throws Exception {
         List<EmailSupervised> listEmail = emailSupervisorRepository.findAll();
+
         if(listEmail.isEmpty())
             System.out.println("Dont exist supervised emails");
-        else
-            for (EmailSupervised emailSupervised : listEmail){
-                System.out.println(fetchSubjectsFromLast24Hours(emailSupervised));
-            }
-    }
-
-    public List<String> fetchSubjectsFromLast24Hours(EmailSupervised emailSupervised) throws Exception {
-        Email clientEmail = emailSupervised.getEmail();
-        String email = clientEmail.getEmail();
-        String clientPassword = vaultPasswordService.getEmailPassword(clientEmail.getClient_id());
-        List<String> subjects = new ArrayList<>();
-        String provider;
-        if (email.contains("gmail"))
-            provider = "gmail.com";
-        else if (email.contains("yahoo")) {
-            provider = "yahoo.com";
-        } else if (email.contains("sapo")) {
-            provider = "sapo.pt";
-        }else {
-            throw new Exception("provedor nao suportado");
+        else{
+            // dispara todas as execuções em paralelo
+            List<CompletableFuture<Void>> futures = listEmail.stream()
+                    .map(asyncSupervisorService::fetchSubjectsFromLast24Hours)
+                    .toList();
+            // espera todas terminarem antes de imprimir "Acabei"
+            //CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         }
-
-        try {
-            Properties props = new Properties();
-            IMAPConfig(props,provider);
-
-            Session session = Session.getInstance(props);
-            Store store = session.getStore("imap");
-            store.connect("imap."+ provider, clientEmail.getEmail(), clientPassword);
-
-            Folder inbox = store.getFolder("INBOX");
-            inbox.open(Folder.READ_ONLY);
-
-
-            // Calcular limite de tempo (últimas 24 horas)
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.HOUR_OF_DAY, -24);
-            Date sinceDate = cal.getTime();
-
-            // Filtro por data de recebimento
-            SearchTerm recent = new ReceivedDateTerm(ComparisonTerm.GE, sinceDate);
-
-            Message[] messages = inbox.search(recent);
-
-            for (Message msg : messages) {
-                subjects.add(msg.getSubject());
-            }
-
-            inbox.close(false);
-            store.close();
-
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao buscar emails do email " + clientEmail.getEmail(), e);
-        }
-
-        return subjects;
+        System.out.println("Acabei");
     }
-    public void IMAPConfig(Properties props, String provider){
-        // Configuração IMAP
-        props.put("mail.store.protocol", "imap");
-        props.put("mail.imap.host", "imap."+provider); // trocar pelo servidor do cliente
-        props.put("mail.imap.port", "993");
-        props.put("mail.imap.ssl.enable", "true");
-    }
+
+
 
 }

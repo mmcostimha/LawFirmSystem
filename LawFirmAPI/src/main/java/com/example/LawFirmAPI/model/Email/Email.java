@@ -19,6 +19,9 @@ public class Email {
     @OneToMany(mappedBy = "email", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmailSupervised> emailSupervised;
 
+    @Column
+    private boolean alarm;
+
     @OneToOne
     @JoinColumn(name = "client_id", unique = true)
     private User user;
@@ -27,6 +30,7 @@ public class Email {
     public Email(EmailDTO email, User user){
         this.email= email.email();
         this.user = user;
+        this.alarm = false;
     }
 
     //getters
@@ -36,13 +40,18 @@ public class Email {
     public Long getClient_id() {
         return user.getId();
     }
-
     public Long getId() {
         return id;
+    }
+    public boolean getAlarm(){
+        return this.alarm;
     }
 
     //setter
     public void setEmail(String email) {
         this.email = email;
+    }
+    public void setAlarm(boolean alarm) {
+        this.alarm = alarm;
     }
 }

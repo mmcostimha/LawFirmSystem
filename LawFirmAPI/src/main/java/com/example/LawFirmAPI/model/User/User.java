@@ -57,6 +57,11 @@ public class User {
     }
 
     //Set functions
+    public void setUser(UserDTO newUser){
+        setEmail(newUser.email());
+        setName(newUser.name());
+        setPhone(newUser.phone());
+    }
     public void setPassword(String password) {
         this.password = password;
     }

@@ -1,0 +1,30 @@
+
+
+.container{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 50vw;
+    height: 80vh;
+
+    border: 1px solid red;
+    /* background-color: white; */
+    border-radius: 30px;
+   
+}
+.formContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    
+    border: 1px solid red;
+
+    width: 50%;
+    height: 60%;
+    
+
+}

@@ -34,11 +34,7 @@ public class VaultPasswordService {
     }
 
     public String getEmailPassword(Long emailID) {
-        System.out.println(clientPath+ emailID);
-
         VaultResponse response = vaultTemplate.read(clientPath+ emailID);
-
-
         if (response.getData() != null) {
             // Primeiro nível: data do Vault
             Map<String, Object> outerData = response.getData();

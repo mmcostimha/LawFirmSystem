@@ -30,14 +30,15 @@ public class AuthController {
         this.userService = us;
     }
 
+    //Regit a new Client
     @PostMapping("/register")
     public ResponseEntity<?> postMethodName(@RequestBody UserDTO request){
-
+        System.out.println("Tried access point"+ request.name());
         User user = userService.newUser(request);
         return ResponseEntity.ok(user);
     }
 
-
+    //Login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Validated AuthenticationDTO request){
 

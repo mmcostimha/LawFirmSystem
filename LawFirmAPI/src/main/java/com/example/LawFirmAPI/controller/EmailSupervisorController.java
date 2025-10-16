@@ -24,7 +24,7 @@ public class EmailSupervisorController {
         this.emailService= emailService;
 
     }
-
+    //Add a supervisor type to a CLient
     @PostMapping("/supervisor/{id}/{type}")
     public EmailSupervised addToCheckList( @PathVariable Long id,@PathVariable String type){
 
@@ -33,11 +33,14 @@ public class EmailSupervisorController {
 
         return emailSupervisorService.addToCheckList(email,type);
     }
+
+    //Get List of Supervisors
     @GetMapping("/supervisor")
     public List<EmailSupervised> getEmailSupervisedList(){
         return emailSupervisorService.getEmailSupervisedList();
     }
 
+    //Delete a type of supervisor from Client
     @DeleteMapping("/supervisor/{id}/{type}")
     public ResponseEntity<EmailSupervised> deleteFromCheckList(@PathVariable Long id, @PathVariable String type){
 

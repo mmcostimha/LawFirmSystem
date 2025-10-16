@@ -35,18 +35,22 @@ public class UserService {
     public User getByUsername(String username){
         return userRepository.findByUsername(username);
     }
-
-    public
-    List<User> getClientsList(){
+    public List<User> getClientsList(){
         return userRepository.findByRole("client");
     }
-
-    public
-    List<User> getAdminsList() {
+    public List<User> getAdminsList() {
         return userRepository.findByRole("admin");
     }
 
-    public ResponseEntity<User> deleteEmail(Long userId){
+    public User changeUser(UserDTO newUser){
+        User user = userRepository.findByUsername(newUser.username());
+
+        user.setUser(newUser);
+
+        return userRepository.save(user);
+    }
+
+    public ResponseEntity<User> deleteUser(Long userId){
 
         Optional<User> op_user = userRepository.findById(userId);
         if (op_user.isEmpty())

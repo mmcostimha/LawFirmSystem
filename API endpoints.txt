@@ -1,0 +1,61 @@
+API endpoints
+
+User:
+
+    //get Clients List
+    @GetMapping("user/clients")
+
+    //get Admin List
+    @GetMapping("user/admins")
+	
+    //Get User by username
+    @GetMapping("user/{username}")
+
+    //Change User
+    @PutMapping("user")
+
+    //Delete user By id
+    @DeleteMapping("user/{id}")
+
+Email:
+
+    //Create Email for a client
+    @PostMapping("/email")
+
+    //Change email of a Client
+    @PutMapping("/email")
+
+    // Get Email By the Client Username
+    @GetMapping("/email/username/{username}")
+
+    // Get Email By the Client Id
+    @GetMapping("/email/id/{id}")
+
+    //Turn off the Client Email Alarm
+    @PutMapping("/email/alarm/{username}")
+
+Supervisor:
+
+    //Add a supervisor type to a CLient
+    @PostMapping("/supervisor/{id}/{type}"
+
+    //Get List of Supervisors
+    @GetMapping("/supervisor")
+
+    //Delete a type of supervisor from Client
+    @DeleteMapping("/supervisor/{id}/{type}")
+
+
+Login/Register
+
+    //Regit a new Client
+    @PostMapping("/register")
+
+    //Login 
+    @PostMapping("/login")
+
+
+
+
+
+

@@ -7,6 +7,7 @@ import com.example.LawFirmAPI.model.User.User;
 import com.example.LawFirmAPI.repository.EmailRepository;
 import com.example.LawFirmAPI.repository.UserRepository;
 import com.example.LawFirmAPI.service.VaultPasswordService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class EmailService {
         vaultPasswordService.storeEmailPassword(newEmail.client_id(),newEmail.password());
         Email email = emailRepository.findByUser_Id(newEmail.client_id());
         email.setEmail(newEmail.email());
-        return email;
+        return emailRepository.save(email);
     }
     public Email getEmailByClientUsername(String username){
         User user = userRepository.findByUsername(username);
@@ -56,6 +57,19 @@ public class EmailService {
         return emailRepository.findByUser_Id(clientId);
     }
 
+    public ResponseEntity<Email> turnOffAlarmByUsername(String username){
+
+        Email email = getEmailByClientUsername(username);
+        email.setAlarm(false);
+        return ResponseEntity.ok(emailRepository.save(email));
+    }
+
+    public ResponseEntity<Email> deleteEmailByUsername(String username){
+        Email email = getEmailByClientUsername(username);
+        emailRepository.delete(email);
+
+        return  ResponseEntity.ok(email);
+    }
 
 
 }

@@ -1,0 +1,21 @@
+.backdropStyle {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    border: 1px solid blue;
+}
+
+.buttonStyle {
+    position: absolute;
+    top: 8%;
+    left: 5%;
+    padding: 8px 16px;
+    cursor: pointer;
+}
