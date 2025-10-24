@@ -9,7 +9,6 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    border: 1px solid blue;
 }
 
 .buttonStyle {
@@ -18,4 +17,5 @@
     left: 5%;
     padding: 8px 16px;
     cursor: pointer;
+    width: 100px;
 }

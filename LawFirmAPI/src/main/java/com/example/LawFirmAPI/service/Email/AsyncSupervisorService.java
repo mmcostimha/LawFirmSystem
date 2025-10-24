@@ -3,7 +3,7 @@ package com.example.LawFirmAPI.service.Email;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailRepository;
-import com.example.LawFirmAPI.service.VaultPasswordService;
+//import com.example.LawFirmAPI.service.VaultPasswordService;
 import jakarta.mail.Folder;
 import jakarta.mail.Message;
 import jakarta.mail.Session;
@@ -20,12 +20,12 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class AsyncSupervisorService {
 
-    private final VaultPasswordService vaultPasswordService;
+    //private final VaultPasswordService vaultPasswordService;
     private EmailRepository emailRepository;
 
-    public AsyncSupervisorService(VaultPasswordService vaultPasswordService,EmailRepository emailRepository){
+    public AsyncSupervisorService(EmailRepository emailRepository){
         this.emailRepository=emailRepository;
-        this.vaultPasswordService = vaultPasswordService;
+        //this.vaultPasswordService = vaultPasswordService;
     }
 
     @Async
@@ -41,7 +41,8 @@ public class AsyncSupervisorService {
 
 
         String email = clientEmail.getEmail();
-        String clientPassword = vaultPasswordService.getEmailPassword(clientEmail.getClient_id());
+        String clientPassword = clientEmail.getPassword();
+        //String clientPassword = vaultPasswordService.getEmailPassword(clientEmail.getClient_id());
 
         List<String> subjects = new ArrayList<>();
 
@@ -94,8 +95,6 @@ public class AsyncSupervisorService {
         catch (Exception e) {
             throw new RuntimeException("Erro ao buscar emails do email " + clientEmail.getEmail(), e);
         }
-
-
         setClientAlarm(clientEmail, subjects, emailSupervised);
         return CompletableFuture.completedFuture(null);
     }

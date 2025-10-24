@@ -38,11 +38,11 @@ public class EmailController {
         return emailService.getEmailByClientId(id);
     }
 
-//    //Delete Client Email
-//    @DeleteMapping("")
-//    public ResponseEntity<Email> deleteClientEmail(@PathVariable String username){
-//        return emailService.deleteEmailByUsername(username);
-//    }
+    //Delete Client Email
+    @DeleteMapping("")
+    public ResponseEntity<Email> deleteClientEmail(@PathVariable String username){
+        return emailService.deleteEmailByUsername(username);
+    }
 
     //Turn off the Client Email Alarm
     @PutMapping("/email/alarm/{username}")

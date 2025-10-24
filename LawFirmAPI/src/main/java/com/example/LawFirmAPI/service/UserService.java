@@ -16,12 +16,12 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final VaultPasswordService vaultPasswordService;
+    //private final VaultPasswordService vaultPasswordService;
 
-    public UserService(UserRepository userRepository,VaultPasswordService vaultPasswordService){
+    public UserService(UserRepository userRepository){
         this.userRepository=userRepository;
         this.passwordEncoder=new BCryptPasswordEncoder();
-        this.vaultPasswordService=vaultPasswordService;
+        //this.vaultPasswordService=vaultPasswordService;
     }
 
 
@@ -56,7 +56,7 @@ public class UserService {
         if (op_user.isEmpty())
             throw  new ResourceNotFound("User "+ userId +" dont exist.");
 
-        vaultPasswordService.deleteEmailPassword(userId);
+        //vaultPasswordService.deleteEmailPassword(userId);
         User user = op_user.get();
         userRepository.delete(user);
 

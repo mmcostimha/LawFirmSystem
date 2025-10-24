@@ -16,6 +16,9 @@ public class Email {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false)
+    private String password;
+
     @OneToMany(mappedBy = "email", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmailSupervised> emailSupervised;
 
@@ -31,6 +34,7 @@ public class Email {
         this.email= email.email();
         this.user = user;
         this.alarm = false;
+        this.password= email.password();
     }
 
     //getters
@@ -47,9 +51,16 @@ public class Email {
         return this.alarm;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     //setter
     public void setEmail(String email) {
         this.email = email;
+    }
+    public void setPassword(String password) {
+        this.password = password;
     }
     public void setAlarm(boolean alarm) {
         this.alarm = alarm;
