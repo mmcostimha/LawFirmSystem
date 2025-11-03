@@ -4,7 +4,6 @@ import {useState} from "react"
 //components
 import Modal from "../components/Modal"
 import Resgister from "../components/register/RegisterFormComponent";
-import LoginFormComponent from "../components/login/loginFormComponent";
 import Header from "../layout/header";
 //context
 import {useUser} from "../context/userContext"
@@ -26,7 +25,7 @@ export default function Home() {
     <button onClick={()=>setIsRegisting(true)} >Regist</button> */}
     
     <Modal isOpen={isRegisting} onClose={() => setIsRegisting(false)}>
-      <Resgister/>
+      <Resgister S/>
     </Modal>
     
   </div>

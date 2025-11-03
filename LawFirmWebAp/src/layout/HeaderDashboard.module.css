@@ -1,0 +1,35 @@
+.container{
+    display: flex;
+    background-color: blueviolet;
+    height: 15vh;
+    min-height: 130px;
+
+    align-items: center;
+    
+    justify-content: start;
+    background-color: transparent;
+}
+
+.barraPesquisa{
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+    height: 39px;
+    width: 40%;
+    margin: 7%;
+    border-radius: 50px;
+    background-color: white;
+    border: none;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.horaAtual{
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    margin: 7%;
+    font-size: clamp(20px, 3vh, 40px);
+    font-weight: 10px;
+    height: 100%;
+}

@@ -1,10 +1,11 @@
-import {useState} from "react"
+import {useState, useContext} from "react"
 //styles
 import styles from "./header.module.css"
 import logo from "../assets/Images/logo.png"
 //camponents
 import Modal from "../components/Modal"
-import LoginFormComponent from "../components/login/loginFormComponent";
+import LoginFormComponent from "../components/login/LoginFormComponent";
+//context
 
 
 function Header() {
@@ -35,8 +36,8 @@ function Header() {
         </li>
       </ul>
        <Modal isOpen={isLogin} onClose={() => setIsLogin(false)}>
-          <LoginFormComponent/>
-        </Modal>
+          <LoginFormComponent setIsLoginFormVisible={setIsLogin}/>
+       </Modal>
     </nav>
   )
 }

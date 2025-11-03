@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
     private final UserService userService;
@@ -21,12 +22,14 @@ public class UserController {
     //get Clients List
     @GetMapping("user/clients")
     public List<User> getClientsList(){
-
+        System.out.println("Endpoit accessed clients");
         return userService.getClientsList();
     }
     //get Admin List
     @GetMapping("user/admins")
     public List<User> getAdminList(){
+        System.out.println("Endpoit accessed admin");
+
         return userService.getAdminsList();
     }
     //Get User by username

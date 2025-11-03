@@ -8,11 +8,9 @@ import { useUser } from "../../context/userContext.jsx";
 import { userLoginStructure } from "../../models/User/userLogin.jsx"
 //img
 import logo from "../../assets/Images/big_logo.png"
+import loading_gif from "../../assets/Images/loading.svg"
 
-export default function LoginFormComponent() {
-    
-    const [userName, setUserName] = useState("");
-    const [userPassword, setUserPassword] = useState("");
+export default function LoginFormComponent({setIsLoginFormVisible}) {
 
     const[userLogin,setUserLogin]= useState(userLoginStructure);
 
@@ -24,29 +22,37 @@ export default function LoginFormComponent() {
     async function doLogin() {
         setError("");
         setLoading(true);
+        await new Promise(resolve => setTimeout(resolve, 2000));
         // Chamar API de login
         try {
             const response = await axios.post(import.meta.env.VITE_SERVER_API_URL + '/auth/login', {
                 username: userLogin.username,
                 password: userLogin.password,
             });
-
+            
             // Supondo que a API retorna { token: "...", role: "admin" }
-            const { token, role } = response.data;
-            login(role, token); // atualiza contexto + localStorage
-            console.log('✅ Login bem-sucedido');
+            const { token } = response.data;
+            // const { token, role } = response.data;
+
+            // redireciona o utilizador para o Dashboard
+            window.location.href = "/dashboard";
+            
+            login("admin", token); // atualiza contexto + localStorage
+            setLoading(false);
+            setIsLoginFormVisible(false);
+
         } catch (err) {
             console.error(err);
-            setError('Usuário ou senha inválidos');
+            alert('Usuário ou senha inválidos');
         }
     }
 
-    const handleSubmit = () =>{
-        console.log("Fazendo o login")
+    const handleSubmit = (e) =>{
+        e.preventDefault(); 
+        doLogin();
     }
 
     return <div className={style.container}>
-      {/* <h1>Login Page</h1> */}
 
       <div className={style.adviceContainer}>
         <div className={style.iconContainer}>
@@ -74,7 +80,9 @@ export default function LoginFormComponent() {
         <input type="text" placeholder={"username"} onChange={(e) => setUserLogin(prev => ({ ...prev, username: e.target.value }))} value={userLogin.username} required />
         <input type="password" placeholder={"password"} onChange={(e) => setUserLogin(prev => ({ ...prev, password: e.target.value }))} value={userLogin.password} required />
         <a href="">esqueci-me minha password</a>
-        <button type="submit" >Submeter</button>
+        <button type="submit" >
+            {loading ? <img src={loading_gif} alt="Loading gift"/> : "Entrar"}
+        </button>
       </form>
    </div>;
 }

@@ -9,9 +9,9 @@ const ACCOUNT_TYPES = {
 
 // Example: pages allowed per account type
 const PAGES_PER_ACCOUNT = {
-    admin: ['register', 'users', 'dashboard', 'profile'],
+    admin: ['dashboard', 'profile'],
     // lawyer: ['dashboard', 'cases', 'profile'],
-    client: ['dashboard', 'profile'],
+    client: ['profile'],
 };
 
 const UserContext = createContext();
