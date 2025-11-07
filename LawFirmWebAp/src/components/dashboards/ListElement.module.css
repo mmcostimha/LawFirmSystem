@@ -1,0 +1,96 @@
+
+
+.containerImpar {
+    background-color: #4d4d4d25; /* cor dos ímpares */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+}
+
+.containerPar {
+    background-color: #ffffff; /* cor dos pares */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+}
+
+.idField{
+    width: 5%;
+    padding-left: 2%;
+    overflow: hidden;
+}
+.nameField{
+    width: 25%;
+    overflow: hidden;
+
+}
+.emailField{
+    width: 20%;
+    overflow: hidden;
+
+}
+.phoneField{
+    width: 10%;
+    overflow: hidden;
+
+}
+.usernameField{
+    width: 15%;
+    overflow: hidden;
+
+}
+.actionsField{
+    width: 15%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+.actionButtonExcluir{
+    padding: 3px 10px;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #c00101e7;
+}
+.actionButtonEditar{
+    padding: 3px 10px;
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #499601;
+}
+.deleteContainer{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    justify-content: space-around;
+    align-items: center;
+
+    aspect-ratio: 1.8/1.1;
+    width: 20vw;
+    min-width: 38rem;
+    border-radius: 15px;
+    background-color: var(--backgroud-color);
+}
+.confirmDeleteButton{
+    padding: 2px 7px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+h2{
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+    

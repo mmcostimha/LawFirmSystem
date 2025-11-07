@@ -1,0 +1,31 @@
+.contrainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    height: 15%;
+    min-height: 80px;
+    background-color: transparent;
+    justify-self: center;
+
+}
+.rightSide{
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    width: 60%;
+    height: 60%;
+    margin-right: 2%;
+
+    button{
+        padding: 0px;
+        text-wrap: none;
+        height: 100%;
+        width: 30%;
+    }
+}
+.title{
+    margin-left: 2%;
+    font-size: clamp(1rem,4vw,2.5rem);
+}

@@ -52,6 +52,15 @@ public class User {
     public String getUsername() {
         return username;
     }
+    public String getEmail() {
+        return email;
+    }
+    public String getPhone() {
+        return phone;
+    }
+    public String getName() {
+        return name;
+    }
     public String getRole() {
         return role;
     }

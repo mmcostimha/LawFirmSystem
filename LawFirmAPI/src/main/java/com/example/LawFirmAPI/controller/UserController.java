@@ -22,8 +22,11 @@ public class UserController {
     //get Clients List
     @GetMapping("user/clients")
     public List<User> getClientsList(){
-        System.out.println("Endpoit accessed clients");
-        return userService.getClientsList();
+        List<User> users = userService.getClientsList();
+        if (!users.isEmpty())
+            System.out.println("Endpoit accessed clients "+ users.get(0).getClass());
+
+        return users;
     }
     //get Admin List
     @GetMapping("user/admins")

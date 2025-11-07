@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './Lista.module.css';
+import headerstyles from "./ListElement.module.css"
 import axios from "axios";
 //components
 import ListElement from './ListElement';
 //context
 import { useUser } from "../../context/userContext"
+//icon
+import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
+import { TbReload } from "react-icons/tb";
 
 export default function Lista({ itens, setItens, type}) {
   const [currentPage, setCurrentPage] = useState(0);
@@ -68,7 +72,6 @@ export default function Lista({ itens, setItens, type}) {
   }, [itens]);
 
   // if (!itens) return <div>Carregando...{token}</div>;
-
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const visibleItems = itens.slice(startIndex, endIndex);
@@ -76,8 +79,35 @@ export default function Lista({ itens, setItens, type}) {
   const hasPrev = currentPage > 0;
   const hasNext = endIndex < itens.length;
 
+  const columns = ['Id', 'Username', 'Name', 'Email', 'Phone', 'Actions'];
+  const getClassForKey = (key) => {
+      switch (key) {
+        case 'Id':
+          return headerstyles.idField;
+        case 'Name':
+          return headerstyles.nameField;
+        case 'Email':
+          return headerstyles.emailField;
+        case 'Phone':
+          return headerstyles.phoneField;
+        case 'Username':
+          return headerstyles.usernameField;
+        case 'Actions':
+          return headerstyles.actionsField;
+        default:
+          return headerstyles.item;
+      }
+    };
+
   return (
     <div className={styles.container} >
+      <div className={styles.listHeader}>
+        {columns.map((col) => (
+          <div key={col} className={ getClassForKey (col)}>
+            {col}
+          </div>
+        ))} 
+      </div>
 
       {
         !itens
@@ -89,7 +119,7 @@ export default function Lista({ itens, setItens, type}) {
                 ref={index === 0 ? itemRef : null} // mede apenas o primeiro item
                 className={styles.listElement}
               >
-                <ListElement params={item} />
+                <ListElement params={item} parChecker={index % 2 === 0} />
               </div>
             ))}
           </div>
@@ -97,9 +127,17 @@ export default function Lista({ itens, setItens, type}) {
       
         
       <div className={styles.controls}>
-        <button onClick={() => setReload(true)}>Recarregar</button>
-        <button disabled={!hasPrev} onClick={() => setCurrentPage(p => p - 1)}>Anterior</button>
-        <button disabled={!hasNext} onClick={() => setCurrentPage(p => p + 1)}>Próximos</button>
+        <button disabled={!hasPrev} onClick={() => setCurrentPage(p => p - 1)}>
+          <FaArrowLeft />
+        </button>
+        
+        <button onClick={() => setReload(true)}>
+          <TbReload  /> 
+        </button>
+        
+        <button disabled={!hasNext} onClick={() => setCurrentPage(p => p + 1)}>
+          <FaArrowRight />
+        </button>
       </div>
     </div>
   );
