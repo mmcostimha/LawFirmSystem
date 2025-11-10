@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './ListElement.module.css';
 //modal
-import Modal from '../Modal';
+import Modal from '../../Modal';
 
 export default function ListElement({ params, parChecker}) {
 

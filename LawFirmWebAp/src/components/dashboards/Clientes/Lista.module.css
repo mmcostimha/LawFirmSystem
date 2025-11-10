@@ -11,6 +11,8 @@
     border-radius: 15px;
     width: 90%;
     height: 75%;
+    border: 1px solid orange;
+
 }
 .list{
     height: 90%;

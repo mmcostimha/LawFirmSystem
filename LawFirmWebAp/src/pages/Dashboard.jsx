@@ -2,15 +2,16 @@ import { useState } from 'react';
 import styles from './Dashboard.module.css';
 import HeaderDashboard from '../layout/headerDashboard.jsx';
 import MenuDashboard from '../components/menu/menuDashboard.jsx';
-import Lista from '../components/dashboards/Lista.jsx';
+import Lista from '../components/dashboards/Clientes/Lista.jsx';
 import SubHeader from '../layout/SubHeader.jsx';
 import Modal from '../components/Modal.jsx';
+import MozaicoBoard from '../components/dashboards/Alarms/MozaicoBoard.jsx';
 
 export default function Dashboard() {
   const [page, setPage] = useState('Visão geral');
 
   const [clients, setClients] = useState("");
-  const [alarms, setAlarms] = useState("");
+  const [alarms, setAlarms] = useState([]);
   const [addClient, setAddClient] = useState(false);
   const [addAlarm, setAddAlarm] = useState(false);
 
@@ -33,7 +34,12 @@ export default function Dashboard() {
             <Lista itens={clients} setItens={setClients} />
           </div>
         ) : page === 'Alarmes' ? (
-          <div>Conteúdo dos Alarmes</div>
+          // <div>Conteúdo dos Alarmes</div>
+          <div>
+            <SubHeader title={page} buttonFuntion={()=>setAddAlarm(true)}/>
+            <MozaicoBoard itens={alarms} setItens={setAlarms} />
+          </div>
+
         ) : page === 'Perfil' ? (
           <div>Conteúdo do Perfil</div>
         ) : (
