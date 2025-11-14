@@ -11,12 +11,13 @@
     border-radius: 15px;
     width: 90%;
     height: 75%;
-    border: 1px solid orange;
+    /* border: 1px solid orange; */
 
 }
 .list{
     height: 90%;
     width: 100%;
+
 }
 .listHeader{
     border-bottom: 2px solid rgba(0, 0, 0, 0.274);
@@ -43,6 +44,7 @@
     height: 10%;
     margin: 1%;
     align-self: center;
+    justify-self: end;
     justify-content: space-around;
     align-items: center;
     padding: 0;

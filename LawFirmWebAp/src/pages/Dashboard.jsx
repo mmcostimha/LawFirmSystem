@@ -6,6 +6,7 @@ import Lista from '../components/dashboards/Clientes/Lista.jsx';
 import SubHeader from '../layout/SubHeader.jsx';
 import Modal from '../components/Modal.jsx';
 import MozaicoBoard from '../components/dashboards/Alarms/MozaicoBoard.jsx';
+import AlarmForm from '../components/dashboards/Alarms/AlarmForm.jsx';
 
 export default function Dashboard() {
   const [page, setPage] = useState('Visão geral');
@@ -50,7 +51,7 @@ export default function Dashboard() {
         <>Cliente</>
       </Modal>
       <Modal isOpen={addAlarm} onClose={()=>setAddAlarm(false)}>
-        <>Alarme</>
+        <AlarmForm />
       </Modal>
     </div>
   );

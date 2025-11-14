@@ -5,16 +5,23 @@ import styles from "./MozaicoBoardElement.module.css"
 import { ImCross } from "react-icons/im";
 
 
-export default function MozaicoBoardElement({item}){
+export default function MozaicoBoardElement({item, setItem,deleteFunction}){
 
     return <div className={styles.container}>
 
         <div className={styles.header}>
-            <h2></h2>
-            <ImCross className={styles.icon} size={25} color="red"/>
+            <h2>{item.name}</h2>
+            <ImCross className={styles.icon} onClick={() =>deleteFunction(item)} size={25} color="red"/>
         </div>
-        <strong>ID:</strong> {item.id} | <strong>Email:</strong> {item.email} |{" "}
-        <strong>Tipo:</strong> {item.tipo} | <strong>Estado:</strong> {item.estado}
-        
+
+        <div className={styles.contentContainer}>
+
+            <p><strong>ID:</strong> {item.id}</p>  
+            <p><strong>Email:</strong> {item.email}</p>
+            <p><strong>Tipo:</strong> {item.tipo}</p> 
+            <p><strong>Estado:</strong> {item.estado}</p>      
+            
+        </div>
+
     </div>
 }
