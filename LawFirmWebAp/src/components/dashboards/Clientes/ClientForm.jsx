@@ -1,12 +1,10 @@
+import styles from "./ClientForm.module.css";
 import {useState} from 'react';
-import styles from "./AlarmForm.module.css"
+//modelo
+import {userStructure} from "../../../models/User/userModel"
 
 export default function AlarmForm() {
-    const [formData, setFormData] = useState({
-        email: '',
-        provider: '',
-        type: ''
-    });
+    const [formData, setFormData] = useState(userStructure);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
