@@ -4,6 +4,7 @@ import headerstyles from "./ListElement.module.css"
 import axios from "axios";
 //components
 import ListElement from './ListElement';
+import LoadingComponent from '../../loading/LoadingComponente';
 //context
 import { useUser } from "../../../context/userContext"
 //icon
@@ -14,6 +15,7 @@ export default function Lista({ itens, setItens, type}) {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [reload, setReload] = useState(false);
+  const [loading, setLoading] = useState(true);
   const containerRef = useRef(null);
   const itemRef = useRef(null);
   // accountType,
@@ -51,12 +53,14 @@ export default function Lista({ itens, setItens, type}) {
     if (!itens || reload) {
 
       fetchData();
+      setLoading(false);
       setReload(false);
     }
   }, [reload]);
 
   useEffect(() => {
     function calculateItemsPerPage() {
+      setLoading(true);
       if (containerRef.current && itemRef.current) {
         const containerHeight = containerRef.current.clientHeight;
         const itemHeight = itemRef.current.clientHeight;
@@ -64,7 +68,7 @@ export default function Lista({ itens, setItens, type}) {
         setItemsPerPage(possible > 0 ? possible : 1);
       }
     }
-
+    
     // calcula no início e no resize
     calculateItemsPerPage();
     window.addEventListener('resize', calculateItemsPerPage);
@@ -101,17 +105,17 @@ export default function Lista({ itens, setItens, type}) {
 
   return (
     <div className={styles.container} >
-      <div className={styles.listHeader}>
-        {columns.map((col) => (
-          <div key={col} className={ getClassForKey (col)}>
-            {col}
-          </div>
-        ))} 
-      </div>
 
+          <div className={styles.listHeader}>
+            {columns.map((col) => (
+              <div key={col} className={ getClassForKey (col)}>
+                {col}
+              </div>
+            ))} 
+          </div>
       {
-        !itens
-          ? <div>Carregando...  {token}</div>:
+        loading ? <LoadingComponent size={70}/> :
+        <>
           <div className={styles.list} ref={containerRef}>
             {visibleItems.map((item, index) => (
               <div
@@ -123,22 +127,22 @@ export default function Lista({ itens, setItens, type}) {
               </div>
             ))}
           </div>
-        }
+          <div className={styles.controls}>
+            <button disabled={!hasPrev} onClick={() => setCurrentPage(p => p - 1)}>
+              <FaArrowLeft />
+            </button>
+            
+            <button onClick={() => setReload(true)}>
+              <TbReload  /> 
+            </button>
+            
+            <button disabled={!hasNext} onClick={() => setCurrentPage(p => p + 1)}>
+              <FaArrowRight />
+            </button>
+          </div>
+        </>
+      }
       
-        
-      <div className={styles.controls}>
-        <button disabled={!hasPrev} onClick={() => setCurrentPage(p => p - 1)}>
-          <FaArrowLeft />
-        </button>
-        
-        <button onClick={() => setReload(true)}>
-          <TbReload  /> 
-        </button>
-        
-        <button disabled={!hasNext} onClick={() => setCurrentPage(p => p + 1)}>
-          <FaArrowRight />
-        </button>
-      </div>
     </div>
   );
 }

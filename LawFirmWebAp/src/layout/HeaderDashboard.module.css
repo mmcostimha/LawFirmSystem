@@ -1,13 +1,13 @@
 .container{
     display: flex;
-    background-color: blueviolet;
+    /* background-color: blueviolet; */
     height: 15vh;
     min-height: 130px;
 
     align-items: center;
     
     justify-content: start;
-    background-color: transparent;
+    /* background-color: transparent; */
 }
 
 .barraPesquisa{

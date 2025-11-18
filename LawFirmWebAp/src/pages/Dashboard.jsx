@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef} from 'react';
 import styles from './Dashboard.module.css';
 import HeaderDashboard from '../layout/headerDashboard.jsx';
 import MenuDashboard from '../components/menu/menuDashboard.jsx';
@@ -15,9 +15,8 @@ export default function Dashboard() {
   const [alarms, setAlarms] = useState([]);
   const [addClient, setAddClient] = useState(false);
   const [addAlarm, setAddAlarm] = useState(false);
-
   return (
-    <div className={styles.container}>
+    <div className={styles.container} >
       <div className={styles.sidebar}>
         <MenuDashboard setPage={setPage} />
       </div>

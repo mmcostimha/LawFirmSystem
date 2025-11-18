@@ -4,12 +4,14 @@ import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
 //componentes
 import MozaicoBoardElement from "./MozaicoBoardElement";
+import LoadingComponent from "../../loading/LoadingComponente";
 //styles
 import styles from "./MozaicoBoard.module.css"
 
 export default function MozaicoBoard({ itens, setItens }) {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [numberOfItems,setNumberOfItems] = useState(1); // número de alarmes visíveis por vez
+  const [loading, setLoading]  = useState(true);
 
   const itemRef = useRef(null);
   const containerRef = useRef(null);
@@ -24,27 +26,42 @@ export default function MozaicoBoard({ itens, setItens }) {
       name:names[index]
     }));
     setItens(alarmesAleatorios);
+    setLoading(false);
   }, [setItens]);
-  useEffect(() => {
+    useEffect(() => {
+      let debounceTimer = null;
+
       function calculateItemsPerPage() {
-        console.log(containerRef.current);
-        console.log(itemRef.current);
         if (containerRef.current && itemRef.current) {
-          
-          const clientWidth = containerRef.current.clientWidth;
-          const containerHeight = containerRef.current.clientHeight;
+          const containerWidth = containerRef.current.clientWidth;
+          const containerHeight = containerRef.current.clientHeight *0.8;
           const itemWidth = itemRef.current.clientWidth;
           const itemHeight = itemRef.current.clientHeight;
-          const possible = Math.floor(containerHeight / (itemHeight))+Math.floor(clientWidth / (itemWidth));
-          setNumberOfItems(possible > 0 ? possible+1 : 1);
+
+          const heithdiv = Math.floor(containerHeight / itemHeight);
+          const widthdiv = Math.floor(containerWidth / itemWidth);
+          const possible = heithdiv * widthdiv;
+          console.log(containerWidth,containerHeight,itemHeight,itemWidth,widthdiv,heithdiv,possible);
+          setNumberOfItems(possible > 0 ? possible : 1);
         }
       }
-      
-      // calcula no início e no resize
+
+      function handleResize() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          calculateItemsPerPage();
+        }, 200); 
+      }
+
       calculateItemsPerPage();
-      window.addEventListener('resize', calculateItemsPerPage);
-      return () => window.removeEventListener('resize', calculateItemsPerPage);
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+        clearTimeout(debounceTimer);
+        window.removeEventListener("resize", handleResize);
+      };
     }, [itens]);
+
 
 
   // cálculo dos índices dos alarmes a mostrar
@@ -73,31 +90,41 @@ export default function MozaicoBoard({ itens, setItens }) {
     console.log("seting alarm- not emplemented")
   }
 
-  return (
-    <div className={styles.container} ref={containerRef}>
-      <div className={styles.itens}>
-        {alarmesVisiveis.map((item,index) => (
-          <div 
-            key={index}
-            ref={index === 0 ? itemRef : null}
-          >
-            {console.log(index)}
-            <MozaicoBoardElement item={item} deleteFunction={deleteAlarmFunction} setItem={setAlarm}/>
-          </div>
-        ))}
-      </div>
+  
 
-      <div className={styles.buttonsContainer}>
-        <button onClick={paginaAnterior} disabled={paginaAtual === 1}>
-          <FaArrowLeft />
-        </button>
-        <span style={{ margin: "0 8px" }}>
-           {paginaAtual} de {totalPaginas}
-        </span>
-        <button onClick={proximaPagina} disabled={paginaAtual === totalPaginas}>
-          <FaArrowRight />
-        </button>
-      </div>
-    </div>
-  );
+
+  return (
+  <div className={styles.container} ref={containerRef}>
+    {loading ? (
+      <LoadingComponent size={70}/>
+    ) : (
+      <>
+        <div className={styles.itens}>
+          {alarmesVisiveis.map((item, index) => (
+            <div key={index} ref={index === 0 ? itemRef : null}>
+              <MozaicoBoardElement 
+                item={item} 
+                deleteFunction={deleteAlarmFunction} 
+                setItem={setAlarm}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.buttonsContainer}>
+          <button onClick={paginaAnterior} disabled={paginaAtual === 1}>
+            <FaArrowLeft />
+          </button>
+          <span style={{ margin: "0 8px" }}>
+            {paginaAtual} de {totalPaginas}
+          </span>
+          <button onClick={proximaPagina} disabled={paginaAtual === totalPaginas}>
+            <FaArrowRight />
+          </button>
+        </div>
+      </>
+    )}
+  </div>
+);
+
 }
