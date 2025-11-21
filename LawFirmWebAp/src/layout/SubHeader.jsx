@@ -8,7 +8,7 @@ export default function SubHeader({title, buttonFuntion} ) {
     const getTypeFromTitle = (title) => {
         switch (title) {
             case 'Clientes':
-                return 'Cliente';
+                return 'Usuário';
             case 'Alarmes':
                 return 'Alarme';    
             default:

@@ -1,0 +1,66 @@
+@import "../../../../assets/css/color.css";
+
+.container{
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 3%;
+    width: 100%;
+    justify-content: start;
+    align-content: start;
+    background-color: var(--color-list-element-2);
+
+    /* border: 1px solid black; */
+
+    h2{
+        text-align: start;
+        /* border: 1px solid black; */
+        width: fit-content;
+        margin-left: 3%;
+        margin-top: 2%;
+    }
+}
+
+.taskContainer{
+    display: flex;
+    flex-direction: row;
+    min-height: 40px;
+    margin-left: 6%;
+    margin-right: 6%;
+    margin-top: 2%; 
+    border-radius: 15px;
+    padding-left: 3%;
+    background-color: var(--color-list-element-1);
+}
+.taskContainer2{
+    display: flex;
+    flex-direction: row;
+    min-height: 40px;
+    margin-left: 6%;
+    margin-right: 6%;
+    margin-top: 2%; 
+    border-radius: 15px;
+    padding-left: 3%;
+    background-color: var(--color-list-element-1);
+
+}
+.textContainer{
+    width: 90%;
+    min-height: 36px;
+    align-content: center;
+
+    text-decoration: line-through;
+}
+.actionsContainer{
+    width: 10%;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+.editIcon{
+    cursor: pointer;
+    &:hover{
+        transform: scale(0.9);
+    }
+}

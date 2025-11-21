@@ -15,7 +15,6 @@ export default function Lista({ itens, setItens, type}) {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [reload, setReload] = useState(false);
-  const [loading, setLoading] = useState(true);
   const containerRef = useRef(null);
   const itemRef = useRef(null);
   // accountType,
@@ -53,14 +52,13 @@ export default function Lista({ itens, setItens, type}) {
     if (!itens || reload) {
 
       fetchData();
-      setLoading(false);
       setReload(false);
     }
   }, [reload]);
 
   useEffect(() => {
     function calculateItemsPerPage() {
-      setLoading(true);
+      
       if (containerRef.current && itemRef.current) {
         const containerHeight = containerRef.current.clientHeight;
         const itemHeight = itemRef.current.clientHeight;
@@ -75,7 +73,7 @@ export default function Lista({ itens, setItens, type}) {
     return () => window.removeEventListener('resize', calculateItemsPerPage);
   }, [itens]);
 
-  // if (!itens) return <div>Carregando...{token}</div>;
+  if (!itens) return <LoadingComponent size={70}/>;
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const visibleItems = itens.slice(startIndex, endIndex);
@@ -105,43 +103,38 @@ export default function Lista({ itens, setItens, type}) {
 
   return (
     <div className={styles.container} >
-
-          <div className={styles.listHeader}>
-            {columns.map((col) => (
-              <div key={col} className={ getClassForKey (col)}>
-                {col}
-              </div>
-            ))} 
+      <div className={styles.listHeader}>
+        {columns.map((col) => (
+          <div key={col} className={ getClassForKey (col)}>
+            {col}
           </div>
-      {
-        loading ? <LoadingComponent size={70}/> :
-        <>
-          <div className={styles.list} ref={containerRef}>
-            {visibleItems.map((item, index) => (
-              <div
-                key={index}
-                ref={index === 0 ? itemRef : null} // mede apenas o primeiro item
-                className={styles.listElement}
-              >
-                <ListElement params={item} parChecker={index % 2 === 0} />
-              </div>
-            ))}
+        ))} 
+      </div>
+  
+      <div className={styles.list} ref={containerRef}>
+        {visibleItems.map((item, index) => (
+          <div
+            key={index}
+            ref={index === 0 ? itemRef : null} // mede apenas o primeiro item
+            className={styles.listElement}
+          >
+            <ListElement params={item} parChecker={index % 2 === 0} />
           </div>
-          <div className={styles.controls}>
-            <button disabled={!hasPrev} onClick={() => setCurrentPage(p => p - 1)}>
-              <FaArrowLeft />
-            </button>
-            
-            <button onClick={() => setReload(true)}>
-              <TbReload  /> 
-            </button>
-            
-            <button disabled={!hasNext} onClick={() => setCurrentPage(p => p + 1)}>
-              <FaArrowRight />
-            </button>
-          </div>
-        </>
-      }
+        ))}
+      </div>
+      <div className={styles.controls}>
+        <button disabled={!hasPrev} onClick={() => setCurrentPage(p => p - 1)}>
+          <FaArrowLeft />
+        </button>
+        
+        <button onClick={() => setReload(true)}>
+          <TbReload  /> 
+        </button>
+        
+        <button disabled={!hasNext} onClick={() => setCurrentPage(p => p + 1)}>
+          <FaArrowRight />
+        </button>
+      </div>
       
     </div>
   );

@@ -7,6 +7,9 @@ import SubHeader from '../layout/SubHeader.jsx';
 import Modal from '../components/Modal.jsx';
 import MozaicoBoard from '../components/dashboards/Alarms/MozaicoBoard.jsx';
 import AlarmForm from '../components/dashboards/Alarms/AlarmForm.jsx';
+import ClientForm from '../components/dashboards/Clientes/ClientForm.jsx';
+import ToDoList from '../components/dashboards/Geral/TodoList/ToDoList.jsx';
+import EmailAtiveList from '../components/dashboards/Geral/EmailList/EmailAtiveList.jsx'; 
 
 export default function Dashboard() {
   const [page, setPage] = useState('Visão geral');
@@ -26,7 +29,10 @@ export default function Dashboard() {
 
         {page === 'Visão geral' ? (
           
-          <div>Conteúdo Geral</div>
+          <div className={styles.dashboardContainer}> 
+            <ToDoList />
+            <EmailAtiveList />
+          </div>
           
         ) : page === 'Clientes' ? (
           <div>
@@ -34,7 +40,6 @@ export default function Dashboard() {
             <Lista itens={clients} setItens={setClients} />
           </div>
         ) : page === 'Alarmes' ? (
-          // <div>Conteúdo dos Alarmes</div>
           <div>
             <SubHeader title={page} buttonFuntion={()=>setAddAlarm(true)}/>
             <MozaicoBoard itens={alarms} setItens={setAlarms} />
@@ -47,7 +52,7 @@ export default function Dashboard() {
         )}
       </div>
       <Modal isOpen={addClient} onClose={()=>setAddClient(false)}>
-        <>Cliente</>
+        <ClientForm/>
       </Modal>
       <Modal isOpen={addAlarm} onClose={()=>setAddAlarm(false)}>
         <AlarmForm />

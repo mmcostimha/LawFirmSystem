@@ -1,7 +1,7 @@
 
 
 .containerImpar {
-    background-color: #4d4d4d25; /* cor dos ímpares */
+    background-color: var(--color-list-element-1); /* cor dos ímpares */
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -11,7 +11,7 @@
 }
 
 .containerPar {
-    background-color: #ffffff; /* cor dos pares */
+    background-color: var(--color-list-element-2); /* cor dos pares */
     display: flex;
     flex-direction: row;
     align-items: center;

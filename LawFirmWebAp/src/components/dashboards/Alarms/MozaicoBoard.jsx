@@ -28,39 +28,40 @@ export default function MozaicoBoard({ itens, setItens }) {
     setItens(alarmesAleatorios);
     setLoading(false);
   }, [setItens]);
-    useEffect(() => {
-      let debounceTimer = null;
+  
+  useEffect(() => {
+    let debounceTimer = null;
 
-      function calculateItemsPerPage() {
-        if (containerRef.current && itemRef.current) {
-          const containerWidth = containerRef.current.clientWidth;
-          const containerHeight = containerRef.current.clientHeight *0.8;
-          const itemWidth = itemRef.current.clientWidth;
-          const itemHeight = itemRef.current.clientHeight;
+    function calculateItemsPerPage() {
+      if (containerRef.current && itemRef.current) {
+        const containerWidth = containerRef.current.clientWidth;
+        const containerHeight = containerRef.current.clientHeight *0.8;
+        const itemWidth = itemRef.current.clientWidth;
+        const itemHeight = itemRef.current.clientHeight;
 
-          const heithdiv = Math.floor(containerHeight / itemHeight);
-          const widthdiv = Math.floor(containerWidth / itemWidth);
-          const possible = heithdiv * widthdiv;
-          console.log(containerWidth,containerHeight,itemHeight,itemWidth,widthdiv,heithdiv,possible);
-          setNumberOfItems(possible > 0 ? possible : 1);
-        }
+        const heithdiv = Math.floor(containerHeight / itemHeight);
+        const widthdiv = Math.floor(containerWidth / itemWidth);
+        const possible = heithdiv * widthdiv;
+        console.log(containerWidth,containerHeight,itemHeight,itemWidth,widthdiv,heithdiv,possible);
+        setNumberOfItems(possible > 0 ? possible : 1);
       }
+    }
 
-      function handleResize() {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-          calculateItemsPerPage();
-        }, 200); 
-      }
+    function handleResize() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        calculateItemsPerPage();
+      }, 200); 
+    }
 
-      calculateItemsPerPage();
-      window.addEventListener("resize", handleResize);
+    calculateItemsPerPage();
+    window.addEventListener("resize", handleResize);
 
-      return () => {
-        clearTimeout(debounceTimer);
-        window.removeEventListener("resize", handleResize);
-      };
-    }, [itens]);
+    return () => {
+      clearTimeout(debounceTimer);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [itens]);
 
 
 
