@@ -8,7 +8,8 @@ import { FaCheckDouble } from "react-icons/fa6";
 
 export default function ListItem({tarefas, setTarefa,data}){
     
-    function alterarEstado(task) {
+    async function alterarEstado(task) {
+        //faça a chamada para o backend aqui para atualizar o estado da tarefa ⚠️⚠️⚠️
         setTarefa(prev =>
             prev.map(t =>
                 t.id === task.id
@@ -16,7 +17,12 @@ export default function ListItem({tarefas, setTarefa,data}){
                     : t
             )
         );
-        //faça a chamada para o backend aqui para atualizar o estado da tarefa
+    }
+    async function deleteTask(task) {
+        //faça a chamada para o backend aqui para atualizar o estado da tarefa ⚠️⚠️⚠️
+        setTarefa(prev =>
+            prev.filter(t => t.id !== task.id)
+        );
     }
         
 
@@ -30,8 +36,8 @@ export default function ListItem({tarefas, setTarefa,data}){
             >
                 <div className={styles.textContainer} style={
                     {
-                        textDecoration: !(task.estado === "concluido") ? "line-through" : "none",
-                        color: !(task.estado === "concluido") ? "gray" : "black"
+                        textDecoration: (task.estado === "concluido") ? "line-through" : "none",
+                        color: (task.estado === "concluido") ? "gray" : "black"
                     }
                 }>
                     {task.tarefa}
@@ -40,9 +46,13 @@ export default function ListItem({tarefas, setTarefa,data}){
                     <div className={styles.editIcon} onClick={()=>alterarEstado(task) }>
                          {
                             task.estado === "concluido" ?<FiCheck /> : <FaCheckDouble />
-
                          }
-                         
+
+                    </div>
+                    <div className={styles.editIcon} onClick={()=>deleteTask(task) }>
+
+                        <FaTrash /> 
+                            
                     </div>
                    
                 </div>

@@ -4,7 +4,7 @@ import headerstyles from "./ListElement.module.css"
 import axios from "axios";
 //components
 import ListElement from './ListElement';
-import LoadingComponent from '../../loading/LoadingComponente';
+import LoadingComponent from '../../loading/LoadingComponent';
 //context
 import { useUser } from "../../../context/userContext"
 //icon

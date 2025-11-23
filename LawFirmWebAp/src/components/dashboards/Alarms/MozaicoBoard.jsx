@@ -4,7 +4,7 @@ import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
 //componentes
 import MozaicoBoardElement from "./MozaicoBoardElement";
-import LoadingComponent from "../../loading/LoadingComponente";
+import LoadingComponent from "../../loading/LoadingComponent";
 //styles
 import styles from "./MozaicoBoard.module.css"
 
