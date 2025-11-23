@@ -91,9 +91,6 @@ export default function MozaicoBoard({ itens, setItens }) {
     console.log("seting alarm- not emplemented")
   }
 
-  
-
-
   return (
   <div className={styles.container} ref={containerRef}>
     {loading ? (

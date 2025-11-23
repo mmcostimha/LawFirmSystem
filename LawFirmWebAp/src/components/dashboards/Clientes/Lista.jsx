@@ -73,7 +73,18 @@ export default function Lista({ itens, setItens, type}) {
     return () => window.removeEventListener('resize', calculateItemsPerPage);
   }, [itens]);
 
-  if (!itens) return <LoadingComponent size={70}/>;
+  if (!itens) return (
+
+    
+    <div className={styles.container} >
+      <div className={styles.list} ref={containerRef}>
+        <LoadingComponent size={70}/>;
+      </div>
+    </div>
+
+  )
+  
+  
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const visibleItems = itens.slice(startIndex, endIndex);

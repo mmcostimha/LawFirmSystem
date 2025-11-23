@@ -53,9 +53,17 @@ export default function ToDoList(){
         }, 1000);
     }, []);
 
+    function handleEnter(e) {
+        if (e.key === "Enter") {
+        // aqui colocas a ação desejada
+            if (!newTask.tarefa.trim()) return;
+            addTask(newTask);
+        }
+    }
+
     return <div className={styles.container}>
         <div className={styles.addContentContainer}>
-            <input type="text" placeholder="Adicionar nova tarefa..." value={newTask.tarefa} onChange={e => setNewTask(prev => ({ ...prev, tarefa: e.target.value}))}/>
+            <input type="text" placeholder="Adicionar nova tarefa..." value={newTask.tarefa} onKeyDown={handleEnter} onChange={e => setNewTask(prev => ({ ...prev, tarefa: e.target.value}))}/>
             <button onClick={()=>{
                 if (!newTask.tarefa.trim()) return;
                 addTask(newTask)}

@@ -12,11 +12,16 @@
 
 .itemsContainer{
     display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
 }
 .titleContainer{
     display: flex;
     height: 40px;
     width: 100%;
+    justify-content: center;
+    align-items: center;
     /* border: 1px solid red; */
     border-bottom: 2px solid var(--backgroud-color);
 }
