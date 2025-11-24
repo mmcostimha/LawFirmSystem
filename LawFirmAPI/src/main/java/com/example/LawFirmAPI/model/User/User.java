@@ -2,6 +2,8 @@ package com.example.LawFirmAPI.model.User;
 
 import com.example.LawFirmAPI.model.Email.Email;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "users")
@@ -29,6 +31,9 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
+    private LocalDateTime creationDate;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Email emailEntity;
 
@@ -41,6 +46,7 @@ public class User {
         this.email=user.email();
         this.phone=user.phone();
         this.role= user.role();
+        this.creationDate = LocalDateTime.now();
     }
     //get functions
     public Long getId() {
@@ -85,5 +91,8 @@ public class User {
     }
     public void setEmail(String email) {
         this.email = email;
+    }
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 }

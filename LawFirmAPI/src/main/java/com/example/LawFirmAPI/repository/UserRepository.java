@@ -1,7 +1,6 @@
 package com.example.LawFirmAPI.repository;
 
 import com.example.LawFirmAPI.model.User.User;
-import jakarta.persistence.JoinColumn;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +12,5 @@ public interface  UserRepository extends JpaRepository<User,Long> {
 
     User findByUsername(String username);
     List<User> findByRole(String role);
+    
 }

@@ -22,7 +22,7 @@ export default function ListElement({ params, parChecker}) {
     console.warn('ListElement recebeu params inválido:', params);
     return null;
   }
-  const sensitiveKeys = ['password', 'role'];
+  const sensitiveKeys = ['password', 'role',"creationDate","username","id"];
   // Filtra apenas os pares seguros
   const safeEntries = Object.entries(params).filter(
     ([key]) => !sensitiveKeys.includes(key)

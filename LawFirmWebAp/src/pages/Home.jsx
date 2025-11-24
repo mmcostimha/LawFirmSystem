@@ -25,7 +25,7 @@ export default function Home() {
     <button onClick={()=>setIsRegisting(true)} >Regist</button> */}
     
     <Modal isOpen={isRegisting} onClose={() => setIsRegisting(false)}>
-      <Resgister S/>
+      <Resgister />
     </Modal>
     
   </div>

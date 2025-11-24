@@ -8,3 +8,9 @@ export const userStructure = {
   username:"",
   password:""
 }
+export const userCreatorStructure = {
+  name: "",
+  email: "",
+  phone:"",
+  role: "",
+}

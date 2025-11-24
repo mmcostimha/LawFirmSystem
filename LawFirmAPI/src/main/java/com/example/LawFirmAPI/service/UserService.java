@@ -32,8 +32,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+
     public User getByUsername(String username){
         return userRepository.findByUsername(username);
+    }
+    public User getByID(Long id){
+        return userRepository.getReferenceById(id);
     }
     public List<User> getClientsList(){
         return userRepository.findByRole("client");

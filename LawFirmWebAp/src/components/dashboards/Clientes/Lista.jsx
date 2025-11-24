@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './Lista.module.css';
 import headerstyles from "./ListElement.module.css"
-import axios from "axios";
+// import axios from "axios";
 //components
 import ListElement from './ListElement';
 import LoadingComponent from '../../loading/LoadingComponent';
@@ -10,6 +10,8 @@ import { useUser } from "../../../context/userContext"
 //icon
 import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
+//data
+import apiRequest from '../../../data/apiRequest.jsx';
 
 export default function Lista({ itens, setItens, type}) {
   const [currentPage, setCurrentPage] = useState(0);
@@ -27,31 +29,19 @@ export default function Lista({ itens, setItens, type}) {
 
   useEffect(() => {
 
-    async function fetchData() {
+    async function carregarDados() {
       try {
-        const response = await axios.get(
-          import.meta.env.VITE_SERVER_API_URL + '/api/user/clients',
-          {}, // request body
-          {
-            headers: {
-              'Authorization': `Bearer${token}` // Include token in headers
-            }
-          }
-        );
-        
-        if (response.data) {
-          setItens(response.data);
-          console.log('Dados carregados:', response.data);
-        }
+        const dados = await apiRequest('/api/user/clients', 'GET', null, token);
+        setItens(dados);
+        console.log('Dados carregados:', dados);
       } catch (err) {
-        console.error(err);
+        console.error('Falha ao carregar dados:', err);
       }
     }
 
     // simula carregamento inicial ou recarregamento
     if (!itens || reload) {
-
-      fetchData();
+      carregarDados();
       setReload(false);
     }
   }, [reload]);
@@ -92,7 +82,7 @@ export default function Lista({ itens, setItens, type}) {
   const hasPrev = currentPage > 0;
   const hasNext = endIndex < itens.length;
 
-  const columns = ['Id', 'Username', 'Name', 'Email', 'Phone', 'Actions'];
+  const columns = [ 'Name', 'Email', 'Phone', 'Actions'];
   const getClassForKey = (key) => {
       switch (key) {
         case 'Id':

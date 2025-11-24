@@ -2,7 +2,7 @@ package com.example.LawFirmAPI.model.Email;
 
 import com.example.LawFirmAPI.model.User.User;
 import jakarta.persistence.*;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -25,6 +25,9 @@ public class Email {
     @Column
     private boolean alarm;
 
+    @Column(nullable = false)
+    private LocalDateTime creationDate;
+
     @OneToOne
     @JoinColumn(name = "client_id", unique = true)
     private User user;
@@ -35,6 +38,7 @@ public class Email {
         this.user = user;
         this.alarm = false;
         this.password= email.password();
+        this.creationDate = LocalDateTime.now();
     }
 
     //getters
@@ -49,6 +53,9 @@ public class Email {
     }
     public boolean getAlarm(){
         return this.alarm;
+    }
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
     public String getPassword() {

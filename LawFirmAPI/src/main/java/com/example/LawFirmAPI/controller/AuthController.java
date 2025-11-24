@@ -1,9 +1,6 @@
 package com.example.LawFirmAPI.controller;
 
-import com.example.LawFirmAPI.model.User.AuthenticationDTO;
-import com.example.LawFirmAPI.model.User.LoginResponseDTO;
-import com.example.LawFirmAPI.model.User.User;
-import com.example.LawFirmAPI.model.User.UserDTO;
+import com.example.LawFirmAPI.model.User.*;
 import com.example.LawFirmAPI.security.JwtUtil;
 import com.example.LawFirmAPI.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.Random;
 import java.util.Map;
 import java.util.Optional;
 
@@ -32,10 +29,26 @@ public class AuthController {
 
     //Regit a new Client
     @PostMapping("/register")
-    public ResponseEntity<?> postMethodName(@RequestBody UserDTO request){
-        System.out.println("Tried access point"+ request.name());
-        User user = userService.newUser(request);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<?> postMethodName(@RequestBody UserRequestedDTO request){
+//        System.out.println("Tried access point"+ request.name());
+        Random random = new Random();
+        int numero = random.nextInt(6);
+        //User Criation logic
+        String[] names= request.name().split(" ");
+
+        String userName = names[0] + names[names.length - 1] + request.phone().substring(numero,numero+3);
+        String password = names[0] + names[names.length - 1];
+        System.out.println(userName);
+        UserDTO newUser = new UserDTO(
+                request.name(),
+                request.email(),
+                request.phone(),
+                request.role(),
+                userName,
+                password
+        );
+        User user = userService.newUser(newUser);
+        return ResponseEntity.ok(newUser);
     }
 
     //Login

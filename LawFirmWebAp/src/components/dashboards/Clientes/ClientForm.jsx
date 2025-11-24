@@ -1,11 +1,17 @@
 import styles from "./ClientForm.module.css";
 import {useState} from 'react';
 //modelo
-import {userStructure} from "../../../models/User/userModel"
+import {userCreatorStructure} from "../../../models/User/userModel"
+//api
+import apiRequest from "../../../data/apiRequest";
+//context
+import {useUser} from "../../../context/userContext"
 
-export default function ClientForm() {
-    const [formData, setFormData] = useState(userStructure);
-    const [tipoConta, setTipoConta] = useState("cliente");
+export default function ClientForm({onClose, setClients}) {
+    const [formData, setFormData] = useState(userCreatorStructure);
+    const [tipoConta, setTipoConta] = useState("client");
+
+    const {token} = useUser();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -15,9 +21,27 @@ export default function ClientForm() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
+
+        try {
+            const data = await apiRequest('/auth/register', 'POST', { ...formData, role: tipoConta }, token);
+
+            // Limpa formulário
+            setFormData(userCreatorStructure);
+
+            // Atualiza lista
+            if (data.role === 'client')
+                setClients(prev => [...prev, data]);
+
+            console.log('Usuário criado:', data);
+
+        } catch (error) {
+            console.error('Erro ao criar usuário:', error);
+        }
+        // Fecha modal
+            onClose();
     };
 
     return (
@@ -33,7 +57,7 @@ export default function ClientForm() {
                         type="text"
                         id="name"
                         name="name"
-                        value={formData.email}
+                        value={formData.name}
                         onChange={handleChange}
                         required
                     />
@@ -53,9 +77,9 @@ export default function ClientForm() {
                 <label htmlFor="provider">Número:</label>
                     <input
                         type="text"
-                        id="provider"
-                        name="provider"
-                        value={formData.provider}
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
                         onChange={handleChange}
                         required
                     />
@@ -68,8 +92,8 @@ export default function ClientForm() {
                         className={styles.providerContainer}
                         onChange={(e) => setTipoConta(e.target.value)}
                     >
-                        <option value="client">Cliente</option>
-                        <option value="admin">Administrador</option>
+                        <option value="client">Client</option>
+                        <option value="admin">Admin</option>
                     </select>
                 </div>
                 <button type="submit">Confirmar</button>

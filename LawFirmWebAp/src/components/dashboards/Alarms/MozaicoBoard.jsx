@@ -16,6 +16,16 @@ export default function MozaicoBoard({ itens, setItens }) {
   const itemRef = useRef(null);
   const containerRef = useRef(null);
   
+  async function carregarDados() {
+    try {
+      const dados = await apiRequest('/api/user/clients', 'GET', null, token);
+      setItens(dados);
+      console.log('Dados carregados:', dados);
+    } catch (err) {
+      console.error('Falha ao carregar dados:', err);
+    }
+  }
+
   const names = ["Alice", "Bruno", "Carla", "Dionísio", "Eduarda", "Fábio", "Gabriela", "Hugo", "Inês", "Jorge", "Kelly", "Leonardo", "Marta", "Nuno", "Olívia", "Paulo", "Quitéria", "Rafael", "Sofia", "Tiago"]
   useEffect(() => {
     const alarmesAleatorios = Array.from({ length: 20 }, (_, index) => ({
