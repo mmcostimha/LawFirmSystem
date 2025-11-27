@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Configuration
 @EnableWebSecurity
-
 public class SecurityConfig {
 
     private  final JwtAuthFilter jwtAuthFilter;

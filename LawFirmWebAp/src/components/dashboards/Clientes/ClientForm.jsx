@@ -23,19 +23,28 @@ export default function ClientForm({onClose, setClients}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(formData);
 
         try {
-            const data = await apiRequest('/auth/register', 'POST', { ...formData, role: tipoConta }, token);
+            const response = await apiRequest('/auth/register', 'POST', { ...formData, role: tipoConta.toLowerCase() }, token);
 
             // Limpa formulário
             setFormData(userCreatorStructure);
 
             // Atualiza lista
-            if (data.role === 'client')
-                setClients(prev => [...prev, data]);
+            if (!!response && tipoConta === 'client') {
+                const newClient = {
+                    id: response.data.id,
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    role: tipoConta,
+                    creationDate: response.data.createdDate
+                };
+                setClients(prev => [...prev, newClient]);
+                console.log('Usuário criado:', newClient,response.data);
+            }
 
-            console.log('Usuário criado:', data);
+            // console.log('Usuário criado:', newClient);
 
         } catch (error) {
             console.error('Erro ao criar usuário:', error);

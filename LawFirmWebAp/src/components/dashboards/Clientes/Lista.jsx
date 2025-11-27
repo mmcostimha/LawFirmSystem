@@ -31,14 +31,13 @@ export default function Lista({ itens, setItens, type}) {
 
     async function carregarDados() {
       try {
-        const dados = await apiRequest('/api/user/clients', 'GET', null, token);
-        setItens(dados);
-        console.log('Dados carregados:', dados);
+        const responce = await apiRequest('/api/user/clients', 'GET', null, token);
+        setItens(responce.data);
+        console.log('Dados carregados:', responce.data);
       } catch (err) {
         console.error('Falha ao carregar dados:', err);
       }
     }
-
     // simula carregamento inicial ou recarregamento
     if (!itens || reload) {
       carregarDados();
@@ -56,7 +55,6 @@ export default function Lista({ itens, setItens, type}) {
         setItemsPerPage(possible > 0 ? possible : 1);
       }
     }
-    
     // calcula no início e no resize
     calculateItemsPerPage();
     window.addEventListener('resize', calculateItemsPerPage);
@@ -64,8 +62,6 @@ export default function Lista({ itens, setItens, type}) {
   }, [itens]);
 
   if (!itens) return (
-
-    
     <div className={styles.container} >
       <div className={styles.list} ref={containerRef}>
         <LoadingComponent size={70}/>;
@@ -73,23 +69,20 @@ export default function Lista({ itens, setItens, type}) {
     </div>
 
   )
-  
-  
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const visibleItems = itens.slice(startIndex, endIndex);
-
   const hasPrev = currentPage > 0;
   const hasNext = endIndex < itens.length;
 
-  const columns = [ 'Name', 'Email', 'Phone', 'Actions'];
+  const columns = ['Name', 'Email Pessoal', 'Phone', 'Actions'];
   const getClassForKey = (key) => {
       switch (key) {
         case 'Id':
           return headerstyles.idField;
         case 'Name':
           return headerstyles.nameField;
-        case 'Email':
+        case 'Email Pessoal':
           return headerstyles.emailField;
         case 'Phone':
           return headerstyles.phoneField;
@@ -115,11 +108,11 @@ export default function Lista({ itens, setItens, type}) {
       <div className={styles.list} ref={containerRef}>
         {visibleItems.map((item, index) => (
           <div
-            key={index}
+            key={item.id}
             ref={index === 0 ? itemRef : null} // mede apenas o primeiro item
             className={styles.listElement}
           >
-            <ListElement params={item} parChecker={index % 2 === 0} />
+            <ListElement params={item} setClients={setItens} parChecker={index % 2 === 0} />
           </div>
         ))}
       </div>

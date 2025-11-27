@@ -55,7 +55,7 @@ export default function Dashboard() {
         <ClientForm onClose={()=>setAddClient(false)} setClients={setClients}/>
       </Modal>
       <Modal isOpen={addAlarm} onClose={()=>setAddAlarm(false)}>
-        <AlarmForm />
+        <AlarmForm onClose={()=>setAddClient(false)} setAlarms={setAlarms}/>
       </Modal>
     </div>
   );

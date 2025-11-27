@@ -1,4 +1,4 @@
-package com.example.LawFirmAPI.model.User;
+package com.example.LawFirmAPI.model.User.UserDTO;
 
 public record UserDTO(
         String name,

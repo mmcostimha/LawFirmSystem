@@ -93,4 +93,89 @@ h2{
     padding: 0;
     margin: 0;
 }
+
+.editContainer{
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    justify-content: space-between;
+    align-items: center;
+
+    aspect-ratio: 1/1;
+    width: 20vw;
+    min-width: 38rem;
+    border-radius: 15px;
+    background-color: var(--backgroud-color);
+}
+.inputContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    width: 90%;
+    margin-bottom: 4%;
     
+
+    label{
+        width: 30%;
+        align-items: center;
+        font-size: clamp(1rem, 1.2vw, 2rem);
+        
+
+    }
+    input{
+        width: 60%;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        outline: none;
+        transition: 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+        &:focus{
+            box-shadow:  0 2px 4px var(--primary-color-2);
+        }
+    }
+    p{
+        font-size: clamp(1rem, 1.2vw, 2rem);
+        margin: 0;
+        padding: 0px;
+
+    }
+    button{
+        height: 40%;
+        width: 100;
+        aspect-ratio: none;
+        padding: 10px;
+    }
+}
+.titleContainer{
+    height: 15%;
+    width: 100%;
+    font-size: clamp(1.5rem, 1.5vw, 5rem);
+    justify-content: center;
+    align-content: center;
+}
+.associateEmailContainer{
+    width: 60%;
+        /* border: 1px solid black; */
+    
+}
+.butonsContainer{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+    height: 15%;
+    width: 90%;
+    margin-bottom: 6%;
+    /* border: 1px solid black; */
+
+    button{
+        height: 70%;
+        margin: 0px 0px;
+        padding: 10px;
+        font-size: clamp(1rem, 1vw, 2rem);
+    }
+}

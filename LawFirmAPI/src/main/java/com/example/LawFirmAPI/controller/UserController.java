@@ -1,7 +1,7 @@
 package com.example.LawFirmAPI.controller;
 
 import com.example.LawFirmAPI.model.User.User;
-import com.example.LawFirmAPI.model.User.UserDTO;
+import com.example.LawFirmAPI.model.User.UserDTO.UserDTO;
 import com.example.LawFirmAPI.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +54,7 @@ public class UserController {
     //Delete user By id
     @DeleteMapping("user/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable Long id){
+
         return userService.deleteUser(id);
     }
 

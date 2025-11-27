@@ -7,6 +7,10 @@ import MozaicoBoardElement from "./MozaicoBoardElement";
 import LoadingComponent from "../../loading/LoadingComponent";
 //styles
 import styles from "./MozaicoBoard.module.css"
+//api
+import apiRequest from "../../../data/apiRequest";
+//context
+import {useUser} from "../../../context/userContext"
 
 export default function MozaicoBoard({ itens, setItens }) {
   const [paginaAtual, setPaginaAtual] = useState(1);
@@ -15,12 +19,12 @@ export default function MozaicoBoard({ itens, setItens }) {
 
   const itemRef = useRef(null);
   const containerRef = useRef(null);
-  
+  const { token } = useUser();    
   async function carregarDados() {
     try {
-      const dados = await apiRequest('/api/user/clients', 'GET', null, token);
-      setItens(dados);
-      console.log('Dados carregados:', dados);
+      const responce = await apiRequest('/api/supervisor', 'GET', null, token);
+      setItens(responce.data);
+      console.log('Dados carregados Alarmes:', responce.data);
     } catch (err) {
       console.error('Falha ao carregar dados:', err);
     }
@@ -35,6 +39,10 @@ export default function MozaicoBoard({ itens, setItens }) {
       estado: ["pendente", "em_processo", "resolvido"][Math.floor(Math.random() * 3)],
       name:names[index]
     }));
+
+    //get data from api
+    carregarDados();
+
     setItens(alarmesAleatorios);
     setLoading(false);
   }, [setItens]);

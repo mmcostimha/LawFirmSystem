@@ -1,6 +1,9 @@
 package com.example.LawFirmAPI.controller;
 
 import com.example.LawFirmAPI.model.User.*;
+import com.example.LawFirmAPI.model.User.UserDTO.UserAccountCreatedDTO;
+import com.example.LawFirmAPI.model.User.UserDTO.UserDTO;
+import com.example.LawFirmAPI.model.User.UserDTO.UserRequestedDTO;
 import com.example.LawFirmAPI.security.JwtUtil;
 import com.example.LawFirmAPI.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.Random;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -48,7 +49,13 @@ public class AuthController {
                 password
         );
         User user = userService.newUser(newUser);
-        return ResponseEntity.ok(newUser);
+        UserAccountCreatedDTO reponce = new UserAccountCreatedDTO(
+                userName,
+                password,
+                user.getId(),
+                user.getCreationDate()
+        );
+        return ResponseEntity.ok(reponce);
     }
 
     //Login

@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import styles from "./AlarmForm.module.css"
 
-export default function AlarmForm() {
+export default function AlarmForm({onClose, setAlarms}) {
 
     const [opcaoSelecionada, setOpcaoSelecionada] = useState('@gmail.com');
     const [formData, setFormData] = useState({

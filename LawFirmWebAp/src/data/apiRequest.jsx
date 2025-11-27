@@ -18,7 +18,7 @@ export default async function apiRequest(url, method = 'GET', body = null, token
             headers: headers
         });
 
-        return response.data;
+        return response;
     } catch (err) {
         console.error('Erro na requisição:', err);
         throw err;

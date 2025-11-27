@@ -1,6 +1,7 @@
 package com.example.LawFirmAPI.model.User;
 
 import com.example.LawFirmAPI.model.Email.Email;
+import com.example.LawFirmAPI.model.User.UserDTO.UserDTO;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
