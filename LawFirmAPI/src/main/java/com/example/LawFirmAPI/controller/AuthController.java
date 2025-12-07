@@ -49,6 +49,7 @@ public class AuthController {
                 password
         );
         User user = userService.newUser(newUser);
+        System.out.println(user.getCreationDate());
         UserAccountCreatedDTO reponce = new UserAccountCreatedDTO(
                 userName,
                 password,

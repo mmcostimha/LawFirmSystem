@@ -2,6 +2,7 @@ package com.example.LawFirmAPI.model.User;
 
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.User.UserDTO.UserDTO;
+import com.example.LawFirmAPI.model.User.UserDTO.UserRequestedDTO;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -73,7 +74,7 @@ public class User {
     }
 
     //Set functions
-    public void setUser(UserDTO newUser){
+    public void setUser(UserRequestedDTO newUser){
         setEmail(newUser.email());
         setName(newUser.name());
         setPhone(newUser.phone());

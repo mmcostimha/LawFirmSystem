@@ -1,0 +1,85 @@
+@import "../../../assets/css/color.css";
+
+.container{
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 2/1;
+    width: 45vw;
+    min-width: 34rem;
+    border-radius: 15px;
+
+    /* height: 80%; */
+    background-color: var(--backgroud-color);
+}
+.titleContainer{
+    height: 30%;
+    width: 100%;
+    font-size: clamp(1.5rem, 1.5vw, 5rem);
+    justify-content: center;
+    align-content: center;
+    
+}
+.formContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    width: 100%;
+    height: 70%;
+
+    buttom{
+        width: 20%;
+        margin: 6%;
+    }
+}
+.contentInput{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    width: 80%;
+    margin-bottom: 4%;
+
+    label{
+        width: 20%;
+        align-items: center;
+        font-size: clamp(1rem, 1.2vw, 2rem);
+
+    }
+    input{
+        width: 50%;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        outline: none;
+        transition: 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+        &:focus{
+            box-shadow:  0 2px 4px var(--primary-color-2);
+        }
+    }
+}
+.providerContainer{
+    background-color: transparent;
+    box-shadow: transparent;
+    border: none;
+    font-size: clamp(1rem, 1.2vw, 2rem);
+}
+.buttonContainer{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+    height: 30%;
+    width: 90%;
+    margin-bottom: 2%;
+    /* border: 1px solid black; */
+
+    button{
+        height: 70%;
+        margin: 0px 0px;
+        padding: 10px;
+        font-size: clamp(1rem, 1vw, 2rem);
+    }
+}

@@ -23,13 +23,11 @@ export default function ClientForm({onClose, setClients}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
             const response = await apiRequest('/auth/register', 'POST', { ...formData, role: tipoConta.toLowerCase() }, token);
-
             // Limpa formulário
             setFormData(userCreatorStructure);
-
+            console.log('Resposta da API:', response.data);
             // Atualiza lista
             if (!!response && tipoConta === 'client') {
                 const newClient = {
@@ -38,7 +36,7 @@ export default function ClientForm({onClose, setClients}) {
                     email: formData.email,
                     phone: formData.phone,
                     role: tipoConta,
-                    creationDate: response.data.createdDate
+                    creationDate: response.data.creationDate
                 };
                 setClients(prev => [...prev, newClient]);
                 console.log('Usuário criado:', newClient,response.data);

@@ -6,6 +6,8 @@ import Modal from '../../Modal';
 import apiRequest from '../../../data/apiRequest.jsx';
 //context
 import { useUser } from "../../../context/userContext"
+// component
+import ClientEditForm from './ClientEditForm.jsx';
 
 export default function ListElement({ params, parChecker,setClients}) {
 
@@ -76,14 +78,7 @@ export default function ListElement({ params, parChecker,setClients}) {
         return styles.item;
     }
   };
-  const data = new Date(params.creationDate);
-  const formatada = new Intl.DateTimeFormat('pt-BR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(data);
+  
 
   return (
     <div className={parChecker ? styles.containerPar:styles.containerImpar}>
@@ -98,55 +93,7 @@ export default function ListElement({ params, parChecker,setClients}) {
       </div>
 
       <Modal isOpen={editing} onClose={handleEdit} >
-        <div className={styles.editContainer}>
-          <div className={styles.titleContainer}>
-            <h2>Editar Cliente </h2> 
-          </div>
-
-          <div className={styles.inputContainer}>
-            <label htmlFor="name">Nome:</label>
-            <input value={params.name} type="text" />
-          </div>
-          <div className={styles.inputContainer}>
-            <label htmlFor="phone">Número:</label>
-            <input value={params.phone} type="text" />
-          </div>
-          <div className={styles.inputContainer}>
-            <label htmlFor="email">Email Pessoal:</label>
-            <input value={params.email} type="text" />
-          </div>
-          {hasEmail ?
-            <div className={styles.inputContainer}>
-              <label htmlFor="corporateEmail">Email Corporativo:</label>  
-              <input value={coporateEmail.email} type="text" />
-              
-            </div>:
-            <>
-              <div className={styles.inputContainer}>
-                <label htmlFor="corporateEmail">Email Corporativo:</label>  
-                <div className={styles.associateEmailContainer}>
-                  <button  type="text" onClick={()=> setHasEmail(true)}> Associar Email </button>
-                </div>
-                
-              </div>
-            </>
-          }
-          <div className={styles.inputContainer}>
-            <label htmlFor="username">Username:</label>
-            <p>{params.username}</p>
-          </div>
-          <div className={styles.inputContainer}>
-            <label htmlFor="creationDate">Registado em:</label>
-            <p>{formatada}</p>
-          </div>
-          <div className={styles.butonsContainer}>
-            {
-              hasEmail &&
-              <button className={styles.removeEmailButton} onClick={()=>{setCoporateEmail(""), setHasEmail(false)}}>Remover Email Corporativo</button>
-            }
-            <button className={styles.saveButton} onClick={handleEdit}>Salvar Alterações</button>
-          </div>
-        </div>
+        <ClientEditForm params={params} setClients={setClients} coporateEmail={coporateEmail} setHasEmail={setHasEmail} hasEmail={hasEmail} />
       </Modal>
       <Modal isOpen={deleting} onClose={()=>setDeleting(false)} >
         <div className={styles.deleteContainer}>
