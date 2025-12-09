@@ -46,16 +46,28 @@ public class EmailService {
         Email email = emailRepository.findByUser_Id(newEmail.client_id());
         email.setEmail(newEmail.email());
         email.setPassword(newEmail.password());
+        email.setValid(true);
 
         return emailRepository.save(email);
     }
     public Email getEmailByClientUsername(String username){
         User user = userRepository.findByUsername(username);
-        return emailRepository.findByUser_Id(user.getId());
+        Email email = emailRepository.findByUser_Id(user.getId());
+        //System.out.println("EMAIL ENCONTRADO: " + email.getEmail());
+        return email;
     }
 
     public Email getEmailByClientId(Long clientId){
         return emailRepository.findByUser_Id(clientId);
+    }
+    public Email getEmailByClientEmail(String email){
+        return emailRepository.findByEmail(email);
+    }
+    public boolean emailExist(Email email){
+        return emailRepository.existsById(email.getId());
+    }
+    public boolean emailIsValid(Email email){
+        return email.getValid();
     }
 
     public ResponseEntity<Email> turnOffAlarmByUsername(String username){
@@ -64,13 +76,15 @@ public class EmailService {
         email.setAlarm(false);
         return ResponseEntity.ok(emailRepository.save(email));
     }
-
-    public ResponseEntity<Email> deleteEmailByUsername(String username){
+    public ResponseEntity<Email> setValidEmailByUsername(String username, boolean bool) {
         Email email = getEmailByClientUsername(username);
-        emailRepository.delete(email);
 
-        return  ResponseEntity.ok(email);
+        email.setValid(bool);
+
+        //System.out.println("PEDI PARA APAGAR");
+        return ResponseEntity.ok(emailRepository.save(email));
     }
+
 
 
 }

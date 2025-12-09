@@ -36,9 +36,26 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
             [name]: value
         }));
     };
+    const handleEmailDelete = async (e) => {
+        
+        try {
+            const response = await apiRequest('/api/email/'+ newData.username , 'DELETE', null, token);
+            
+            if (response.status === 200) {
+                // setCoporateEmail(response.data);
+                // console.log("Email corporativo eliminado: ", response.data);
+                setCoporateEmail("")
+                setHasEmail(false)
+            }
+        } catch (error) {
+            console.error(error);
+        }
+
+    };
     async function editClient() {
         try {
             const response = await apiRequest('/api/user', 'PUT', {
+                id: newData.id,
                 name : newData.name,
                 email : newData.email,
                 phone : newData.phone,
@@ -59,7 +76,7 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
                     // se params for um objeto único, mescla com os novos dados
                     return { ...prev, ...response.data };
                 });
-                console.log("Editado para: ", response.data);
+                // console.log("Editado para: ", response.data);
             }
         } catch (error) {
             console.error(error);
@@ -101,7 +118,6 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
                 type="email"
             />
         </div>
-        {console.log(newData)}
         {hasEmail ?
         <div className={styles.inputContainer}>
             <label htmlFor="corporateEmail">Email Corporativo:</label>  
@@ -133,13 +149,13 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
             <div className={styles.butonsContainer}>
             {
                 hasEmail &&
-                <button className={styles.removeEmailButton} onClick={()=>{setCoporateEmail(""), setHasEmail(false)}}>Remover Email Corporativo</button>
+                <button className={styles.removeEmailButton} onClick={()=>{handleEmailDelete()}}>Remover Email Corporativo</button>
             }
             <button className={styles.saveButton} onClick={editClient}>Salvar Alterações</button>
         </div>
 
         <Modal isOpen={newCorporateEmalView} onClose={()=>setNewCorporateEmalView(false)}>
-            <EmailForm onClose={()=>setNewCorporateEmalView(false)} setCoporateEmail={setCoporateEmail}/>
+            <EmailForm onClose={()=>setNewCorporateEmalView(false)} setCoporateEmail={setCoporateEmail} setHasEmail={setHasEmail} client_id={newData.id}/>
         </Modal>
     </div>
 }

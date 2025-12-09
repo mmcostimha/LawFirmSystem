@@ -1,14 +1,21 @@
 import {useState} from 'react';
 import styles from "./AlarmForm.module.css"
+//api
+import apiRequest from '../../../data/apiRequest';
+//context
+import { useUser } from '../../../context/userContext';
 
-export default function AlarmForm({onClose, setAlarms}) {
+export default function AlarmForm({onClose, setAlarms,clientId }) {
 
     const [opcaoSelecionada, setOpcaoSelecionada] = useState('@gmail.com');
+    const [tipoSelecionado, setTipoSelecionado] = useState('aima');
     const [formData, setFormData] = useState({
         email: '',
         provider: '',
-        type: ''
+        type: 'aima'
     });
+
+    const {token} = useUser();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,15 +27,28 @@ export default function AlarmForm({onClose, setAlarms}) {
         console.log(formData)
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const novoEmailCompleto = formData.email + opcaoSelecionada;
         setFormData(prev => ({
             ...prev,
-            ["email"]: prev.email + opcaoSelecionada
+            ["email"]: novoEmailCompleto
         }));
         console.log(formData);
 
         //Logica da API
+
+        try{
+            const response = await apiRequest('/supervisor/'+ clientId +"/" + formData.type, 'POST', {}, token);
+            
+            if (response.status === 200) {
+                setAlarms(prev=>[...prev,response.data])
+                console.log("Alarm registado : ", response.data);
+            }
+        }
+        catch(e){
+
+        }
 
         //limpar o form Data
         setFormData({
@@ -69,9 +89,9 @@ export default function AlarmForm({onClose, setAlarms}) {
                     <label htmlFor="type">Tipo:</label>
                     <select
                         id="meuSelect2"
-                        value={opcaoSelecionada}
+                        value={tipoSelecionado}
                         className={styles.providerContainer}
-                        onChange={(e) => setOpcaoSelecionada(e.target.value)}
+                        onChange={(e) => setTipoSelecionado(e.target.value)}
                     >
                         <option value="Aima">AIMA</option>
                         {/* <option value="@sapo.pt">@sapo.pt</option> */}

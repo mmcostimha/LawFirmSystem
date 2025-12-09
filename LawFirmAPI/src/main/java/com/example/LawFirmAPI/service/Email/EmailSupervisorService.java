@@ -49,7 +49,7 @@ public class EmailSupervisorService {
        return emailSupervisorRepository.findAll();
     }
 
-    @Scheduled(cron = "${spring.task.scheduling.cron}")
+    @Scheduled(cron = "${spring.task1.scheduling.cron}")
     public void checkEmails() throws Exception {
         List<EmailSupervised> listEmail = emailSupervisorRepository.findAll();
 

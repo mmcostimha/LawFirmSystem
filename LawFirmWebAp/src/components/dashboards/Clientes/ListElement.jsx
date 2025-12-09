@@ -93,7 +93,7 @@ export default function ListElement({ params, parChecker,setClients}) {
       </div>
 
       <Modal isOpen={editing} onClose={handleEdit} >
-        <ClientEditForm params={params} setClients={setClients} coporateEmail={coporateEmail} setHasEmail={setHasEmail} hasEmail={hasEmail} />
+        <ClientEditForm params={params} setClients={setClients} setCoporateEmail={setCoporateEmail} coporateEmail={coporateEmail} setHasEmail={setHasEmail} hasEmail={hasEmail} />
       </Modal>
       <Modal isOpen={deleting} onClose={()=>setDeleting(false)} >
         <div className={styles.deleteContainer}>

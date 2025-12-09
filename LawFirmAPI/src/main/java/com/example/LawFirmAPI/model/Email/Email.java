@@ -26,6 +26,9 @@ public class Email {
     private boolean alarm;
 
     @Column(nullable = false)
+    private boolean valid;
+
+    @Column(nullable = false)
     private LocalDateTime creationDate;
 
     @OneToOne
@@ -39,6 +42,7 @@ public class Email {
         this.alarm = false;
         this.password= email.password();
         this.creationDate = LocalDateTime.now();
+        this.valid = true;
     }
 
     //getters
@@ -53,6 +57,9 @@ public class Email {
     }
     public boolean getAlarm(){
         return this.alarm;
+    }
+    public boolean getValid(){
+        return this.valid;
     }
     public LocalDateTime getCreationDate() {
         return creationDate;
@@ -71,5 +78,13 @@ public class Email {
     }
     public void setAlarm(boolean alarm) {
         this.alarm = alarm;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

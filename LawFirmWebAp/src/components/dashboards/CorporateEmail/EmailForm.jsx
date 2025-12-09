@@ -1,15 +1,20 @@
 import {useState} from 'react';
 import styles from "./EmailForm.module.css"
+//api
+import apiRequest from '../../../data/apiRequest';
+//context
+import { useUser } from '../../../context/userContext';
 
-export default function EmailForm({onClose, setClients}) {
+export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client_id}) {
 
     const [opcaoSelecionada, setOpcaoSelecionada] = useState('@gmail.com');
     const [formData, setFormData] = useState({
         email: '',
         provider: '',
-        type: ''
+        password: ''
     });
 
+    const {token} = useUser();
     const handleChange = (e) => {
         const { name, value } = e.target;
         
@@ -20,22 +25,46 @@ export default function EmailForm({onClose, setClients}) {
         console.log(formData)
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // 1. Calcular o novo email final uma única vez
+        const novoEmailCompleto = formData.email + opcaoSelecionada;
+        
+        // 3. Atualizar o estado (formData) com o valor final CORRETO
+        // Esta atualização ainda é assíncrona, mas garantirá que o estado
+        // esteja pronto para a próxima renderização.
         setFormData(prev => ({
             ...prev,
-            ["email"]: prev.email + opcaoSelecionada
+            ["email"]: novoEmailCompleto // Usa o valor calculado
         }));
-        console.log(formData);
 
-        //Logica da API
+        // Logica da API
+        try {
+            const response = await apiRequest('/api/email', 'POST', {
+                client_id: client_id,
+                email : novoEmailCompleto, // Usa o valor calculado
+                password : formData.password
+            }, token);
+            
+            if (response.status === 200) {
+                setHasEmail(true)
+                setCoporateEmail(response.data);
+                console.log("Email registado : ", response.data);
+            }
+        } catch (error) {
+            console.error(error);
+        }
 
         //limpar o form Data
         setFormData({
             email: '',
             provider: '',
+            password:'',
             type: ''
         });
+        onClose();
+
     };
 
     return (
@@ -66,7 +95,7 @@ export default function EmailForm({onClose, setClients}) {
                     </select>
                 </div>
                 <div className={styles.contentInput}>
-                    <label htmlFor="type">Password:</label>
+                    <label htmlFor="password">Password:</label>
                     <input
                         type="password"
                         id="password"

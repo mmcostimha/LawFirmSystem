@@ -19,7 +19,13 @@ public class EmailController {
     //Create Email for a client
     @PostMapping("/email")
     public Email registerClientEmail(@RequestBody EmailDTO request){
-        return emailService.newClientEmail(request);
+        System.out.println("Email recebido: "+ request.email() + " com id de client "+ request.client_id());
+        try {
+            Email emailReceived = emailService.getEmailByClientId(request.client_id());
+            return emailService.changeClientEmail(request);
+        } catch (Exception e){
+            return emailService.newClientEmail(request);
+        }
     }
 
     //Change email of a Client
@@ -31,18 +37,24 @@ public class EmailController {
     // Get Email By the Client Username
     @GetMapping("/email/username/{username}")
     public Email getClientEmail(@PathVariable String username){
-        return emailService.getEmailByClientUsername(username);
+        Email emailAsked = emailService.getEmailByClientUsername(username);
+        if (emailService.emailIsValid(emailAsked))
+            return emailAsked;
+        return null;
     }
     // Get Email By the Client Id
     @GetMapping("/email/id/{id}")
     public Email getClientEmail(@PathVariable Long id){
-        return emailService.getEmailByClientId(id);
+        Email emailAsked = emailService.getEmailByClientId(id);
+        if (emailService.emailIsValid(emailAsked))
+            return emailAsked;
+        return null;
     }
 
-    //Delete Client Email
-    @DeleteMapping("")
+    //Delete Client Corporate Email
+    @DeleteMapping("/email/{username}")
     public ResponseEntity<Email> deleteClientEmail(@PathVariable String username){
-        return emailService.deleteEmailByUsername(username);
+        return emailService.setValidEmailByUsername(username, false);
     }
 
     //Turn off the Client Email Alarm
