@@ -2,12 +2,9 @@
     display: flex;
     /* background-color: blueviolet; */
     height: 15vh;
-    min-height: 130px;
-
+    min-height: 100px;
     align-items: center;
-    
-    justify-content: start;
-    /* background-color: transparent; */
+    justify-content: space-between;
 }
 
 .barraPesquisa{
@@ -17,19 +14,41 @@
     align-items: center;
     height: 39px;
     width: 40%;
-    margin: 7%;
+    margin: 2.5%;
     border-radius: 50px;
     background-color: white;
     border: none;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    padding-left: 2%;
+    font-size: clamp(1rem,3px,2rem);
+    font-weight:bold;
 }
-.horaAtual{
-    display: flex;
-    justify-content: center;
-    align-items: start;
-    flex-direction: column;
-    margin: 7%;
-    font-size: clamp(20px, 3vh, 40px);
-    font-weight: 10px;
-    height: 100%;
+
+.clockContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Ou center, dependendo do layout */
+  /* border: 1px solid red; */
+  margin-right: 10%;
+}
+
+.timeDisplay {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -2px;
+  color: #1a1a1a;
+  line-height: 1;
+}
+
+.dateDisplay {
+  margin-top: 4px;
+  color: #666;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.divider {
+  margin: 0 8px;
+  color: #ccc;
 }

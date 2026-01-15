@@ -20,9 +20,10 @@ public class EmailSupervised {
     private LocalDateTime creationDate;
 
     @Column(updatable = false)
+    private LocalDateTime activationDate;
+
+    @Column(updatable = false)
     private String type;
-
-
 
     public EmailSupervised(){}
     public EmailSupervised(Email email,String type){
@@ -41,5 +42,19 @@ public class EmailSupervised {
 
     public LocalDateTime getCreationDate() {
         return creationDate;
+    }
+
+    public LocalDateTime getActivationDate() {
+        return activationDate;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    //setters
+    public void setActivationDate() {
+        this.activationDate = LocalDateTime.now();
+//        System.out.println("sahafsdjh"+this.activationDate);
     }
 }

@@ -1,0 +1,34 @@
+
+services:
+  # Banco de Dados (Exemplo com PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: lawfirm_db
+      POSTGRES_USER: user_admin      # O nome que você escolher
+      POSTGRES_PASSWORD: password123 # A senha que você escolher
+    ports:
+      - "5432:5432"
+
+  # Backend Spring Boot
+  backend:
+    build: ./LawFirmAPI
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/lawfirm_db
+      - DB_USER=user_admin           # Deve ser igual ao POSTGRES_USER
+      - DB_PASSWORD=password123      # Deve ser igual ao POSTGRES_PASSWORD
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD} # Pega do seu .env local
+    depends_on:
+      - db
+
+  # Frontend React
+  frontend:
+    build: ./LawFirmWebAp
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_SERVER_API_URL=http://localhost:8080
+    depends_on:
+      - backend

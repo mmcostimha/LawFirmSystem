@@ -4,13 +4,15 @@ import {useState} from 'react';
 import {userCreatorStructure} from "../../../models/User/userModel"
 //api
 import apiRequest from "../../../data/apiRequest";
+import { validateForm } from "../../../data/formValidation";
 //context
 import {useUser} from "../../../context/userContext"
 
 export default function ClientForm({onClose, setClients}) {
     const [formData, setFormData] = useState(userCreatorStructure);
+    const [prefixo, setPrefixo] = useState('+351'); // Padrão Portugal
     const [tipoConta, setTipoConta] = useState("client");
-
+    const [errors, setErrors] = useState({}); // Estado para guardar erros
     const {token} = useUser();
 
     const handleChange = (e) => {
@@ -19,16 +21,28 @@ export default function ClientForm({onClose, setClients}) {
             ...prev,
             [name]: value
         }));
+        // Limpa o erro do campo enquanto o utilizador escreve
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: null }));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        // Criamos o número completo para validação e envio
+        const numeroCompleto = prefixo + formData.phone;
+
+        // Se quiseres validar apenas o corpo do número (os 9 a 12 dígitos)
+        const formErrors = validateForm(formData); 
+        
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
+
         try {
-            const response = await apiRequest('/auth/register', 'POST', { ...formData, role: tipoConta.toLowerCase() }, token);
-            // Limpa formulário
+            const response = await apiRequest('/auth/register', 'POST', { ...formData, role: tipoConta.toLowerCase() ,phone: numeroCompleto }, token);
             setFormData(userCreatorStructure);
-            console.log('Resposta da API:', response.data);
-            // Atualiza lista
             if (!!response && tipoConta === 'client') {
                 const newClient = {
                     id: response.data.id,
@@ -39,16 +53,12 @@ export default function ClientForm({onClose, setClients}) {
                     creationDate: response.data.creationDate
                 };
                 setClients(prev => [...prev, newClient]);
-                console.log('Usuário criado:', newClient,response.data);
             }
-
-            // console.log('Usuário criado:', newClient);
 
         } catch (error) {
             console.error('Erro ao criar usuário:', error);
         }
-        // Fecha modal
-            onClose();
+        onClose();
     };
 
     return (
@@ -56,40 +66,43 @@ export default function ClientForm({onClose, setClients}) {
             <div className={styles.titleContainer}>
                 <h2>Novo Usuário</h2>
             </div>
-
             <form onSubmit={handleSubmit} className={styles.formContainer}>
                 <div className={styles.inputContainer}>
                     <label htmlFor="name">Name:</label>
-                    <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="text" id="name" name="name" value={formData.name} onChange={handleChange}  placeholder="Márcio Costa" required/>
+                    {errors.name && <span className={styles.errorText}>{errors.name}</span>}
                 </div>
                 <div className={styles.inputContainer}>
                     <label htmlFor="email">Email:</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                    />
+                    <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder="exemplo@gmail.com" required/>
+                    {errors.email && <span className={styles.errorText}>{errors.email}</span>}
                 </div>
                 <div className={styles.inputContainer}>
-                <label htmlFor="provider">Número:</label>
-                    <input
-                        type="text"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        required
-                    />
+                    <label htmlFor="phone">Número:</label>
+                    <div className={styles.phoneInputGroup}> 
+                        <select 
+                            value={prefixo} 
+                            onChange={(e) => setPrefixo(e.target.value)}
+                            className={styles.prefixSelect}
+                        >
+                            <option value="+351">+351 (PT)</option>
+                            <option value="+34">+34 (ES)</option>
+                            <option value="+44">+44 (UK)</option>
+                            <option value="+1">+1 (USA)</option>
+                        </select>
+                        
+                        <input
+                            type="text"
+                            id="phone"
+                            name="phone"
+                            placeholder="912345678"
+                            value={formData.phone}
+                            onChange={handleChange}
+                            className={errors.phone ? styles.inputError : ''}
+                            required
+                        />
+                    </div>
+                    {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
                 </div>
                 <div className={styles.inputContainer}>
                     <label htmlFor="type">Tipo:</label>

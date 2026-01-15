@@ -22,7 +22,7 @@ export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client
             ...prev,
             [name]: value
         }));
-        console.log(formData)
+        // console.log(formData)
     };
 
     const handleSubmit = async (e) => {
@@ -50,7 +50,7 @@ export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client
             if (response.status === 200) {
                 setHasEmail(true)
                 setCoporateEmail(response.data);
-                console.log("Email registado : ", response.data);
+                // console.log("Email registado : ", response.data);
             }
         } catch (error) {
             console.error(error);
@@ -107,7 +107,7 @@ export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client
                 </div>
                 <div className={styles.buttonContainer}>    
                     <button type="submit">Confirmar</button>
-                    <button onClick={()=> console.log("testei")}>Teste</button>
+                    <button onClick={()=> console.log("Funcionalidade n implementada")}>Teste</button>
                 </div>
             </form>
         </div>

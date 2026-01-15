@@ -10,7 +10,7 @@ import { userLoginStructure } from "../../models/User/userLogin.jsx"
 import logo from "../../assets/Images/big_logo.png"
 import loading_gif from "../../assets/Images/loading.svg"
 
-export default function LoginFormComponent({setIsLoginFormVisible}) {
+export default function LoginFormComponent({setPassRecoveryFormVisible}) {
 
     const[userLogin,setUserLogin]= useState(userLoginStructure);
 
@@ -31,15 +31,15 @@ export default function LoginFormComponent({setIsLoginFormVisible}) {
             });
             
             // Supondo que a API retorna { token: "...", role: "admin" }
-            const { token } = response.data;
+            const { token,id } = response.data;
             // const { token, role } = response.data;
-
-            // redireciona o utilizador para o Dashboard
+            
+            //esperar um pouco para ver a mensagem
+            
             window.location.href = "/dashboard";
             
-            login("admin", token); // atualiza contexto + localStorage
+            login("admin", token, id); // atualiza contexto + localStorage
             setLoading(false);
-            setIsLoginFormVisible(false);
 
         } catch (err) {
             console.error(err);
@@ -79,7 +79,7 @@ export default function LoginFormComponent({setIsLoginFormVisible}) {
         <h1>Login</h1>
         <input type="text" placeholder={"username"} onChange={(e) => setUserLogin(prev => ({ ...prev, username: e.target.value }))} value={userLogin.username} required />
         <input type="password" placeholder={"password"} onChange={(e) => setUserLogin(prev => ({ ...prev, password: e.target.value }))} value={userLogin.password} required />
-        <a href="">esqueci-me minha password</a>
+        <a onClick={()=>setPassRecoveryFormVisible(true)}>esqueci-me minha password</a>
         <button type="submit" >
             {loading ? <img src={loading_gif} alt="Loading gift"/> : "Entrar"}
         </button>

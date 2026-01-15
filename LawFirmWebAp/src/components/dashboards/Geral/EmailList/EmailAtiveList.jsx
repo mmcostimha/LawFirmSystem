@@ -4,16 +4,16 @@ import { useState, useEffect, use } from "react"
 import EmailAtiveElement from "./EmailAtiveElement"
 //models
 import { emailTrigger } from "../../../../models/Email/emailTrigger"
+//contexts
+import {useUser} from "../../../../context/userContext"
+//api
+import apiRequest from "../../../../data/apiRequest"
 
 export default  function EmailAtiveList(){
 
-    const triggedEmails = [
-        { id: 1, type: "Aima", email: "exemplolonguissimo@gmail.com", client: "Cliente Exemplo 01" },
-        { id: 2, type: "Aviso", email: "cliente2@exemplo.com", client: "Cliente Exemplo 02" },
-        { id: 3, type: "Lembrete", email: "cliente3@exemplo.com", client: "Cliente Exemplo 03" }
-    ];
 
     const [emails, setEmails] = useState([]);
+    const { token } = useUser();
 
     const removeAlert = (id) => {
         setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
@@ -21,9 +21,27 @@ export default  function EmailAtiveList(){
     
     useEffect(() => {
         // Simulate fetching data from an API
+        const loadData = async () => {
+            const link = '/api/supervisor/actioned';
+            try{
+                const response = await apiRequest(link, 'GET', null, token);
+                if(response.status === 200){
+                    if(response.data.length > 0){
+                        // console.log("Emails acionados carregados com sucesso:", response.data);
+                        setEmails(response.data);
+                    }else{
+                        // console.log("Nenhum email acionado encontrado.");
+                        setEmails([]);
+                    }
+
+                }
+            }
+            catch(error){
+                console.error("Erro ao buscar emails acionados:", error);
+            }
+        }
         
-        // In a real application, you would fetch data here and update state
-        setEmails(triggedEmails);
+        loadData();
     }, []);
 
     return <div className={styles.container}>

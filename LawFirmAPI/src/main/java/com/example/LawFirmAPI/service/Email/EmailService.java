@@ -1,8 +1,7 @@
 package com.example.LawFirmAPI.service.Email;
 
 import com.example.LawFirmAPI.exceptions.ResourceNotFound;
-import com.example.LawFirmAPI.model.Email.Email;
-import com.example.LawFirmAPI.model.Email.EmailDTO;
+import com.example.LawFirmAPI.model.Email.*;
 import com.example.LawFirmAPI.model.User.User;
 import com.example.LawFirmAPI.repository.EmailRepository;
 import com.example.LawFirmAPI.repository.UserRepository;
@@ -10,6 +9,7 @@ import com.example.LawFirmAPI.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -32,7 +32,7 @@ public class EmailService {
         //Check Client
         Optional<User> user = userRepository.findById(newEmail.client_id());
         if (user.isEmpty())
-                throw  new ResourceNotFound("User "+newEmail.client_id()+" not found.");
+                throw  new ResourceNotFound("User "+newEmail.client_id()+" not found: Cant create a Email");
 
         //Create Email row
         Email email = new Email(newEmail,user.get());
@@ -85,6 +85,26 @@ public class EmailService {
         return ResponseEntity.ok(emailRepository.save(email));
     }
 
+    public ArrayList<EmailListElementDTO> getEmailList(){
+        ArrayList<Email> emailList = emailRepository.findByValid(true);
+
+        ArrayList<EmailListElementDTO> dtoListClientEmail = new ArrayList<>();
+
+        for (Email email : emailList) {
+            Long clientID = email.getClient_id();
+            String clientName = userRepository.getReferenceById(clientID).getName();
+
+            // Supondo que EmailActivatedDTO tenha um construtor que recebe EmailSupervised
+            EmailListElementDTO dto = new EmailListElementDTO(
+                    clientID,
+                    clientName,
+                    email.getEmail()
+            );
+
+            dtoListClientEmail.add(dto);
+        }
+        return dtoListClientEmail;
+    }
 
 
 }

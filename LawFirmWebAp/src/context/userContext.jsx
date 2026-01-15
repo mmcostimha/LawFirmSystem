@@ -21,44 +21,53 @@ export const useUser = () => useContext(UserContext);
 export const UserProvider = ({ children }) => {
     const [accountType, setAccountType] = useState(null); // e.g., 'admin', 'lawyer', 'client'
     const [token, setToken] = useState(null); // e.g., JWT or session tokens
+    const [id, setId] = useState(null); // Placeholder for future use
     const [allowedPages, setAllowedPages] = useState([]);
 
     // Restaurar sessão ao carregar a app
     useEffect(() => {
         const savedToken = localStorage.getItem('authToken');
         const savedType = localStorage.getItem('accountType');
+        const savedId = localStorage.getItem('userId');
 
-        if (savedToken && savedType) {
+        if (savedToken && savedType && savedId) {
             setToken(savedToken);
             setAccountType(savedType);
+            setId(savedId);
             setAllowedPages(PAGES_PER_ACCOUNT[savedType] || []);
         }
     }, []);
 
     // Login
-    const login = (type, token) => {
+    const login = (type, token, id) => {
         setAccountType(type);
         setAllowedPages(PAGES_PER_ACCOUNT[type] || []);
         setToken(token);
+        setId(id);
 
-        console.log("User logged in:");
-        console.log("type:", type);
-        console.log("token:", token);
-        console.log("allowedPages:", PAGES_PER_ACCOUNT[type] || []);
+        // console.log("User logged in:");
+        // console.log("type:", type);
+        // console.log("token:", token);
+        // console.log("id:", id);
+        // console.log("allowedPages:", PAGES_PER_ACCOUNT[type] || []);
         // Persistir no localStorage
         localStorage.setItem('authToken', token);
         localStorage.setItem('accountType', type);
+        localStorage.setItem('userId', id);
     };
+
 
     // Logout
     const logout = () => {
         setAccountType(null);
         setAllowedPages([]);
         setToken(null);
+        setId(null);
 
         // Limpar do localStorage
         localStorage.removeItem('authToken');
         localStorage.removeItem('accountType');
+        localStorage.removeItem('userId');
     };
 
     // Check if a page is allowed for current account
@@ -70,9 +79,10 @@ export const UserProvider = ({ children }) => {
                 accountType,
                 token,
                 allowedPages,
+                id,
                 login,
                 logout,
-                isPageAllowed,
+                isPageAllowed
             }}
             >
             {children}

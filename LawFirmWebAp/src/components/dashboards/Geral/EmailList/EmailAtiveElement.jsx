@@ -11,7 +11,7 @@ export default function EmailAtiveElement({triggedEmail,removeAlert}) {
 
     const handleResolveAlert = () => {
         // lógica para marcar o alerta como resolvido
-        console.log(`Alerta do e-mail ${triggedEmail.email} marcado como resolvido.`);
+        // console.log(`Alerta do e-mail ${triggedEmail.email} marcado como resolvido.`);
         setModalOpen(false);
         // Aqui você pode adicionar lógica adicional, como atualizar o estado ou fazer uma chamada à API
 
@@ -29,7 +29,7 @@ export default function EmailAtiveElement({triggedEmail,removeAlert}) {
                     <FaArrowRightLong />
                 </div>
                 <div className={styles.emailContainer}>
-                    {triggedEmail.email.split('@')[0]}
+                    {triggedEmail.email}
                 </div>
                 
             </div>
@@ -39,11 +39,11 @@ export default function EmailAtiveElement({triggedEmail,removeAlert}) {
                         <h2>Detalhes do Evento </h2>
                     </div>
                     <div className={styles.modalContentInput}>
-                        <p><strong>Cliente:</strong> {triggedEmail.client }</p>
+                        <p><strong>Cliente:</strong> {triggedEmail.clientName }</p>
                         <p><strong>E-mail:</strong> {triggedEmail.email}</p>
                         <div className={styles.modalDates}>
-                            <p><strong>Criado em:</strong>  {triggedEmail.dataTrigger}</p>
-                            <p><strong>Acionado em:</strong> {triggedEmail.dataCriation}</p>
+                            <p><strong>Criado:</strong>  {triggedEmail.creationData.split('T')[0]}</p>
+                            <p><strong>Acionado:</strong> {triggedEmail.dataCriation}</p>
                         </div>
                         <p><strong>Tipo:</strong> {triggedEmail.type}</p>
                         <button onClick={handleResolveAlert}>Resolvido</button>

@@ -1,4 +1,4 @@
 package com.example.LawFirmAPI.model.User;
 
-public record LoginResponseDTO(String token) {
+public record LoginResponseDTO(String token, Long id) {
 }

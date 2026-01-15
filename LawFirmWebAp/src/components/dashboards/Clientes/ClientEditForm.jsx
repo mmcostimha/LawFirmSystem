@@ -9,7 +9,7 @@ import Modal from '../../Modal';
 //component
 import EmailForm from '../CorporateEmail/EmailForm';
 
-export default function ClientEditForm({params, setClients,coporateEmail,setHasEmail, hasEmail, setCoporateEmail}) {
+export default function ClientEditForm({params, setClients,coporateEmail,setHasEmail, hasEmail, setCoporateEmail,closeForm}) {
 
     const [newData, setNewData] = useState(params);
     const [newCorporateEmalView, setNewCorporateEmalView ] = useState(false);
@@ -77,6 +77,7 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
                     return { ...prev, ...response.data };
                 });
                 // console.log("Editado para: ", response.data);
+                closeForm();
             }
         } catch (error) {
             console.error(error);
@@ -128,7 +129,7 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
             <div className={styles.inputContainer}>
                 <label htmlFor="corporateEmail">Email Corporativo:</label>  
                 <div className={styles.associateEmailContainer}>
-                    <button  type="text" onClick={()=>{setNewCorporateEmalView(true),console.log("Abrindo o Emal Form")} }> Associar Email </button>
+                    <button  type="text" onClick={()=>{setNewCorporateEmalView(true)} }> Associar Email </button>
                 </div>
             
             </div>

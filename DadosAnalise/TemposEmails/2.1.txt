@@ -1,4 +1,3 @@
-Ontem
-Sapo - 21
-Outlook - 11 
-Gmail - 6
+Sapo = 21
+Gmail = 11
+Outlook = 6

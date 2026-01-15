@@ -8,79 +8,113 @@ import LoadingComponent from "../../../loading/LoadingComponent";
 import { FaPlus } from "react-icons/fa";
 //models
 import { taskModel } from "../../../../models/User/taskModel";
+//api 
+import apiRequest from "../../../../data/apiRequest";
+//context
+import { useUser } from "../../../../context/userContext";
 
 export default function ToDoList(){
 
     const [items, setItems] = useState([]);
     const [newTask, setNewTask] = useState(taskModel);
+    const [isLoadingNewTask, setIsLoadingNewTask] = useState(false);
     const sortedItems = [...items].sort((a, b) => new Date(b.data) - new Date(a.data));
+    const { token, id } = useUser();
     const agrupado = sortedItems.reduce((acc, item) => {
-        if (!acc[item.data]) acc[item.data] = [];
-        acc[item.data].push(item);
+        // Extrai apenas "2026-01-09" da string completa
+        const dataApenas = item.creationDate.split('T')[0]; 
+        if (!acc[dataApenas]) acc[dataApenas] = [];
+        acc[dataApenas].push(item);
         return acc;
     }, {});
 
-    async function addTask(tarefa){
-        //Adicionar tarefa na lista
-        tarefa.data = new Date().toISOString().split('T')[0]; //Data atual
+    const formatTaskText = (text) => {
+        if (!text) return "";
+        let formatted = text.trim();
+        
+        // Pôr a primeira letra em maiúscula
+        formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        
+        // Adicionar ponto final se não existir nenhum sinal de pontuação no fim
+        if (!/[.!?]$/.test(formatted)) {
+            formatted += ".";
+        }
+        
+        return formatted;
+    };
 
-        //API call to save task get id
-        tarefa.id = items.length + 1; //Simular id
+    async function addTask(task) {
+        // 1. Formatar o texto da task antes de enviar
+        const formattedTask = {
+            ...task,
+            task: formatTaskText(task.task), // Aplica a formatação aqui
+            creationDate: new Date().toISOString(),
+            clientId: id
+        };
 
-        //Update lista
-        setItems([...items, tarefa]);
-        setNewTask(taskModel);
+        setIsLoadingNewTask(true); // Garante que o loading começa aqui
+
+        try {
+            const responce = await apiRequest('/api/task', 'POST', formattedTask, token);
+            if (responce.status === 200) {
+                setItems(prev => [...prev, responce.data]);
+                setNewTask(taskModel); // Limpa o input apenas após o sucesso
+            }
+        } catch (err) {
+            console.error('Falha ao adicionar task:', err);
+        } finally {
+            setIsLoadingNewTask(false);
+        }
     }
-
+    
     useEffect(() => {
-        // Simular carregamento de dados
         //Camada a API aqui
-        const fakeAPICall =[
-            { id: 1 ,tarefa: "Tarefa 1 hvfsd lkljnsdfjlhvvasdlkjn fsdjkhfsdlkjnfsda jhfsadokjfsdlk jhfdoiufdn  iusdk fsdoiyub oihbfsd lkhj", data: "2024-01-15",estado: "concluido"  },
-            { id: 2 ,tarefa: "Tarefa 2", data: "2024-01-16", estado: "concluido" },
-            { id: 3 ,tarefa: "Tarefa 3", data: "2024-01-17", estado: "ative" },
-            { id: 4 ,tarefa: "Tarefa 4", data: "2024-01-18", estado: "concluido" },
-            { id: 5 ,tarefa: "Tarefa 5", data: "2024-01-19", estado: "concluido" },
-            { id: 6 ,tarefa: "Tarefa 6", data: "2024-01-20", estado: "concluido" },
-            { id: 7 ,tarefa: "Tarefa 7", data: "2024-01-21", estado: "concluido" },
-            { id: 8 ,tarefa: "Tarefa 8", data: "2024-01-24", estado: "concluido" },
-            { id: 9 ,tarefa: "Tarefa 9", data: "2024-01-24", estado: "ative" },
-            { id: 10,tarefa: "Tarefa 10", data: "2024-01-24", estado: "ative" }
-        ]
-        setTimeout(() => {
-            setItems(fakeAPICall);
-            console.log("Dados carregados");
-        }, 1000);
-    }, []);
+        const loadData = async () => {
+            if (!token || !id) return;
+            //chamada API aqui
+            try {
+                const link = "/api/task/" + id;
+                const responce = await apiRequest(link, 'GET', null, token);
+                
+                if(responce.status === 200){
+                    // console.log('Lista de Task: ',responce.data);
+                    setItems(responce.data);
+                }
+            } catch (err) {
+                console.error('Falha ao carregar dados:', err);
+            }
+        }
+
+        loadData();
+    }, [token, id]);
 
     function handleEnter(e) {
-        if (e.key === "Enter") {
-        // aqui colocas a ação desejada
-            if (!newTask.tarefa.trim()) return;
+        if (e.key === "Enter" && !isLoadingNewTask) {
+            setIsLoadingNewTask(true);
+            if (!newTask.task.trim()) return;
             addTask(newTask);
         }
     }
 
     return <div className={styles.container}>
         <div className={styles.addContentContainer}>
-            <input type="text" placeholder="Adicionar nova tarefa..." value={newTask.tarefa} onKeyDown={handleEnter} onChange={e => setNewTask(prev => ({ ...prev, tarefa: e.target.value}))}/>
+            <input type="text" placeholder="Adicionar nova tarefa..." value={newTask.task} onKeyDown={handleEnter} onChange={e => setNewTask(prev => ({ ...prev, task: e.target.value}))}/>
             <button onClick={()=>{
-                if (!newTask.tarefa.trim()) return;
+                if (!newTask.task.trim()) return;
                 addTask(newTask)}
             }
-             disabled={!newTask.tarefa.trim()}
-             style={{ opacity: !newTask.tarefa.trim() ? 0.8 : 1 }}
+             disabled={!newTask.task.trim()}
+             style={{ opacity: !newTask.task.trim() ? 0.8 : 1 }}
             ><FaPlus /></button>
         </div>
         <div className={styles.ListContainer}>
             {
                 !!items ?
                 <div className={styles.itemsContainer} >
-                    {Object.entries(agrupado).map(([data, tarefas], index) => (
-                        <ListItems  key={index}  data={data} tarefas={tarefas} setTarefa={setItems} par={index % 2}/>
+                    {Object.entries(agrupado).map(([data, tasks], index) => (
+                        <ListItems  key={index}  data={data} tasks={tasks} setTasks={setItems} par={index % 2}/>
                     ))}
                 </div>:
-                
                 <div>
                     <LoadingComponent />
                 </div>

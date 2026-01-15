@@ -27,14 +27,14 @@ export default function ListElement({ params, parChecker,setClients}) {
         
         setCoporateEmail(responce.data);
         setHasEmail(!!responce.data);
-        console.log('Email carregado:', responce.data);
+        // console.log('Email carregado:', responce.data);
       } catch (err) {
         console.error('Falha ao carregar dados:', err);
       }
   }
 
   const handleEdit = () => {
-    console.log("Editando item com id:", params.id);
+    // console.log("Editando item com id:", params.id);
     setEditing(false);
   };
   const handleDelete = async (e) => {
@@ -57,7 +57,7 @@ export default function ListElement({ params, parChecker,setClients}) {
     console.warn('ListElement recebeu params inválido:', params);
     return null;
   }
-  const sensitiveKeys = ['password', 'role',"creationDate","username", "id"];
+  const sensitiveKeys = ['password', 'role',"creationDate","username", "id","task"];
   // Filtra apenas os pares seguros
   const safeEntries = Object.entries(params).filter(
     ([key]) => !sensitiveKeys.includes(key)
@@ -93,7 +93,7 @@ export default function ListElement({ params, parChecker,setClients}) {
       </div>
 
       <Modal isOpen={editing} onClose={handleEdit} >
-        <ClientEditForm params={params} setClients={setClients} setCoporateEmail={setCoporateEmail} coporateEmail={coporateEmail} setHasEmail={setHasEmail} hasEmail={hasEmail} />
+        <ClientEditForm params={params} setClients={setClients} setCoporateEmail={setCoporateEmail} coporateEmail={coporateEmail} setHasEmail={setHasEmail} hasEmail={hasEmail} closeForm={handleEdit}/>
       </Modal>
       <Modal isOpen={deleting} onClose={()=>setDeleting(false)} >
         <div className={styles.deleteContainer}>

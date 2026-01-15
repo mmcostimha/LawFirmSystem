@@ -4,6 +4,7 @@ import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailRepository;
 //import com.example.LawFirmAPI.service.VaultPasswordService;
+import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
 import jakarta.mail.Folder;
 import jakarta.mail.Message;
 import jakarta.mail.Session;
@@ -22,9 +23,11 @@ public class AsyncSupervisorService {
 
     //private final VaultPasswordService vaultPasswordService;
     private EmailRepository emailRepository;
+    private EmailSupervisorRepository emailSupervisorRepository;
 
-    public AsyncSupervisorService(EmailRepository emailRepository){
+    public AsyncSupervisorService(EmailRepository emailRepository,EmailSupervisorRepository emailSupervisorRepository){
         this.emailRepository=emailRepository;
+        this.emailSupervisorRepository=emailSupervisorRepository;
         //this.vaultPasswordService = vaultPasswordService;
     }
 
@@ -113,12 +116,16 @@ public class AsyncSupervisorService {
         for(String subject : subjects){
             if (subject.equalsIgnoreCase(emailSupervised.getType())){
                 clientEmail.setAlarm(true);
+                emailSupervised.setActivationDate();
+                System.out.println(emailSupervised.getActivationDate());
                 emailRepository.save(clientEmail);
+                emailSupervisorRepository.save(emailSupervised);
                 System.out.println("O alarm do email "+ clientEmail.getEmail() + " foi acionado");
                 return;
             }
         }
         System.out.println("Nenhum alarm acionado para o email"+ clientEmail.getEmail());
     }
+
 
 }

@@ -4,17 +4,17 @@
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  background-color: var( --backgroud-color);
+  background-color: var(--backgroud-color);
 }
 
 a {
   font-weight: 500;
   text-decoration: inherit;
   transition: color 0.15s;
+  cursor: pointer;
 }
-a:hover {
+a:active{
   scale: 0.95; 
-  color: var(--primary-color-2);
 }
 
 body {

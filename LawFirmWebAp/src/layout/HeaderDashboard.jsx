@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import styles from './HeaderDashboard.module.css';
+// context
+import { useFilter } from '../context/filterContext';
+import { useLocation } from 'react-router-dom';
 
-export default function HeaderDashboard() {
+export default function HeaderDashboard({page}) {
   const [currentDateTime, setCurrentDateTime] = useState(getFormattedDateTime());
+
 
   function getFormattedDateTime() {
     const now = new Date();
@@ -27,6 +31,22 @@ export default function HeaderDashboard() {
     };
   }
 
+
+  const { searchTerm,setSearchTerm, clearSearch } = useFilter();
+
+  const placeholder = ()=>{
+
+    switch(page){
+      case 'Alarmes':
+        return "Nome, telemovel ou email pessoal"
+      case 'Clientes':
+        return "Nome, telemovel ou email pessoal"
+      default:
+        return "Barra de perquisa..."
+    }
+      
+  }
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDateTime(getFormattedDateTime());
@@ -37,11 +57,15 @@ export default function HeaderDashboard() {
 
   return (
     <div className={styles.container}>
-      <input type="text" className={styles.barraPesquisa} />
-      <div className={styles.horaAtual}>
-        <span >{currentDateTime.time}</span>
-        <span >{currentDateTime.day}</span>
-        <span >{currentDateTime.date}</span>
+      <input type="text" className={styles.barraPesquisa} onChange={(e)=> setSearchTerm(e.target.value)} value={searchTerm} placeholder={placeholder()}/>
+
+      <div className={styles.clockContainer}>
+        <div className={styles.timeDisplay}>{currentDateTime.time}</div>
+        <div className={styles.dateDisplay}>
+          <span className={styles.dayOfWeek}>{currentDateTime.day}</span>
+          <span className={styles.divider}>|</span>
+          <span className={styles.calendarDate}>{currentDateTime.date}</span>
+        </div>
       </div>
     </div>
   );

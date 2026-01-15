@@ -1,6 +1,6 @@
 import {use, useEffect} from 'react';
 
-import styles from './menuDashboard.module.css'
+import styles from './MenuDashboard.module.css'
 //imgs
 import logo from "../../assets/Images/logo.png"
 //context

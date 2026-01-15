@@ -15,7 +15,6 @@ public class UserController {
 
     private final UserService userService;
 
-
     public  UserController(UserService userService){
         this.userService = userService;
     }
@@ -40,9 +39,15 @@ public class UserController {
         return userService.getByUsername(username);
     }
 
+    @GetMapping("user/id/{id}")
+    public User getById(@PathVariable Long id){
+        return userService.getById(id);
+    }
+
     //Change User
     @PutMapping("user")
     public User changeUser(@RequestBody UserDTO newUser){
+        System.out.println("Recebendo o seguinte user para mudar: "+newUser.toString());
        return userService.changeUser(newUser);
     }
 

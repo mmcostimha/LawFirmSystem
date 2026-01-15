@@ -32,6 +32,7 @@
     }
 }
 .inputContainer{
+    position: relative;
     display: flex;
     flex-direction: row;
     justify-content: start;
@@ -65,4 +66,35 @@
     border: none;
     font-size: clamp(1rem, 1.2vw, 2rem);
     
+}
+.errorText{
+    position: absolute;
+    color: red;
+    left: 21%;
+    top: 100%;
+    font-weight: bold;
+    font-size:smaller;
+}
+.phoneInputGroup{
+    display: flex;
+    justify-content: start;
+    align-items: space-between;
+    /* border: 1px solid black; */
+    width: 60%;
+    margin-right: 10%;
+    select{
+        border: none;
+        border-radius: 8px;
+        outline: none;
+        margin-right: 5%;
+        transition: 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+        &:focus{
+            box-shadow:  0 2px 4px var(--primary-color-2);
+        }
+    }
+    input{
+        width: 40%;
+        
+    }
 }

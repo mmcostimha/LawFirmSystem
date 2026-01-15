@@ -5,47 +5,84 @@ import styles from "./ListItems.module.css"
 import { FaTrash, FaRegEdit} from "react-icons/fa";
 import { FiCheck } from "react-icons/fi";
 import { FaCheckDouble } from "react-icons/fa6";
+import { MdOutlineCheckBox,MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
+//api
+import apiRequest from "../../../../data/apiRequest";
+//context
+import { useUser } from "../../../../context/userContext";
 
-export default function ListItem({tarefas, setTarefa,data}){
+
+export default function ListItem({tasks, setTasks,data}){
     
+    const { token } = useUser();
+
     async function alterarEstado(task) {
+        // console.log('Alterando estado da task:', task);
         //faça a chamada para o backend aqui para atualizar o estado da tarefa ⚠️⚠️⚠️
-        setTarefa(prev =>
-            prev.map(t =>
-                t.id === task.id
-                    ? { ...t, estado: t.estado === "concluido" ? "ative" : "concluido" }
-                    : t
-            )
-        );
+        const link = '/api/task';
+        try {
+            const responce = await apiRequest(link, 'PUT', task, token);
+
+            if (responce.status == 200) {
+                // console.log('Estado da task alterado com sucesso:', responce.data);
+                setTasks(prev =>
+                    prev.map(t =>
+                        t.id === task.id
+                            ? { ...t, state: t.state === false ? true : false }
+                            : t
+                    )
+                );
+            }
+            
+        }
+        catch (err) {
+            console.error('Falha ao alterar estado da task:', err);
+            return;
+        }
+
+
     }
     async function deleteTask(task) {
-        //faça a chamada para o backend aqui para atualizar o estado da tarefa ⚠️⚠️⚠️
-        setTarefa(prev =>
-            prev.filter(t => t.id !== task.id)
-        );
+        //faça a chamada para o backend aqui para atualizar o estado da tarefa 
+        const link = '/api/task';
+        // console.log('Deletando task:', task);
+        try {
+            const responce = await apiRequest(link, 'DELETE', task, token);
+            if (responce.status == 200) {
+                // console.log('Task deletada com sucesso:', responce.data);
+                setTasks(prev =>
+                    prev.filter(t => t.id !== task.id)
+                );
+            }
+        }
+        catch (err) {
+            console.error('Falha ao deletar task:', err);
+            return;
+        }   
+       
     }
         
 
     return <div className={styles.container} >
         <h2>{data}</h2>
         
-        {tarefas.map((task) => ( 
+        {tasks.map((task) => ( 
             <div
                 key={task.id}
                 className={styles.taskContainer}
             >
                 <div className={styles.textContainer} style={
                     {
-                        textDecoration: (task.estado === "concluido") ? "line-through" : "none",
-                        color: (task.estado === "concluido") ? "gray" : "black"
+                        textDecoration: (task.state === "concluido") ? "line-through" : "none",
+                        color: (task.state === true) ? "gray" : "black"
                     }
                 }>
-                    {task.tarefa}
+                    {task.task}
                 </div>
                 <div className={styles.actionsContainer} >
                     <div className={styles.editIcon} onClick={()=>alterarEstado(task) }>
                          {
-                            task.estado === "concluido" ?<FiCheck /> : <FaCheckDouble />
+                            task.state === true ? <MdOutlineCheckBox /> : <MdOutlineCheckBoxOutlineBlank />
                          }
 
                     </div>

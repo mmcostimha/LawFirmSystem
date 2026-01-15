@@ -3,6 +3,7 @@ package com.example.LawFirmAPI.service.Email;
 import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
+import com.example.LawFirmAPI.repository.EmailRepository;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,11 +17,14 @@ public class EmailSupervisorService {
 
     private final EmailSupervisorRepository emailSupervisorRepository;
     private final AsyncSupervisorService asyncSupervisorService;
+    private final EmailRepository emailRepository;
 
     public EmailSupervisorService(EmailSupervisorRepository emailSupervisorRepository,
-                                  AsyncSupervisorService asyncSupervisorService){
+                                  AsyncSupervisorService asyncSupervisorService,
+                                  EmailRepository emailRepository){
         this.emailSupervisorRepository = emailSupervisorRepository;
         this.asyncSupervisorService=asyncSupervisorService;
+        this.emailRepository = emailRepository;
     }
 
     public EmailSupervised addToCheckList(Email email,String type){
@@ -49,6 +53,27 @@ public class EmailSupervisorService {
        return emailSupervisorRepository.findAll();
     }
 
+    public Optional<EmailSupervised> getAlarmById(Long id ){
+        return  emailSupervisorRepository.findById(id);
+    }
+
+
+    public ResponseEntity<EmailSupervised> deleteEmailSupervisedById(Long id){
+
+        Optional<EmailSupervised> alarm_aux = emailSupervisorRepository.findById(id);
+
+        // Opção 1: Lançar exceção se não encontrar (Melhor prática)
+        EmailSupervised alarm = alarm_aux.orElseThrow(() -> new RuntimeException("Alarme não encontrado"));
+
+        Email email = alarm.getEmail();
+
+        email.setAlarm(false);
+
+        // Delete
+        emailSupervisorRepository.delete(alarm);
+        return ResponseEntity.ok(alarm);
+    }
+
     @Scheduled(cron = "${spring.task1.scheduling.cron}")
     public void checkEmails() throws Exception {
         List<EmailSupervised> listEmail = emailSupervisorRepository.findAll();
@@ -65,7 +90,4 @@ public class EmailSupervisorService {
         }
         System.out.println("Acabei");
     }
-
-
-
 }

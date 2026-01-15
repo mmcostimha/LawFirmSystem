@@ -1,9 +1,12 @@
 package com.example.LawFirmAPI.controller;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailDTO;
+import com.example.LawFirmAPI.model.Email.EmailListElementDTO;
 import com.example.LawFirmAPI.service.Email.EmailService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api")
@@ -19,7 +22,7 @@ public class EmailController {
     //Create Email for a client
     @PostMapping("/email")
     public Email registerClientEmail(@RequestBody EmailDTO request){
-        System.out.println("Email recebido: "+ request.email() + " com id de client "+ request.client_id());
+        //System.out.println("Email recebido: "+ request.email() + " com id de client "+ request.client_id());
         try {
             Email emailReceived = emailService.getEmailByClientId(request.client_id());
             return emailService.changeClientEmail(request);
@@ -63,6 +66,10 @@ public class EmailController {
         return emailService.turnOffAlarmByUsername(username);
     }
 
+    @GetMapping("/email/list")
+    public ArrayList<EmailListElementDTO> getEmailList(){
+        return emailService.getEmailList();
+    }
 
 
 }

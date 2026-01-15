@@ -7,6 +7,7 @@ import ListElement from './ListElement';
 import LoadingComponent from '../../loading/LoadingComponent';
 //context
 import { useUser } from "../../../context/userContext"
+import { useFilter } from '../../../context/filterContext.jsx';
 //icon
 import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
@@ -26,6 +27,7 @@ export default function Lista({ itens, setItens, type}) {
   // logout,
   // isPageAllowed,
   const { token, allowedPages } = useUser();
+  const { searchTerm } = useFilter();
 
   useEffect(() => {
 
@@ -33,7 +35,7 @@ export default function Lista({ itens, setItens, type}) {
       try {
         const responce = await apiRequest('/api/user/clients', 'GET', null, token);
         setItens(responce.data);
-        console.log('Dados carregados:', responce.data);
+        // console.log('Dados carregados:', responce.data);
       } catch (err) {
         console.error('Falha ao carregar dados:', err);
       }
@@ -69,11 +71,19 @@ export default function Lista({ itens, setItens, type}) {
     </div>
 
   )
+  const itensFiltred = Array.isArray(itens) ? itens.filter(item =>{
+    return(
+      item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+
+    );
+  }) : [];
+
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const visibleItems = itens.slice(startIndex, endIndex);
+  const visibleItems = itensFiltred.slice(startIndex, endIndex);
   const hasPrev = currentPage > 0;
-  const hasNext = endIndex < itens.length;
+  const hasNext = endIndex < itensFiltred.length;
 
   const columns = ['Name', 'Email Pessoal', 'Phone', 'Actions'];
   const getClassForKey = (key) => {

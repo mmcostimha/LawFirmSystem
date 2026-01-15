@@ -11,6 +11,7 @@ import styles from "./MozaicoBoard.module.css"
 import apiRequest from "../../../data/apiRequest";
 //context
 import {useUser} from "../../../context/userContext"
+import { useFilter } from "../../../context/filterContext";
 
 export default function MozaicoBoard({ itens, setItens }) {
   const [paginaAtual, setPaginaAtual] = useState(1);
@@ -20,30 +21,20 @@ export default function MozaicoBoard({ itens, setItens }) {
   const itemRef = useRef(null);
   const containerRef = useRef(null);
   const { token } = useUser();    
-  async function carregarDados() {
-    try {
-      const responce = await apiRequest('/api/supervisor', 'GET', null, token);
-      setItens(responce.data);
-      console.log('Dados carregados Alarmes:', responce.data);
-    } catch (err) {
-      console.error('Falha ao carregar dados:', err);
-    }
-  }
+  const {searchTerm} = useFilter();
 
-  const names = ["Alice", "Bruno", "Carla", "Dionísio", "Eduarda", "Fábio", "Gabriela", "Hugo", "Inês", "Jorge", "Kelly", "Leonardo", "Marta", "Nuno", "Olívia", "Paulo", "Quitéria", "Rafael", "Sofia", "Tiago"]
   useEffect(() => {
-    const alarmesAleatorios = Array.from({ length: 20 }, (_, index) => ({
-      id: index + 1,
-      email: `user${Math.floor(Math.random() * 100)}@example.com`,
-      tipo: ["urgente", "normal", "baixa"][Math.floor(Math.random() * 3)],
-      estado: ["pendente", "em_processo", "resolvido"][Math.floor(Math.random() * 3)],
-      name:names[index]
-    }));
-
+    async function carregarDados() {
+      try {
+        const responce = await apiRequest('/api/supervisor', 'GET', null, token);
+        setItens(responce.data);
+        // console.log('Dados carregados - Alarmes:', responce.data);
+      } catch (err) {
+        console.error('Falha ao carregar dados:', err);
+      }
+    }
     //get data from api
     carregarDados();
-
-    setItens(alarmesAleatorios);
     setLoading(false);
   }, [setItens]);
   
@@ -60,7 +51,7 @@ export default function MozaicoBoard({ itens, setItens }) {
         const heithdiv = Math.floor(containerHeight / itemHeight);
         const widthdiv = Math.floor(containerWidth / itemWidth);
         const possible = heithdiv * widthdiv;
-        console.log(containerWidth,containerHeight,itemHeight,itemWidth,widthdiv,heithdiv,possible);
+        // console.log(containerWidth,containerHeight,itemHeight,itemWidth,widthdiv,heithdiv,possible);
         setNumberOfItems(possible > 0 ? possible : 1);
       }
     }
@@ -80,18 +71,24 @@ export default function MozaicoBoard({ itens, setItens }) {
       window.removeEventListener("resize", handleResize);
     };
   }, [itens]);
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [searchTerm]);
 
+  const itensFiltred = Array.isArray(itens) ? itens.filter(item =>{
+    return(
+      item.clientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.type?.toLowerCase().includes(searchTerm.toLowerCase()) 
 
+    );
+  }) : [];
 
   // cálculo dos índices dos alarmes a mostrar
   const indiceInicial = (paginaAtual - 1) * numberOfItems;
-
   const indiceFinal = indiceInicial + numberOfItems;
-
-  const alarmesVisiveis = Array.isArray(itens) ? itens.slice(indiceInicial, indiceFinal) : [];
-
-  const totalPaginas = Math.ceil((itens?.length || 0) / numberOfItems);
-
+  const alarmesVisiveis = Array.isArray(itensFiltred) ? itensFiltred.slice(indiceInicial, indiceFinal) : [];
+  const totalPaginas = Math.ceil((itensFiltred?.length || 0) / numberOfItems);
 
   const proximaPagina = () => {
     if (paginaAtual < totalPaginas) setPaginaAtual(paginaAtual + 1);
@@ -99,16 +96,29 @@ export default function MozaicoBoard({ itens, setItens }) {
   const paginaAnterior = () => {
     if (paginaAtual > 1) setPaginaAtual(paginaAtual - 1);
   };
-  function deleteAlarmFunction(item){
+  async function deleteAlarmFunction(item){
       //delete an alarm
-      setItens((prev) => prev.filter((i) => i.id !== item.id))
-      console.log("delete alarm- API relese not emplemented")
-
+      const link = "/api/supervisor/"+item.id;
+      // console.log("Deleting alarm:",link)
+      try {
+        const responce = await apiRequest(link, 'DELETE', null, token);
+        setItens(responce.data);
+        if(responce.status === 200){
+          setItens((prev) => {
+            // Se prev não for array por algum erro anterior, retorna array vazio ou o próprio prev
+            if (!Array.isArray(prev)) return []; 
+            
+            return prev.filter((i) => i.id !== item.id);
+          });
+        }
+        // console.log('Dados carregados:', responce.data);
+      } catch (err) {
+        console.error('Falha ao carregar dados:', err);
+      }
   }
   const setAlarm = (item) =>{
-    console.log("seting alarm- not emplemented")
+    // console.log("seting alarm- not emplemented")
   }
-
   return (
   <div className={styles.container} ref={containerRef}>
     {loading ? (

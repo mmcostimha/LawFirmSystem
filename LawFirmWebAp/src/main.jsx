@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider,  } from 'react-router-dom'
 
 // context
 import { UserProvider } from './context/userContext.jsx'
+import { FilterProvider } from './context/filterContext.jsx'
 
 // Importing page components
 import Home from './pages/Home.jsx'
@@ -26,7 +27,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <UserProvider>
+    <FilterProvider>
       <RouterProvider router={router} />
+    </FilterProvider>
     </UserProvider>
   </StrictMode>,
 )

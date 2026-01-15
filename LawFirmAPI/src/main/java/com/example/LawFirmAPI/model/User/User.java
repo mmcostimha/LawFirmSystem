@@ -1,10 +1,12 @@
 package com.example.LawFirmAPI.model.User;
 
 import com.example.LawFirmAPI.model.Email.Email;
+import com.example.LawFirmAPI.model.Recovery.Recovery;
+import com.example.LawFirmAPI.model.Task.Task;
 import com.example.LawFirmAPI.model.User.UserDTO.UserDTO;
-import com.example.LawFirmAPI.model.User.UserDTO.UserRequestedDTO;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Entity
@@ -39,6 +41,13 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Email emailEntity;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Task> tasks;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Recovery> recoveries;
+
+
     public User(){}
 
     public User(UserDTO user){
@@ -49,6 +58,7 @@ public class User {
         this.phone=user.phone();
         this.role= user.role();
         this.creationDate = LocalDateTime.now();
+
     }
     //get functions
     public Long getId() {
@@ -71,6 +81,10 @@ public class User {
     }
     public String getRole() {
         return role;
+    }
+
+    public List<Task> getTask() {
+        return tasks;
     }
 
     //Set functions
