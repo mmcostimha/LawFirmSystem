@@ -2,18 +2,21 @@ import styles from "./EmailAtiveList.module.css"
 import { useState, useEffect, use } from "react"
 //components
 import EmailAtiveElement from "./EmailAtiveElement"
+import LoadingComponent from "../../../loading/LoadingComponent"
 //models
 import { emailTrigger } from "../../../../models/Email/emailTrigger"
 //contexts
 import {useUser} from "../../../../context/userContext"
 //api
 import apiRequest from "../../../../data/apiRequest"
+//icons
+import { FaRegClock } from "react-icons/fa";
 
 export default  function EmailAtiveList(){
 
-
     const [emails, setEmails] = useState([]);
     const { token } = useUser();
+    const [loading, setLoading] = useState(true);
 
     const removeAlert = (id) => {
         setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
@@ -33,6 +36,7 @@ export default  function EmailAtiveList(){
                         // console.log("Nenhum email acionado encontrado.");
                         setEmails([]);
                     }
+                    setLoading(false)
 
                 }
             }
@@ -48,11 +52,21 @@ export default  function EmailAtiveList(){
         <div className={styles.titleContainer}>
             <h3>Emails Acionados</h3>
         </div>
-        <div className={styles.itemsContainer}>
-            {emails.length !== 0 ?emails.map((email) => (
-                <EmailAtiveElement key={email.id} triggedEmail={email} removeAlert={removeAlert}/>
-            ))
-            : <p>Nenhum email acionado</p>}
+        {
+            loading ? <LoadingComponent/> 
+            :
+            <div className={styles.itemsContainer}>
+                {emails.length !== 0 ?emails.map((email) => (
+                    <EmailAtiveElement key={email.id} triggedEmail={email} removeAlert={removeAlert}/>
+                ))
+                : <div className={styles.emptyState}>
+                    <h3>Tudo em ordem por aqui</h3>
+                    <p>Nenhum alarme foi acionado até ao momento.</p>
+                    <div className={styles.iconWrapper}>
+                        <FaRegClock /> {/* Ícone de sino riscado */}
+                    </div>
+                    </div>}
+                </div>
+        }
         </div>
-    </div>
 }

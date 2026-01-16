@@ -7,8 +7,12 @@ services:
       POSTGRES_DB: lawfirm_db
       POSTGRES_USER: user_admin      # O nome que você escolher
       POSTGRES_PASSWORD: password123 # A senha que você escolher
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data  # Isso cria uma pasta no seu PC com os dados
     ports:
       - "5432:5432"
+    restart: always  # Adicione esta linha
+    
 
   # Backend Spring Boot
   backend:
@@ -22,6 +26,7 @@ services:
       - EMAIL_PASSWORD=${EMAIL_PASSWORD} # Pega do seu .env local
     depends_on:
       - db
+    restart: always  # Adicione esta linha
 
   # Frontend React
   frontend:
@@ -32,3 +37,5 @@ services:
       - VITE_SERVER_API_URL=http://localhost:8080
     depends_on:
       - backend
+    restart: always  # Adicione esta linha
+    

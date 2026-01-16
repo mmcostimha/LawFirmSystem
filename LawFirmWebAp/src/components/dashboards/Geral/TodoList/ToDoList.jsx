@@ -17,6 +17,7 @@ export default function ToDoList(){
 
     const [items, setItems] = useState([]);
     const [newTask, setNewTask] = useState(taskModel);
+    const [loading , setLoading] = useState(true);
     const [isLoadingNewTask, setIsLoadingNewTask] = useState(false);
     const sortedItems = [...items].sort((a, b) => new Date(b.data) - new Date(a.data));
     const { token, id } = useUser();
@@ -79,6 +80,7 @@ export default function ToDoList(){
                 if(responce.status === 200){
                     // console.log('Lista de Task: ',responce.data);
                     setItems(responce.data);
+                    setLoading(false);
                 }
             } catch (err) {
                 console.error('Falha ao carregar dados:', err);
@@ -107,19 +109,22 @@ export default function ToDoList(){
              style={{ opacity: !newTask.task.trim() ? 0.8 : 1 }}
             ><FaPlus /></button>
         </div>
-        <div className={styles.ListContainer}>
-            {
-                !!items ?
-                <div className={styles.itemsContainer} >
-                    {Object.entries(agrupado).map(([data, tasks], index) => (
-                        <ListItems  key={index}  data={data} tasks={tasks} setTasks={setItems} par={index % 2}/>
-                    ))}
-                </div>:
-                <div>
-                    <LoadingComponent />
-                </div>
-            }
-            
-        </div>
+
+        { loading ? <LoadingComponent/>
+            :
+            <div className={styles.ListContainer}>
+                {
+                    !!items ?
+                    <div className={styles.itemsContainer} >
+                        {Object.entries(agrupado).map(([data, tasks], index) => (
+                            <ListItems  key={index}  data={data} tasks={tasks} setTasks={setItems} par={index % 2}/>
+                        ))}
+                    </div>:
+                    <div>
+                        <LoadingComponent />
+                    </div>
+                }
+            </div>
+        }
     </div>
 }
