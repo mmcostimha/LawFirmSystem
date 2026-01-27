@@ -4,6 +4,7 @@ import { useState } from 'react';
 import apiRequest from "../../../data/apiRequest"
 //contex
 import {useUser} from "../../../context/userContext"
+import { validateForm } from '../../../data/formValidation';
 //Modal
 import Modal from '../../Modal';
 //component
@@ -11,10 +12,13 @@ import EmailForm from '../CorporateEmail/EmailForm';
 
 export default function ClientEditForm({params, setClients,coporateEmail,setHasEmail, hasEmail, setCoporateEmail,closeForm}) {
 
+    // const { foundPrefix, remaining } = parsePhone(params.phone);
+    const [prefixo, setPrefixo] = useState(params.prefix);
+    const [phone, setPhone] = useState(params.phone);
     const [newData, setNewData] = useState(params);
     const [newCorporateEmalView, setNewCorporateEmalView ] = useState(false);
     const {token} = useUser();
-
+    const [errors, setErrors] = useState({}); // Estado para guardar erros   
 
     let formatada = null;
     if (params.creationDate) {
@@ -31,12 +35,14 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
     }
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setNewData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setNewData({ ...newData, [name]: value });
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: null }));
+        }
     };
+
     const handleEmailDelete = async (e) => {
+        e.preventDefault();
         
         try {
             const response = await apiRequest('/api/email/'+ newData.username , 'DELETE', null, token);
@@ -53,18 +59,31 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
 
     };
     async function editClient() {
+        // Se quiseres validar apenas o corpo do número (os 9 a 12 dígitos)
+
+        const clientData = {
+            id: newData.id,
+            name : newData.name,
+            email : newData.email,
+            phone : phone,
+            prefix: prefixo,
+            role : newData.role,
+            username : newData.username,
+            password : ""
+        }
+        console.log("editClient", clientData);
+        const formErrors = validateForm(clientData); 
+        
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+            return;
+        }
+        
         try {
-            const response = await apiRequest('/api/user', 'PUT', {
-                id: newData.id,
-                name : newData.name,
-                email : newData.email,
-                phone : newData.phone,
-                role : newData.role,
-                username : newData.username,
-                password : ""
-            }, token);
+            const response = await apiRequest('/api/user', 'PUT', clientData, token);
             
             if (response.status === 200) {
+                console.log("Cliente editado com sucesso: ", response.data);
                 setClients(prev => {
                     // se params for um array, atualiza o item correspondente
                     if (Array.isArray(prev)) {
@@ -82,7 +101,7 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
         } catch (error) {
             console.error(error);
         }
-    }
+    };
 
     return <div className={styles.editContainer}>
         <div className={styles.titleContainer}>
@@ -98,16 +117,8 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
                 onChange={handleChange}
                 type="text"
             />
-        </div>
-        <div className={styles.inputContainer}>
-            <label htmlFor="phone">Número:</label>
-            <input
-                id='phone'
-                name='phone' 
-                value={newData.phone} 
-                onChange={handleChange}
-                type="number"
-            />
+            {errors.name && <span className={styles.errorText}>{errors.name}</span>}
+            
         </div>
         <div className={styles.inputContainer}>
             <label htmlFor="email">Email Pessoal:</label>
@@ -118,6 +129,33 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
                 onChange={handleChange} 
                 type="email"
             />
+            {errors.email && <span className={styles.errorText}>{errors.email}</span>}
+        </div>
+        <div className={styles.inputContainer}>
+            <label htmlFor="phone">Número:</label>
+            <div className={styles.phoneInputGroup}> 
+                <select 
+                    value={prefixo} 
+                    onChange={(e) => setPrefixo(e.target.value)}
+                    className={styles.prefixSelect}
+                >
+                    <option value="+351">+351 (PT)</option>
+                    <option value="+34">+34 (ES)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+1">+1 (USA)</option>
+                </select>
+                <input
+                    id='phone'
+                    name='phone'
+                    type="text"
+                    // .slice(3) remove os primeiros 3 caracteres
+                    // .replace(...) adiciona o espaço após o 3º dígito do que sobrou
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    maxLength={9}
+                />
+            </div>
+            {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
         </div>
         {hasEmail ?
         <div className={styles.inputContainer}>

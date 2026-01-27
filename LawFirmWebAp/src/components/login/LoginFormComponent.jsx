@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import axios from "axios";
 //styles
 import style from "./LoginForm.module.css"
@@ -13,11 +13,25 @@ import loading_gif from "../../assets/Images/loading.svg"
 export default function LoginFormComponent({setPassRecoveryFormVisible}) {
 
     const[userLogin,setUserLogin]= useState(userLoginStructure);
-
+    // const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-
     const { login } = useUser();
+
+
+    useEffect(() => {
+        // Verificar se há credenciais salvas no localStorage
+        const savedUsername = localStorage.getItem('savedUsername');
+        const savedPassword = localStorage.getItem('savedPassword');
+        console.log("Saved credentials:", { savedUsername, savedPassword });
+        if (savedUsername && savedPassword) {
+            setUserLogin(prev => ({ ...prev, username: savedUsername, password: savedPassword }));
+            // setRememberMe(true);
+        }else if(savedUsername){
+            setUserLogin(prev => ({ ...prev, username: savedUsername }));
+        }
+    }, []);
+    
     
     async function doLogin() {
         setError("");
@@ -35,15 +49,16 @@ export default function LoginFormComponent({setPassRecoveryFormVisible}) {
             // const { token, role } = response.data;
             
             //esperar um pouco para ver a mensagem
-            
+
+
+            login("admin", token, id, userLogin.username, userLogin.password); // atualiza contexto + localStorage
             window.location.href = "/dashboard";
-            
-            login("admin", token, id); // atualiza contexto + localStorage
-            setLoading(false);
 
         } catch (err) {
             console.error(err);
             alert('Usuário ou senha inválidos');
+            setLoading(false);
+
         }
     }
 

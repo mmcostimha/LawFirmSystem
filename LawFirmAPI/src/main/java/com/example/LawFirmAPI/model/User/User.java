@@ -33,6 +33,9 @@ public class User {
     private String phone;
 
     @Column(nullable = false)
+    private String prefix;
+
+    @Column(nullable = false)
     private String role;
 
     @Column(nullable = false)
@@ -58,7 +61,7 @@ public class User {
         this.phone=user.phone();
         this.role= user.role();
         this.creationDate = LocalDateTime.now();
-
+        this.prefix = user.prefix();
     }
     //get functions
     public Long getId() {
@@ -82,7 +85,9 @@ public class User {
     public String getRole() {
         return role;
     }
-
+    public String getPrefix() {
+        return prefix;
+    }
     public List<Task> getTask() {
         return tasks;
     }
@@ -92,6 +97,7 @@ public class User {
         setEmail(newUser.email());
         setName(newUser.name());
         setPhone(newUser.phone());
+        setPrefix(newUser.prefix());
     }
     public void setPassword(String password) {
         this.password = password;
@@ -108,6 +114,10 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
     public LocalDateTime getCreationDate() {
         return creationDate;
     }

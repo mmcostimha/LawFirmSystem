@@ -1,6 +1,6 @@
 import { useEffect, useState,useRef } from "react";
 //icon
-import { FaArrowRight,FaArrowLeft} from "react-icons/fa";
+import { FaArrowRight,FaArrowLeft,FaRegClock } from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
 //componentes
 import MozaicoBoardElement from "./MozaicoBoardElement";
@@ -123,6 +123,16 @@ export default function MozaicoBoard({ itens, setItens }) {
   <div className={styles.container} ref={containerRef}>
     {loading ? (
       <LoadingComponent size={70}/>
+    ) : alarmesVisiveis.length === 0 ? (
+      <div className={styles.itensEmpty}>
+        <div className={styles.emptyState}>
+          <h3>Tudo em ordem por aqui!</h3>
+          <p>Nenhum alarme foi acionado até ao momento.</p>
+          <div className={styles.iconWrapper}>
+            <FaRegClock />
+          </div>
+        </div>
+      </div>
     ) : (
       <>
         <div className={styles.itens}>

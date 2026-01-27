@@ -27,7 +27,16 @@ public class UserService {
 
     public User newUser(UserDTO userRequest){
         String encryptedPassword = passwordEncoder.encode(userRequest.password());
-        UserDTO newUser = new UserDTO(userRequest.name(),userRequest.email(),userRequest.phone(),userRequest.role(),userRequest.username(),encryptedPassword);
+        //System.out.println("Prefixo "+userRequest.prefix());
+        UserDTO newUser = new UserDTO(
+                userRequest.name(),
+                userRequest.email(),
+                userRequest.phone(),
+                userRequest.prefix(),
+                userRequest.role(),
+                userRequest.username(),
+                encryptedPassword
+        );
         User user = new User(newUser);
         return userRepository.save(user);
     }
@@ -83,10 +92,8 @@ public class UserService {
         for (int i = 0; i < length; i++) { // Senha de 12 caracteres
             sb.append(chars.charAt(random.nextInt(chars.length())));
         }
-        String passCreated = fistPart + sb.toString();
-//        System.out.println("Tamanho da senha gerada: "+length+" e passe: "+passCreated);
 
-        return passCreated;
+        return fistPart + sb.toString();
     }
 
     public ResponseEntity<User> newUserPassword(Long userId, String passe){

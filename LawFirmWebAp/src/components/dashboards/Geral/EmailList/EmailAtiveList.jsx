@@ -21,11 +21,15 @@ export default  function EmailAtiveList(){
     const removeAlert = (id) => {
         setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
     }
+
     
     useEffect(() => {
         // Simulate fetching data from an API
         const loadData = async () => {
             const link = '/api/supervisor/actioned';
+            if(!token){
+                return;
+            }
             try{
                 const response = await apiRequest(link, 'GET', null, token);
                 if(response.status === 200){
@@ -37,16 +41,16 @@ export default  function EmailAtiveList(){
                         setEmails([]);
                     }
                     setLoading(false)
-
                 }
             }
             catch(error){
                 console.error("Erro ao buscar emails acionados:", error);
             }
         }
-        
         loadData();
-    }, []);
+    }, [token]);
+
+    
 
     return <div className={styles.container}>
         <div className={styles.titleContainer}>
@@ -60,7 +64,7 @@ export default  function EmailAtiveList(){
                     <EmailAtiveElement key={email.id} triggedEmail={email} removeAlert={removeAlert}/>
                 ))
                 : <div className={styles.emptyState}>
-                    <h3>Tudo em ordem por aqui</h3>
+                    <h3>Tudo em ordem por aqui!</h3>
                     <p>Nenhum alarme foi acionado até ao momento.</p>
                     <div className={styles.iconWrapper}>
                         <FaRegClock /> {/* Ícone de sino riscado */}

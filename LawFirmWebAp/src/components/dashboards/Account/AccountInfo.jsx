@@ -39,7 +39,8 @@ export default function AccountInfo({ user, setUserInfo }) {
       const isDifferent = 
         updatedUser.name !== user.name || 
         updatedUser.email !== user.email || 
-        updatedUser.phone !== user.phone;
+        updatedUser.phone !== user.phone ||
+        updatedUser.prefix !== user.prefix;
 
       setChanged(isDifferent);
       return updatedUser;
@@ -79,13 +80,25 @@ export default function AccountInfo({ user, setUserInfo }) {
             onChange={handleInputChange('name')} 
           />
         </div>
-        <div className={styles.inputContainer}>
+                        
+        <div className={styles.inputContainerPhone}>
           <label>Phone:</label>
+          <select 
+              value={userVar?.prefix || ''} 
+              onChange={handleInputChange('prefix')}
+              className={styles.prefixSelect}
+          >
+              <option value="+351">+351 (PT)</option>
+              <option value="+34">+34 (ES)</option>
+              <option value="+44">+44 (UK)</option>
+              <option value="+1">+1 (USA)</option>
+          </select>
           <input 
-            type="text" 
+            type="phone" 
             value={userVar?.phone || ''} 
             onChange={handleInputChange('phone')} 
           />
+          
         </div>
         <div className={styles.inputContainer}>
           <label>Email:</label>

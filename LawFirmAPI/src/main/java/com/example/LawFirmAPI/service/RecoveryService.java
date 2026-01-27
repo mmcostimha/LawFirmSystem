@@ -29,7 +29,7 @@ public class RecoveryService {
     }
 
     public RecoveryDTO codeCreator(String email){
-        System.out.println("Entrei na criacao");
+        //System.out.println("Entrei na criacao");
         User user = userRepository.findByEmail(email);
         if (user == null)
             throw new ResourceNotFound("User associado ao email "+email+" não encontrado");
@@ -65,7 +65,7 @@ public class RecoveryService {
 
             // 4. Envio
             Transport.send(message);
-            System.out.println("E-mail enviado com sucesso!");
+            //System.out.println("E-mail enviado com sucesso!");
 
         } catch (MessagingException e) {
             e.printStackTrace();

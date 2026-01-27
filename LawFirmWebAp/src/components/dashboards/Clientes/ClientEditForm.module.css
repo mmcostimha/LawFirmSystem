@@ -15,13 +15,14 @@
 }
 .inputContainer{
     display: flex;
+    position: relative;
     flex-direction: row;
     justify-content: start;
     align-items: center;
     width: 90%;
     margin-bottom: 4%;
+    /* border: 1px solid black; */
     
-
     label{
         width: 30%;
         align-items: center;
@@ -38,6 +39,8 @@
         outline: none;
         transition: 0.3s;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+        /* border: 1px solid blue; */
+
         &:focus{
             box-shadow:  0 2px 4px var(--primary-color-2);
         }
@@ -67,6 +70,14 @@
         /* border: 1px solid black; */
     
 }
+.errorText{
+    position: absolute;
+    color: red;
+    left: 31%;
+    top: 100%;
+    font-weight: bold;
+    font-size:smaller;
+}
 .butonsContainer{
     display: flex;
     justify-content: space-around;
@@ -82,5 +93,29 @@
         margin: 0px 0px;
         padding: 10px;
         font-size: clamp(1rem, 1vw, 2rem);
+    }
+}
+.phoneInputGroup{
+    display: flex;
+    justify-content: start;
+    align-items: space-between;
+    /* border: 1px solid black; */
+    width: 60%;
+    margin-right: 10%;
+    select{
+        border: none;
+        border-radius: 8px;
+        outline: none;
+        margin-right: 5%;
+        transition: 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+        &:focus{
+            box-shadow:  0 2px 4px var(--primary-color-2);
+        }
+    }
+    input{
+        width: 60%;
+        padding: 10px;
+        
     }
 }

@@ -30,6 +30,7 @@ export const UserProvider = ({ children }) => {
         const savedType = localStorage.getItem('accountType');
         const savedId = localStorage.getItem('userId');
 
+
         if (savedToken && savedType && savedId) {
             setToken(savedToken);
             setAccountType(savedType);
@@ -39,7 +40,7 @@ export const UserProvider = ({ children }) => {
     }, []);
 
     // Login
-    const login = (type, token, id) => {
+    const login = (type, token, id, username, password) => {
         setAccountType(type);
         setAllowedPages(PAGES_PER_ACCOUNT[type] || []);
         setToken(token);
@@ -54,6 +55,11 @@ export const UserProvider = ({ children }) => {
         localStorage.setItem('authToken', token);
         localStorage.setItem('accountType', type);
         localStorage.setItem('userId', id);
+        // Optionally save credentials for "Remember Me" functionality
+        if (username && password) {
+            localStorage.setItem('savedUsername', username);
+            localStorage.setItem('savedPassword', password);
+        }
     };
 
 
@@ -68,6 +74,8 @@ export const UserProvider = ({ children }) => {
         localStorage.removeItem('authToken');
         localStorage.removeItem('accountType');
         localStorage.removeItem('userId');
+        // localStorage.removeItem('savedUsername');
+        localStorage.removeItem('savedPassword');
     };
 
     // Check if a page is allowed for current account

@@ -5,6 +5,7 @@ import com.example.LawFirmAPI.model.Email.EmailActivatedDTO;
 import com.example.LawFirmAPI.model.Email.EmailDTO;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.UserRepository;
+import com.example.LawFirmAPI.service.Email.AsyncSupervisorService;
 import com.example.LawFirmAPI.service.Email.EmailService;
 import com.example.LawFirmAPI.service.Email.EmailSupervisorService;
 import com.example.LawFirmAPI.service.UserService;
@@ -24,13 +25,15 @@ import java.util.Optional;
 public class EmailSupervisorController {
 
     private final EmailSupervisorService emailSupervisorService;
+    private final AsyncSupervisorService asyncSupervisorService;
     private final UserService userService;
     private final EmailService emailService;
 
-    public EmailSupervisorController(EmailSupervisorService emailSupervisorService, EmailService emailService,UserService userService){
+    public EmailSupervisorController(EmailSupervisorService emailSupervisorService, EmailService emailService,UserService userService,AsyncSupervisorService asyncSupervisorService){
         this.emailSupervisorService=emailSupervisorService;
         this.emailService= emailService;
         this.userService = userService;
+        this.asyncSupervisorService = asyncSupervisorService;
 
     }
     //Add a supervisor type to a CLient
@@ -75,14 +78,14 @@ public class EmailSupervisorController {
 
             dtoList.add(dto);
         }
-        System.out.println(dtoList.toString());
+        //System.out.println(dtoList.toString());
         return dtoList;
     }
 
     @DeleteMapping("/supervisor/{supervisedEmailId}")
     public ResponseEntity<EmailSupervised> deleteFromCheckList(@PathVariable Long supervisedEmailId){
         // Agora você pode usar o objeto 'alarm'superviedEmailId
-        System.out.println("Id do Alarm: "+supervisedEmailId );
+        //System.out.println("Id do Alarm: "+supervisedEmailId );
         return emailSupervisorService.deleteEmailSupervisedById(supervisedEmailId);
     }
     //Get List of Supervisors
@@ -108,8 +111,13 @@ public class EmailSupervisorController {
                 dtoList.add(dto);
             }
         }
-        System.out.println(dtoList.toString());
+        //System.out.println(dtoList.toString());
         return dtoList;
     }
 
-}
+    @PostMapping("/supervisor/teste")
+    public  ResponseEntity<?> emailValidator(@RequestBody EmailDTO email){
+
+        return asyncSupervisorService.fetchSubjectsEmailValidation(email);
+    }
+;}

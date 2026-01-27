@@ -6,6 +6,7 @@ import ListItems from "./ListItem";
 import LoadingComponent from "../../../loading/LoadingComponent";
 //icons
 import { FaPlus } from "react-icons/fa";
+import { FaRegClock } from "react-icons/fa";
 //models
 import { taskModel } from "../../../../models/User/taskModel";
 //api 
@@ -110,21 +111,32 @@ export default function ToDoList(){
             ><FaPlus /></button>
         </div>
 
-        { loading ? <LoadingComponent/>
-            :
+        {loading ? (
+            <LoadingComponent />
+        ) : items.length === 0 ? (
             <div className={styles.ListContainer}>
-                {
-                    !!items ?
-                    <div className={styles.itemsContainer} >
-                        {Object.entries(agrupado).map(([data, tasks], index) => (
-                            <ListItems  key={index}  data={data} tasks={tasks} setTasks={setItems} par={index % 2}/>
-                        ))}
-                    </div>:
-                    <div>
-                        <LoadingComponent />
+                <div className={styles.emptyState}>
+                    <h3>Tudo em ordem por aqui!</h3>
+                    <p>Nenhuma tarefa pendente.</p>
+                    <div className={styles.iconWrapper}>
+                        <FaRegClock />
                     </div>
-                }
+                </div>
             </div>
-        }
+        ) : (
+            <div className={styles.ListContainer}>
+                <div className={styles.itemsContainer}>
+                    {Object.entries(agrupado).map(([data, tasks], index) => (
+                        <ListItems 
+                            key={index} 
+                            data={data} 
+                            tasks={tasks} 
+                            setTasks={setItems} 
+                            par={index % 2} 
+                        />
+                    ))}
+                </div>
+            </div>
+        )}
     </div>
 }

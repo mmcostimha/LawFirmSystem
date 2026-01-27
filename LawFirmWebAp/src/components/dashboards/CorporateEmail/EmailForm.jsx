@@ -8,6 +8,7 @@ import { useUser } from '../../../context/userContext';
 export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client_id}) {
 
     const [opcaoSelecionada, setOpcaoSelecionada] = useState('@gmail.com');
+    const [tested, setTested] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
         provider: '',
@@ -23,11 +24,11 @@ export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client
             [name]: value
         }));
         // console.log(formData)
+        
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         // 1. Calcular o novo email final uma única vez
         const novoEmailCompleto = formData.email + opcaoSelecionada;
         
@@ -66,6 +67,27 @@ export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client
         onClose();
 
     };
+
+    const handleTest = async (e) => {
+        e.preventDefault();
+    
+        try{
+            const response = await apiRequest('/api/supervisor/teste', 'POST', {
+                email: formData.email + opcaoSelecionada,
+                password: formData.password,
+                id: ""
+            }, token);
+
+            if (response.status === 200) {
+                console.log("Teste realizado com sucesso: ", response.data);
+                setTested(true);
+            }else {
+                console.log("Teste falhou: ", response.data);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <div className={styles.container}>
@@ -106,8 +128,11 @@ export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client
                     />
                 </div>
                 <div className={styles.buttonContainer}>    
-                    <button type="submit">Confirmar</button>
-                    <button onClick={()=> console.log("Funcionalidade n implementada")}>Teste</button>
+                    {
+                        tested ? <button type="submit">Confirmar</button>   :
+                        <button onClick={handleTest}>Teste</button>
+                    }
+
                 </div>
             </form>
         </div>

@@ -54,12 +54,13 @@ public class AuthController {
         String userName = firstName + lastName + request.phone().substring(numero, numero + 3);
         // Fixed the syntax error here
         String password = userService.generateSecurePassword(names);
-
+        //System.out.println("Prefixo "+request.prefix());
         // 3. Mapping and Service Call
         UserDTO newUserDto = new UserDTO(
                 request.name(),
                 request.email(),
                 request.phone(),
+                request.prefix(),
                 request.role(),
                 userName,
                 password

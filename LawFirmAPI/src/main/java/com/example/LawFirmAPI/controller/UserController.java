@@ -22,15 +22,15 @@ public class UserController {
     @GetMapping("user/clients")
     public List<User> getClientsList(){
         List<User> users = userService.getClientsList();
-        if (!users.isEmpty())
-            System.out.println("Endpoit accessed clients "+ users.size());
+        //if (!users.isEmpty())
+            //System.out.println("Endpoit accessed clients "+ users.size());
 
         return users;
     }
     //get Admin List
     @GetMapping("user/admins")
     public List<User> getAdminList(){
-        System.out.println("Endpoit accessed admin");
+        //System.out.println("Endpoit accessed admin");
         return userService.getAdminsList();
     }
     //Get User by username
@@ -47,7 +47,7 @@ public class UserController {
     //Change User
     @PutMapping("user")
     public User changeUser(@RequestBody UserDTO newUser){
-        System.out.println("Recebendo o seguinte user para mudar: "+newUser.toString());
+        //System.out.println("Recebendo o seguinte user para mudar: "+newUser.toString());
        return userService.changeUser(newUser);
     }
 

@@ -90,3 +90,47 @@
         font-size: clamp(1rem, 1vw, 2rem);
     } */
 }
+.inputContainerPhone{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: start;
+    width: 70%;
+    height: 80%;
+    margin-bottom: 3%;
+    /* border: 1px solid orange; */
+
+    label{
+        width: 30%;
+        align-items: center;
+        font-size: clamp(1rem, 1.2vw, 2rem);
+        /* border: 1px solid orange; */
+    }
+    input{
+        width: 38%;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        outline: none;
+        transition: 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+        &:focus{
+            box-shadow:  0 2px 4px var(--primary-color-2);
+        }
+    }
+    
+    select{
+        height: 100%;
+        width: 17%;
+        border: none;
+        border-radius: 8px;
+        outline: none;
+        margin-right: 2%;
+        transition: 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+        &:focus{
+            box-shadow:  0 2px 4px var(--primary-color-2);
+        }
+    }
+}

@@ -37,7 +37,7 @@ Email:
 Supervisor:
 
     //Add a supervisor type to a CLient
-    @PostMapping("/supervisor/{id}/{type}"
+    @PostMapping("/supervisor/{id}/{type}")
 
     //Get List of Supervisors
     @GetMapping("/supervisor")

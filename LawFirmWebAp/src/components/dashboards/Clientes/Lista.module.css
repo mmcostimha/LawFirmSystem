@@ -28,6 +28,7 @@
     justify-content: space-around;
     font-weight: bold;
     font-size: 18px;
+
 }
 .headerItem{
     flex: 1;
@@ -59,4 +60,10 @@
         justify-content: center;
         align-items: center;
     }
+}
+
+.emptyState{
+    width: 100%;
+    margin-left: 5%;
+    /* border: 1px solid black; */
 }

@@ -1,5 +1,15 @@
 
 services:
+
+  # Container que apenas atualiza o IP antes dos outros subirem
+  config-ip:
+    image: python:3.9-slim
+    volumes:
+      - .:/app
+    working_dir: /app
+    network_mode: "host" # Essencial para ler o IP do teu PC e não do Docker
+    command: python update_ip.py
+
   # Banco de Dados (Exemplo com PostgreSQL)
   db:
     image: postgres:15-alpine
@@ -12,8 +22,22 @@ services:
     ports:
       - "5432:5432"
     restart: always  # Adicione esta linha
-    
 
+  # PgAdmin para gerenciar o PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_ui
+    profiles:
+      - debug  # O container só sobe se você chamar o profile 'debug'
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    
   # Backend Spring Boot
   backend:
     build: ./LawFirmAPI
@@ -24,6 +48,7 @@ services:
       - DB_USER=user_admin           # Deve ser igual ao POSTGRES_USER
       - DB_PASSWORD=password123      # Deve ser igual ao POSTGRES_PASSWORD
       - EMAIL_PASSWORD=${EMAIL_PASSWORD} # Pega do seu .env local
+      - FRONTEND_URL=http://${SEU_IP_LOCAL}:5173  # Substitua pelo seu IP local
     depends_on:
       - db
     restart: always  # Adicione esta linha
@@ -31,10 +56,16 @@ services:
   # Frontend React
   frontend:
     build: ./LawFirmWebAp
+
     ports:
       - "5173:5173"
+
+    # O comando abaixo é vital para o Vite aceitar conexões da rede
+    command: npm run dev -- --host 0.0.0.0
+
     environment:
-      - VITE_SERVER_API_URL=http://localhost:8080
+      - VITE_SERVER_API_URL=http://${SEU_IP_LOCAL}:8080
+
     depends_on:
       - backend
     restart: always  # Adicione esta linha

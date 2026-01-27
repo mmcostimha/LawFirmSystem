@@ -25,7 +25,7 @@ public class TaskService {
     }
 
     public TaskDTO newClientTask(TaskDTO task){
-        System.out.println("Entrei no Service para criar");
+        //System.out.println("Entrei no Service para criar");
 
         Long clientId = task.clientId();
         //Check client
@@ -64,7 +64,7 @@ public class TaskService {
         Task task= taskOptional.get();
         task.setState(taskDTO.state());
         taskRepository.save(task);
-        System.out.println("Task"+task.toString());
+        //System.out.println("Task"+task.toString());
         return new TaskDTO(
             task.getId(),
             taskDTO.clientId(),

@@ -13,7 +13,7 @@ export default function ListElement({ params, parChecker,setClients}) {
 
 
   const [editing, setEditing] = React.useState(false);
-  const [deleting, setDeleting] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);1
   const [coporateEmail, setCoporateEmail] = React.useState("");
   const [hasEmail, setHasEmail] = React.useState(false);
 
@@ -57,7 +57,7 @@ export default function ListElement({ params, parChecker,setClients}) {
     console.warn('ListElement recebeu params inválido:', params);
     return null;
   }
-  const sensitiveKeys = ['password', 'role',"creationDate","username", "id","task"];
+  const sensitiveKeys = ['password', 'role',"creationDate","username", "id","task", "prefix"];
   // Filtra apenas os pares seguros
   const safeEntries = Object.entries(params).filter(
     ([key]) => !sensitiveKeys.includes(key)
@@ -78,13 +78,28 @@ export default function ListElement({ params, parChecker,setClients}) {
         return styles.item;
     }
   };
-  
 
+  const formatValue = (key, value) => {
+    if (!value) return "";
+    
+    // Se for a chave de telefone e for uma string/número
+    if (key.toLowerCase().includes('phone') || key.toLowerCase().includes('telefone')) {
+      const numberSpaced = value.toString().replace(/(\d{3})(\d{3})(\d{3,4})/, '$1 $2 $3');
+
+      const valStr = params.prefix+" "+ numberSpaced;
+      // Regex: Pega os primeiros 3 dígitos ($1) e o resto ($2)
+      return valStr;
+    }
+
+    return typeof value === 'object' ? JSON.stringify(value) : value.toString();
+  };
+    
   return (
     <div className={parChecker ? styles.containerPar:styles.containerImpar}>
       {safeEntries.map(([key, value]) => (
         <div key={key} className={getClassForKey(key)}>
-          {typeof value === 'object' ? JSON.stringify(value) : value?.toString()}
+          {formatValue(key, value)}
+          {/* {typeof value === 'object' ? JSON.stringify(value) : value?.toString()} */}
         </div>
       ))}
       <div className={styles.actionsField}>

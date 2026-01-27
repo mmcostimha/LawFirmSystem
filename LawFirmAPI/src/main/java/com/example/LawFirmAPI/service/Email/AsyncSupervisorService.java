@@ -1,17 +1,16 @@
 package com.example.LawFirmAPI.service.Email;
 
 import com.example.LawFirmAPI.model.Email.Email;
+import com.example.LawFirmAPI.model.Email.EmailDTO;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailRepository;
 //import com.example.LawFirmAPI.service.VaultPasswordService;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
-import jakarta.mail.Folder;
-import jakarta.mail.Message;
-import jakarta.mail.Session;
-import jakarta.mail.Store;
+import jakarta.mail.*;
 import jakarta.mail.search.ComparisonTerm;
 import jakarta.mail.search.ReceivedDateTerm;
 import jakarta.mail.search.SearchTerm;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,6 @@ public class AsyncSupervisorService {
 
     @Async
     public CompletableFuture<Void> fetchSubjectsFromLast24Hours(EmailSupervised emailSupervised){
-
         //posso vir a repetir essa funcao pois um email pode ser supervisionado por dois motivos(tipos)
         Email clientEmail = emailSupervised.getEmail();
 
@@ -102,6 +100,61 @@ public class AsyncSupervisorService {
         return CompletableFuture.completedFuture(null);
     }
 
+    public ResponseEntity<List<String>> fetchSubjectsEmailValidation(EmailDTO emailDTO) {
+        String email = emailDTO.email();
+        String clientPassword = emailDTO.password();
+        List<String> subjects = new ArrayList<>();
+
+        // 1. Determine Provider
+        String provider = determineProvider(email);
+
+        try {
+            Properties props = new Properties();
+            IMAPConfig(props, provider); // Assuming this sets imaps.host, port, etc.
+
+            Session session = Session.getInstance(props);
+
+            // Using try-with-resources isn't directly possible with Store/Folder,
+            // so we use a finally block for safety.
+            Store store = session.getStore("imaps");
+            store.connect(provider, email, clientPassword);
+
+            Folder inbox = store.getFolder("INBOX");
+            inbox.open(Folder.READ_ONLY);
+
+            // 2. Define Time Range (Last 24 Hours)
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.HOUR_OF_DAY, -24);
+            Date sinceDate = cal.getTime();
+
+            // 3. Search and Collect
+            SearchTerm recent = new ReceivedDateTerm(ComparisonTerm.GE, sinceDate);
+            Message[] messages = inbox.search(recent);
+
+            for (Message msg : messages) {
+                subjects.add(msg.getSubject());
+            }
+
+            // Clean up
+            inbox.close(false);
+            store.close();
+
+            return ResponseEntity.ok(subjects);
+
+        } catch (AuthenticationFailedException authEx) {
+            // Specific error for wrong credentials
+            return ResponseEntity.status(403).build();
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar emails de: " + email, e);
+        }
+    }
+
+    private String determineProvider(String email) {
+        if (email.contains("gmail")) return "imap.gmail.com";
+        if (email.contains("sapo")) return "imap.sapo.pt";
+        throw new IllegalArgumentException("Provedor não suportado");
+    }
+
     public void IMAPConfig(Properties props, String provider){
         // Configuração IMAP
         props.put("mail.store.protocol", "imaps");
@@ -117,14 +170,14 @@ public class AsyncSupervisorService {
             if (subject.equalsIgnoreCase(emailSupervised.getType())){
                 clientEmail.setAlarm(true);
                 emailSupervised.setActivationDate();
-                System.out.println(emailSupervised.getActivationDate());
+                //System.out.println(emailSupervised.getActivationDate());
                 emailRepository.save(clientEmail);
                 emailSupervisorRepository.save(emailSupervised);
-                System.out.println("O alarm do email "+ clientEmail.getEmail() + " foi acionado");
+                //System.out.println("O alarm do email "+ clientEmail.getEmail() + " foi acionado");
                 return;
             }
         }
-        System.out.println("Nenhum alarm acionado para o email"+ clientEmail.getEmail());
+        //System.out.println("Nenhum alarm acionado para o email"+ clientEmail.getEmail());
     }
 
 

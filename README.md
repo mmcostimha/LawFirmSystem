@@ -38,3 +38,12 @@ ESTRUTURA TÉCNICA (STACK):
 -> Frontend (ReactJS): Interface dinâmica e responsiva, utilizando estados em tempo real (WebSockets/Polling) para gerenciamento de notificações e dashboard de controle.
 
 --------------------------------
+METODO DE COFIGURAÇÃO
+
+-> Criar regra do firewall aceitando requisições na porta 5174
+
+-> Instalar o Docker.
+
+-> Clonar o repositório https://github.com/mmcostimha/LawFirmSystem.git
+
+-> Docker Compose:  docker-compose up

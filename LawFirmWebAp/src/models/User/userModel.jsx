@@ -4,6 +4,7 @@ export const userStructure = {
   name: "",
   email: "",
   phone:"",
+  prefix: "",
   role: "",
   username:"",
   password:""
@@ -12,5 +13,6 @@ export const userCreatorStructure = {
   name: "",
   email: "",
   phone:"",
+  prefix: "",
   role: "",
 }

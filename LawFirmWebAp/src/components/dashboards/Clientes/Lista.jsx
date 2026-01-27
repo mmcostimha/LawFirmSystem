@@ -40,7 +40,6 @@ export default function Lista({ itens, setItens, type}) {
         console.error('Falha ao carregar dados:', err);
       }
     }
-    // simula carregamento inicial ou recarregamento
     if (!itens || reload) {
       carregarDados();
       setReload(false);
@@ -85,20 +84,20 @@ export default function Lista({ itens, setItens, type}) {
   const hasPrev = currentPage > 0;
   const hasNext = endIndex < itensFiltred.length;
 
-  const columns = ['Name', 'Email Pessoal', 'Phone', 'Actions'];
+  const columns = ['Nome', 'Email Pessoal', 'Telefone', 'Ações'];
   const getClassForKey = (key) => {
       switch (key) {
         case 'Id':
           return headerstyles.idField;
-        case 'Name':
+        case 'Nome':
           return headerstyles.nameField;
         case 'Email Pessoal':
           return headerstyles.emailField;
-        case 'Phone':
+        case 'Telefone':
           return headerstyles.phoneField;
         case 'Username':
           return headerstyles.usernameField;
-        case 'Actions':
+        case 'Ações':
           return headerstyles.actionsField;
         default:
           return headerstyles.item;
@@ -114,7 +113,14 @@ export default function Lista({ itens, setItens, type}) {
           </div>
         ))} 
       </div>
-  
+      {
+        visibleItems.length === 0 ? (
+          <div className={styles.emptyState}>
+            <h3>Nenhum cliente encontrado!</h3>
+            <p>Verifique os filtros ou adicione novos clientes.</p>
+          </div>
+        ) : null
+      }
       <div className={styles.list} ref={containerRef}>
         {visibleItems.map((item, index) => (
           <div

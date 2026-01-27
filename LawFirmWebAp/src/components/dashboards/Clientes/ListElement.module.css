@@ -20,13 +20,13 @@
     height: 100%;
 }
 
-.idField{
+/* .idField{
     width: 5%;
     padding-left: 2%;
     overflow: hidden;
-}
+} */
 .nameField{
-    width: 25%;
+    width: 23%;
     overflow: hidden;
 
 }
@@ -36,7 +36,7 @@
 
 }
 .phoneField{
-    width: 10%;
+    width: 12%;
     overflow: hidden;
 
 }

@@ -29,19 +29,15 @@ export default function ClientForm({onClose, setClients}) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Criamos o número completo para validação e envio
-        const numeroCompleto = prefixo + formData.phone;
-
         // Se quiseres validar apenas o corpo do número (os 9 a 12 dígitos)
-        const formErrors = validateForm(formData); 
-        
+        const formErrors = validateForm(formData);    
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);
             return;
         }
 
         try {
-            const response = await apiRequest('/auth/register', 'POST', { ...formData, role: tipoConta.toLowerCase() ,phone: numeroCompleto }, token);
+            const response = await apiRequest('/auth/register', 'POST', { ...formData, role: tipoConta.toLowerCase() , prefix: prefixo }, token);
             setFormData(userCreatorStructure);
             if (!!response && tipoConta === 'client') {
                 const newClient = {
@@ -49,9 +45,12 @@ export default function ClientForm({onClose, setClients}) {
                     name: formData.name,
                     email: formData.email,
                     phone: formData.phone,
+                    prefix: prefixo,
                     role: tipoConta,
                     creationDate: response.data.creationDate
                 };
+                console.log('Usuário criado com sucesso:', newClient);
+                
                 setClients(prev => [...prev, newClient]);
             }
 
@@ -99,6 +98,7 @@ export default function ClientForm({onClose, setClients}) {
                             value={formData.phone}
                             onChange={handleChange}
                             className={errors.phone ? styles.inputError : ''}
+                            maxLength={9}
                             required
                         />
                     </div>

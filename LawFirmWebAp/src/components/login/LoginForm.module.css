@@ -28,7 +28,7 @@
 
     h1{
         color: var(--primary-color);
-        font-size: clamp(2rem, 5vw, 10rem);
+        font-size: clamp(1.7rem, 5vw, 8rem);
         margin: 4%;
     }
 
@@ -119,5 +119,32 @@
         margin: 2% 0;
         font-size: clamp(1rem, 1vw, 3rem);
         font-weight: bolder;
+    }
+}
+.rememberContainer{
+    
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    font-size: clamp(0.8rem, 0.45vw, 2rem);
+    width: 70%;
+
+    label{
+        display: flex;
+        flex-direction: row;
+        margin: 0;
+        padding: 0;
+        text-wrap: none;
+        color: var(--secundary-color);
+        font-weight: bolder;
+    }
+    .checkBox{
+        background-color: transparent;
+        border: none;
+        box-shadow: none;
+        width: 20%;
+        border: 1px solid blue;
+
     }
 }

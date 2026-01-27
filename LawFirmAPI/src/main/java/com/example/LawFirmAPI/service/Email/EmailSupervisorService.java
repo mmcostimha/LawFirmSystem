@@ -2,6 +2,7 @@ package com.example.LawFirmAPI.service.Email;
 
 import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.Email.Email;
+import com.example.LawFirmAPI.model.Email.EmailDTO;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailRepository;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
@@ -79,7 +80,8 @@ public class EmailSupervisorService {
         List<EmailSupervised> listEmail = emailSupervisorRepository.findAll();
 
         if(listEmail.isEmpty())
-            System.out.println("Dont exist supervised emails");
+            //System.out.println("Dont exist supervised emails");
+            return;
         else{
             // dispara todas as execuções em paralelo
             List<CompletableFuture<Void>> futures = listEmail.stream()
@@ -88,6 +90,12 @@ public class EmailSupervisorService {
             // espera todas terminarem antes de imprimir "Acabei"
             //CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         }
-        System.out.println("Acabei");
+        //System.out.println("Acabei");
+    }
+
+    public void checkEmail(EmailDTO email) throws Exception {
+        //asyncSupervisorService.fetchSubjectsFromLast24Hours()
+
+
     }
 }
