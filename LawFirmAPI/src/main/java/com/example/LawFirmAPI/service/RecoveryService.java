@@ -20,8 +20,12 @@ public class RecoveryService {
 
     private final UserRepository userRepository;
     private final RecoveryRepository recoveryRepository;
+
     @Value("${EMAIL_PASSWORD:}")
     private String emailPassword;
+
+    @Value("${EMAIL_USER}")
+    private String emailUser;
 
     public RecoveryService (UserRepository userRepository,RecoveryRepository recoveryRepository){
         this.userRepository = userRepository;
@@ -45,20 +49,17 @@ public class RecoveryService {
         props.put("mail.smtp.starttls.enable", "true"); // TLS obrigatório
 
         // 2. Autenticação
-        String myEmail = "testeddd@sapo.pt";
-        String myPass = emailPassword;
-
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(myEmail, myPass);
+                return new PasswordAuthentication(emailUser, emailPassword);
             }
         });
 
         try {
             // 3. Criação da mensagem
             Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(myEmail));
+            message.setFrom(new InternetAddress(emailUser));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
             message.setSubject("Código de Recuperação");
             message.setText("Olá"+user.getUsername()+"! Seu código de segurança é: "+newCode.getCode());

@@ -18,7 +18,7 @@ services:
       POSTGRES_USER: user_admin      # O nome que você escolher
       POSTGRES_PASSWORD: password123 # A senha que você escolher
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data  # Isso cria uma pasta no seu PC com os dados
+      - postgres_data:/var/lib/postgresql/data  # Isso cria uma pasta no seu PC com os dados
     ports:
       - "5432:5432"
     restart: always  # Adicione esta linha
@@ -48,6 +48,7 @@ services:
       - DB_USER=user_admin           # Deve ser igual ao POSTGRES_USER
       - DB_PASSWORD=password123      # Deve ser igual ao POSTGRES_PASSWORD
       - EMAIL_PASSWORD=${EMAIL_PASSWORD} # Pega do seu .env local
+      - EMAIL_USER=${EMAIL_USER}         # Pega do seu .env local
       - FRONTEND_URL=http://${SEU_IP_LOCAL}:5173  # Substitua pelo seu IP local
     depends_on:
       - db
@@ -70,3 +71,5 @@ services:
       - backend
     restart: always  # Adicione esta linha
     
+volumes:
+  postgres_data:
