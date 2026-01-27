@@ -51,4 +51,7 @@ METODO DE COFIGURAÇÃO
   EMAIL_PASSWORD= password do meu email 
   SEU_IP_LOCAL= ip do meu PC
 
--> Docker Compose:  docker-compose up
+-> double click no ficheiro .bat
+
+-> Nos PCs da rede: C:\Windows\System32\drivers\etc\hosts (admin):
+    ip do meu PC lawfirm
