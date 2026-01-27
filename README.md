@@ -46,4 +46,9 @@ METODO DE COFIGURAÇÃO
 
 -> Clonar o repositório https://github.com/mmcostimha/LawFirmSystem.git
 
+-> Criar um .env com:
+  EMAIL = meu email 
+  EMAIL_PASSWORD= password do meu email 
+  SEU_IP_LOCAL= ip do meu PC
+
 -> Docker Compose:  docker-compose up
