@@ -1,8 +1,7 @@
-FROM node:20-alpine
+FROM node:20-slim
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install  
 COPY . .
-# Expõe a porta padrão do Vite
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

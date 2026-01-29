@@ -1,5 +1,17 @@
 
 services:
+# Nginx - A "Porta de Entrada" do teu sistema
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_proxy
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    restart: always
 
   # Banco de Dados (Exemplo com PostgreSQL)
   db:
@@ -32,35 +44,35 @@ services:
   # Backend Spring Boot
   backend:
     build: ./LawFirmAPI
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
     environment:
       - DB_URL=jdbc:postgresql://db:5432/lawfirm_db
       - DB_USER=user_admin           # Deve ser igual ao POSTGRES_USER
       - DB_PASSWORD=password123      # Deve ser igual ao POSTGRES_PASSWORD
-      - EMAIL_PASSWORD=${EMAIL_PASSWORD} # Pega do seu .env local
-      - EMAIL_USER=${EMAIL_USER}         # Pega do seu .env local
-      - FRONTEND_URL=http://${SEU_IP_LOCAL}:5173  # Substitua pelo seu IP local
+      - EMAIL_PASSWORD=Teste123.@ # Pega do seu .env local
+      - EMAIL_USER=testeddd@sapo.pt       # Pega do seu .env local
+      - FRONTEND_URL=http://192.168.1.116  # Substitua pelo seu IP local
     depends_on:
       - db
     restart: always  # Adicione esta linha
 
   # Frontend React
   frontend:
-    build: ./LawFirmWebAp
-
-    ports:
-      - "5173:5173"
-
-    # O comando abaixo é vital para o Vite aceitar conexões da rede
-    command: npm run dev -- --host 0.0.0.0
-
+    build: 
+      context: ./LawFirmWebApp
+      dockerfile: Dockerfile
+    platform: linux/amd64
+    # ports:
+    #   - "5173:5173"
+    volumes:
+      - ./LawFirmWebApp:/app
+      - /app/node_modules  # Protege os módulos instalados no build
     environment:
-      - VITE_SERVER_API_URL=http://${SEU_IP_LOCAL}:8080
-
+      - VITE_SERVER_API_URL=http://wagneradvocacia.local/api  # Substitua pelo seu IP local
     depends_on:
       - backend
-    restart: always  # Adicione esta linha
+    restart: always
     
 volumes:
   postgres_data:

@@ -5,6 +5,6 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: true,
-    allowedHosts: ['lawfirm']
+    allowedHosts: ['wagneradvocacia.local']
   }
 })
