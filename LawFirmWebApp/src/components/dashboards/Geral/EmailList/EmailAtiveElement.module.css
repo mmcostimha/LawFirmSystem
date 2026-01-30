@@ -9,31 +9,24 @@
     background-color: var(--color-list-element-1);
     
     border-radius: 15px;
-    width: 90%;
+    width: 80%;
     height: 45px;
     margin-top: 5%;
     cursor: pointer;
     font-size: clamp(8px, 1.2vw, 16px);
-    /* border: 1px solid orange; */
+    border: 1px solid orange;
   
 }
 .tipeContainer{
     margin-left: 3%;
-    width: 25%;
-
-}
-.arrowContainer{
-    width: 5%;
-    margin-left: 3%;
-    margin-top: 3%;
-    justify-content: end;
-    align-items: end;
+    width: 20%;
+    text-align: center;
+    border-right: solid 1px black;
 }
 .emailContainer{
     margin-left: 3%;
-    width: 55%; 
+    max-width: 70%; 
     overflow-x:hidden;
-
 }
 .modalContent{
     display: flex;

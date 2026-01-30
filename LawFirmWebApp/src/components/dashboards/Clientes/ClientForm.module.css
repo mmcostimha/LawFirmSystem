@@ -29,6 +29,7 @@
     buttom{
         width: 20%;
         margin: 6%;
+        font-size: clamp(1rem, 1.2vw, 2rem);
     }
 }
 .inputContainer{
@@ -43,8 +44,7 @@
     label{
         width: 20%;
         align-items: center;
-        font-size: clamp(1rem, 1.2vw, 2rem);
-
+        font-size: clamp(1rem, 1vw, 1.5rem);
     }
     input{
         width: 70%;

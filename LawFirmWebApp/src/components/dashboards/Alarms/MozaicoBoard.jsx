@@ -28,7 +28,7 @@ export default function MozaicoBoard({ itens, setItens }) {
       try {
         const responce = await apiRequest('/api/supervisor', 'GET', null, token);
         setItens(responce.data);
-        // console.log('Dados carregados - Alarmes:', responce.data);
+        console.log('Dados carregados - Alarmes:', responce.data);
       } catch (err) {
         console.error('Falha ao carregar dados:', err);
       }
@@ -102,23 +102,16 @@ export default function MozaicoBoard({ itens, setItens }) {
       // console.log("Deleting alarm:",link)
       try {
         const responce = await apiRequest(link, 'DELETE', null, token);
-        setItens(responce.data);
         if(responce.status === 200){
-          setItens((prev) => {
-            // Se prev não for array por algum erro anterior, retorna array vazio ou o próprio prev
-            if (!Array.isArray(prev)) return []; 
-            
-            return prev.filter((i) => i.id !== item.id);
-          });
+          // console.log("Alarme deletado com sucesso:", responce.data);
+          setItens(prevItens => prevItens.filter(alarm => alarm.id !== item.id));
         }
         // console.log('Dados carregados:', responce.data);
       } catch (err) {
         console.error('Falha ao carregar dados:', err);
       }
   }
-  const setAlarm = (item) =>{
-    // console.log("seting alarm- not emplemented")
-  }
+
   return (
   <div className={styles.container} ref={containerRef}>
     {loading ? (
@@ -141,7 +134,7 @@ export default function MozaicoBoard({ itens, setItens }) {
               <MozaicoBoardElement 
                 item={item} 
                 deleteFunction={deleteAlarmFunction} 
-                setItem={setAlarm}
+                
               />
             </div>
           ))}

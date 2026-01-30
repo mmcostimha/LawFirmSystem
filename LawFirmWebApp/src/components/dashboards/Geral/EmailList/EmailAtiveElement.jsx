@@ -5,29 +5,28 @@ import styles from "./EmailAtiveElement.module.css"
 import { FaArrowRightLong } from "react-icons/fa6";
 //modals
 import Modal from "../../../Modal"
+//api
+import apiRequest from "../../../../data/apiRequest";
+//context
+import { useUser } from "../../../../context/userContext";
+//components
+import LoadingComponent from "../../../loading/LoadingComponent";
 
 export default function EmailAtiveElement({triggedEmail,removeAlert}) {
     const [modalOpen, setModalOpen] = useState(false);
 
-    const handleResolveAlert = () => {
-        // lógica para marcar o alerta como resolvido
-        // console.log(`Alerta do e-mail ${triggedEmail.email} marcado como resolvido.`);
-        setModalOpen(false);
-        // Aqui você pode adicionar lógica adicional, como atualizar o estado ou fazer uma chamada à API
 
-        // Retirar o alerta da lista ou marcar como resolvido
-        removeAlert(triggedEmail.id);
-    }   
+    const{ token } = useUser();
 
     return (
         <>
             <div className={styles.container} onClick={() => setModalOpen(!modalOpen)}>
                 <div className={styles.tipeContainer}>
-                    {triggedEmail.type}
+                    {triggedEmail.type.charAt(0).toUpperCase() + triggedEmail.type.slice(1)}
                 </div>
-                <div className={styles.arrowContainer}>
-                    <FaArrowRightLong />
-                </div>
+                {/* <div className={styles.arrowContainer}>
+                    <FaArrowRightLong  />
+                </div> */}
                 <div className={styles.emailContainer}>
                     {triggedEmail.email}
                 </div>
@@ -41,12 +40,12 @@ export default function EmailAtiveElement({triggedEmail,removeAlert}) {
                     <div className={styles.modalContentInput}>
                         <p><strong>Cliente:</strong> {triggedEmail.clientName }</p>
                         <p><strong>E-mail:</strong> {triggedEmail.email}</p>
-                        <div className={styles.modalDates}>
+                        {/* <div className={styles.modalDates}> */}
                             <p><strong>Criado:</strong>  {triggedEmail.creationData.split('T')[0]}</p>
-                            <p><strong>Acionado:</strong> {triggedEmail.dataCriation}</p>
-                        </div>
+                            {/* <p><strong>Acionado:</strong> {triggedEmail.dataCriation}</p> */}
+                        {/* </div> */}
                         <p><strong>Tipo:</strong> {triggedEmail.type}</p>
-                        <button onClick={handleResolveAlert}>Resolvido</button>
+                        <button onClick={() => setModalOpen(false)}>Voltar</button>
                     </div>
                 </div>
             </Modal>

@@ -30,11 +30,12 @@ export default function AlarmForm({onClose, setAlarms, alarms}) {
             ...prev,
             [name]: value
         }));
-        // console.log("mudando", formData)
+        console.log("mudando", formData)
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
         const novoEmailCompleto = formData.email + opcaoSelecionada;
         const clientId = filteredOptions[0]?.clientId; 
         setFormData(prev => ({
@@ -45,11 +46,13 @@ export default function AlarmForm({onClose, setAlarms, alarms}) {
             alarm.email === novoEmailCompleto && alarm.type === formData.type
         );
 
-        const validation = validateForm(formData, opcaoSelecionada);
-        if (!validation.isValid) {
-            setFormErrors(validation.errors);
-            return; // Interrompe o envio
-        }
+        // const validation = validateForm(formData);
+        // if (!validation.isValid) {
+        //     setFormErrors(validation.errors);
+        //     return; // Interrompe o envio
+        // }
+        
+        console.log("enviando", formData);
 
         if (alarmeJaExiste) {
             alert('Este alarme já existe!');

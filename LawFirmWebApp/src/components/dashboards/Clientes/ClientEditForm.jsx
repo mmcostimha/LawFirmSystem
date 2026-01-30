@@ -188,9 +188,9 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
             <div className={styles.butonsContainer}>
             {
                 hasEmail &&
-                <button className={styles.removeEmailButton} onClick={()=>{handleEmailDelete()}}>Remover Email Corporativo</button>
+                <button className={styles.removeEmailButton} onClick={(e)=>{handleEmailDelete(e)}}>Remover Email Corporativo</button>
             }
-            <button className={styles.saveButton} onClick={editClient}>Salvar Alterações</button>
+            <button className={styles.saveButton} onClick={editClient}>Salvar</button>
         </div>
 
         <Modal isOpen={newCorporateEmalView} onClose={()=>setNewCorporateEmalView(false)}>

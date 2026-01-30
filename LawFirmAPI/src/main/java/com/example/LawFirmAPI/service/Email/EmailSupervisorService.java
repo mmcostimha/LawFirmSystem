@@ -75,7 +75,7 @@ public class EmailSupervisorService {
         return ResponseEntity.ok(alarm);
     }
 
-    @Scheduled(cron = "${spring.task1.scheduling.cron}")
+    @Scheduled(cron = "${spring.task2.scheduling.cron}")
     public void checkEmails() throws Exception {
         List<EmailSupervised> listEmail = emailSupervisorRepository.findAll();
 
@@ -88,9 +88,26 @@ public class EmailSupervisorService {
                     .map(asyncSupervisorService::fetchSubjectsFromLast24Hours)
                     .toList();
             // espera todas terminarem antes de imprimir "Acabei"
-            //CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         }
         //System.out.println("Acabei");
+    }
+    public  ResponseEntity<?> forcedCheckEmails() throws Exception {
+        List<EmailSupervised> listEmail = emailSupervisorRepository.findAll();
+
+        if(listEmail.isEmpty())
+            //System.out.println("Dont exist supervised emails");
+            return ResponseEntity.ok().build() ;
+        else{
+            // dispara todas as execuções em paralelo
+            List<CompletableFuture<Void>> futures = listEmail.stream()
+                    .map(asyncSupervisorService::fetchSubjectsFromLast24Hours)
+                    .toList();
+            // espera todas terminarem antes de imprimir "Acabei"
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        }
+        //System.out.println("Acabei");
+        return ResponseEntity.ok().build();
     }
 
     public void checkEmail(EmailDTO email) throws Exception {

@@ -1,5 +1,6 @@
 package com.example.LawFirmAPI.service.Email;
 
+import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailDTO;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
@@ -13,6 +14,7 @@ import jakarta.mail.search.SearchTerm;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -30,7 +32,6 @@ public class AsyncSupervisorService {
         //this.vaultPasswordService = vaultPasswordService;
     }
 
-    @Async
     public CompletableFuture<Void> fetchSubjectsFromLast24Hours(EmailSupervised emailSupervised){
         //posso vir a repetir essa funcao pois um email pode ser supervisionado por dois motivos(tipos)
         Email clientEmail = emailSupervised.getEmail();
@@ -39,8 +40,6 @@ public class AsyncSupervisorService {
             System.out.println("Alarm ja acionado do email "+ clientEmail.getEmail());
             return CompletableFuture.completedFuture(null);
         }
-
-
         String email = clientEmail.getEmail();
         String clientPassword = clientEmail.getPassword();
         //String clientPassword = vaultPasswordService.getEmailPassword(clientEmail.getClient_id());
@@ -170,7 +169,7 @@ public class AsyncSupervisorService {
             if (subject.equalsIgnoreCase(emailSupervised.getType())){
                 clientEmail.setAlarm(true);
                 emailSupervised.setActivationDate();
-                //System.out.println(emailSupervised.getActivationDate());
+                System.out.println("hsiadfbaslkjb"+emailSupervised.getActivationDate());
                 emailRepository.save(clientEmail);
                 emailSupervisorRepository.save(emailSupervised);
                 //System.out.println("O alarm do email "+ clientEmail.getEmail() + " foi acionado");

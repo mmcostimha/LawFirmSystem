@@ -26,7 +26,7 @@
     label{
         width: 30%;
         align-items: center;
-        font-size: clamp(1rem, 1.2vw, 2rem);
+        font-size: clamp(1rem, 1vw, 2rem);
         
 
     }
@@ -46,7 +46,7 @@
         }
     }
     p{
-        font-size: clamp(1rem, 1.2vw, 2rem);
+        font-size: clamp(1rem, 1vw, 2rem);
         margin: 0;
         padding: 0px;
 
@@ -56,6 +56,7 @@
         width: 100;
         aspect-ratio: none;
         padding: 10px;
+        font-size: clamp(1rem, 1vw, 2rem);
     }
 }
 .titleContainer{
@@ -92,7 +93,7 @@
         height: 70%;
         margin: 0px 0px;
         padding: 10px;
-        font-size: clamp(1rem, 1vw, 2rem);
+        /* font-size: clamp(1rem, 1vw, 2rem); */
     }
 }
 .phoneInputGroup{
@@ -118,4 +119,7 @@
         padding: 10px;
         
     }
+}
+.removeEmailButton{
+    font-size: clamp(1rem, 0.5vw, 2rem);
 }

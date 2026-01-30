@@ -34,7 +34,7 @@ export default function Recovery({setPassRecoveryFormVisible}) {
             
         }
     }
-     const setPassword = async (e)=>{
+    const setPassword = async (e)=>{
         
         e.preventDefault()
         const link = "/auth/recovery/password/" + userId + "/" + pass;
@@ -113,8 +113,7 @@ export default function Recovery({setPassRecoveryFormVisible}) {
                                 onChange={(e) => setPass(e.target.value)}
                             />
                             <button type="submit">Confirmar</button>
-                        </form>
-                        
+                        </form>                        
                     :
                         <form className={styles.formContainer} onSubmit={(e) => confirmCode(e)}>
                             <div className={styles.digit}>
@@ -147,7 +146,12 @@ export default function Recovery({setPassRecoveryFormVisible}) {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <button type="submit">Enviar</button>
+                        <div className={styles.buttonContainer}>
+
+                            <button onClick={() => setPassRecoveryFormVisible(false)}>Back</button>
+                            <button type="submit">Enviar</button>
+
+                        </div>
                     </form>      
                 </>
             }

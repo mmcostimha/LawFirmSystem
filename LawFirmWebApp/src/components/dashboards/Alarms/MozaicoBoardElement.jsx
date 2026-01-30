@@ -7,7 +7,7 @@ import { LuTrash } from "react-icons/lu";
 import { GiPlainCircle } from "react-icons/gi";
 
 
-export default function MozaicoBoardElement({item, setItem ,deleteFunction}){
+export default function MozaicoBoardElement({item ,deleteFunction}){
 
     function handletStateIconColor(){
         // console.log("Alarm recebido",item)
@@ -52,7 +52,10 @@ export default function MozaicoBoardElement({item, setItem ,deleteFunction}){
             {/* <p><strong>ID:</strong> {item.id}</p>   */}
             <p><strong>Email:</strong> {item.email}</p>
             <p><strong>Tipo:</strong> {item.type}</p>  
-            <p><strong>Recebido:</strong> {formatada}</p>
+            {/* {
+                !(item.state === "false" || item.state === false) &&
+                <p><strong>Recebido:</strong> {item.activationData}</p>
+            } */}
             
         </div>
         <div className={styles.footer}>

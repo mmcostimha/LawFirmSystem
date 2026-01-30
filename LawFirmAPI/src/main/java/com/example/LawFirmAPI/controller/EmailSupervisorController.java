@@ -96,6 +96,7 @@ public class EmailSupervisorController {
 
         for (EmailSupervised emailSpv : emailSupervisedList) {
             String clientName = userService.getById(emailSpv.getEmail().getClient_id()).getName();
+//            System.out.println("Data de acinamento: "+emailSpv.getActivationDate());
             if (emailSpv.getEmail().getAlarm()){
                 // Supondo que EmailActivatedDTO tenha um construtor que recebe EmailSupervised
                 EmailActivatedDTO dto = new EmailActivatedDTO(
@@ -119,5 +120,10 @@ public class EmailSupervisorController {
     public  ResponseEntity<?> emailValidator(@RequestBody EmailDTO email){
 
         return asyncSupervisorService.fetchSubjectsEmailValidation(email);
+    }
+
+    @PostMapping("/supervisor/check")
+    public  ResponseEntity<?> checkEmails() throws Exception {
+        return emailSupervisorService.forcedCheckEmails();
     }
 ;}

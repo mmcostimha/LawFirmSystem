@@ -1,4 +1,5 @@
 .container{
+    position: relative;
     display: flex;
     flex-direction: column;
     width: 30%;
@@ -26,6 +27,10 @@
     border-bottom: 2px solid var(--backgroud-color);
 }
 
-/* .loadingIcon{
-
-} */
+.checkEmailsButton{
+    position: absolute;
+    bottom: 5%;
+    right: 8%;
+    /* max-width: 25%; */
+    min-width: 100px;
+}

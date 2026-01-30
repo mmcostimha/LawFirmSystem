@@ -44,15 +44,14 @@ services:
   # Backend Spring Boot
   backend:
     build: ./LawFirmAPI
-    # ports:
-    #   - "8080:8080"
+    ports:
+      - "8080:8080"
     environment:
       - DB_URL=jdbc:postgresql://db:5432/lawfirm_db
       - DB_USER=user_admin           # Deve ser igual ao POSTGRES_USER
       - DB_PASSWORD=password123      # Deve ser igual ao POSTGRES_PASSWORD
       - EMAIL_PASSWORD=Teste123.@ # Pega do seu .env local
       - EMAIL_USER=testeddd@sapo.pt       # Pega do seu .env local
-      - FRONTEND_URL=http://192.168.1.116  # Substitua pelo seu IP local
     depends_on:
       - db
     restart: always  # Adicione esta linha
