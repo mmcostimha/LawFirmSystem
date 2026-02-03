@@ -35,6 +35,7 @@ export default function ClientEditForm({params, setClients,coporateEmail,setHasE
     }
     const handleChange = (e) => {
         const { name, value } = e.target;
+        
         setNewData({ ...newData, [name]: value });
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: null }));

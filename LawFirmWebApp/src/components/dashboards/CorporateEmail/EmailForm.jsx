@@ -19,12 +19,13 @@ export default function EmailForm({onClose, setCoporateEmail,setHasEmail, client
     const handleChange = (e) => {
         const { name, value } = e.target;
         
+        // Se o campo for o email, transformamos tudo em minúsculas
+        const finalValue = name === "email" ? value.toLowerCase() : value;
+
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: finalValue
         }));
-        // console.log(formData)
-        
     };
 
     const handleSubmit = async (e) => {

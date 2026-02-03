@@ -48,10 +48,10 @@ export default function MozaicoBoard({ itens, setItens }) {
         const itemWidth = itemRef.current.clientWidth;
         const itemHeight = itemRef.current.clientHeight;
 
-        const heithdiv = Math.floor(containerHeight / itemHeight);
-        const widthdiv = Math.floor(containerWidth / itemWidth);
+        const heithdiv = Math.floor(containerHeight / (itemHeight*1.1));
+        const widthdiv = Math.floor(containerWidth / (itemWidth*1.1));
         const possible = heithdiv * widthdiv;
-        // console.log(containerWidth,containerHeight,itemHeight,itemWidth,widthdiv,heithdiv,possible);
+        console.log(containerWidth,containerHeight,itemHeight,itemWidth,widthdiv,heithdiv,possible);
         setNumberOfItems(possible > 0 ? possible : 1);
       }
     }

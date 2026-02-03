@@ -24,46 +24,47 @@ export default  function EmailAtiveList(){
         setEmails((prevEmails) => prevEmails.filter((email) => email.id !== id));
     }
 
+    // 1. Isolamos a função de carregar dados
+    const loadData = async () => {
+        if (!token) return;
+        
+        const link = '/api/supervisor/actioned';
+        try {
+            const response = await apiRequest(link, 'GET', null, token);
+            if (response.status === 200) {
+                setEmails(response.data || []);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar emails acionados:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
     
     useEffect(() => {
-        // Simulate fetching data from an API
-        const loadData = async () => {
-            const link = '/api/supervisor/actioned';
-            if(!token){
-                return;
-            }
-            try{
-                const response = await apiRequest(link, 'GET', null, token);
-                if(response.status === 200){
-                    if(response.data.length > 0){
-                        // console.log("Emails acionados carregados com sucesso:", response.data);
-                        setEmails(response.data);
-                    }else{
-                        // console.log("Nenhum email acionado encontrado.");
-                        setEmails([]);
-                    }
-                    setLoading(false)
-                }
-            }
-            catch(error){
-                console.error("Erro ao buscar emails acionados:", error);
-            }
-        }
         loadData();
-    }, [token, chekingEmails]);
+    }, [token]);
 
     const handleCheckEmails = async (e) => {
         e.preventDefault();
+        if (chekingEmails) return; // Evita cliques duplos acidentais
         setChekingEmails(true);
+
         const link = "/api/supervisor/check";
         try {
-            const response =apiRequest(link, 'POST', {}, token);
-            // Aqui você pode atualizar o estado ou fazer algo com a resposta
+            const response =await apiRequest(link, 'POST', {}, token);
+            if (response.status === 200) {
+                console.log("Verificação concluída.");
+                // 4. Após o POST com sucesso, chamamos o GET manualmente
+                await loadData(); 
+            }
         } catch (error) {
             console.error("Error checking emails:", error);
+        }finally {
+            setChekingEmails(false);
         }
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Simula um atraso de 2 segundos
-        setChekingEmails(false);
+        // await new Promise((resolve) => setTimeout(resolve, 2000)); // Simula um atraso de 2 segundos
+       
         
     };
 

@@ -27,12 +27,15 @@
     justify-content: center;
     align-items: start;
     height: 60%;
+    width: 85%;
     /* border: 1px solid lightgray; */
     font-size: clamp(0.9rem,3px,3rem);
-    margin-top: 3%;
+    /* margin-top: 3%; */
+    overflow-x: hidden;
     p{
         margin: 0;
         padding: 0;
+        white-space: nowrap;
     }
 }
 .footer{
