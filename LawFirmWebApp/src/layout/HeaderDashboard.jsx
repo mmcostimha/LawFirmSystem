@@ -41,6 +41,8 @@ export default function HeaderDashboard({page}) {
         return "Nome, telemovel ou email pessoal"
       case 'Clientes':
         return "Nome, telemovel ou email pessoal"
+      case 'Visão geral':
+        return "Nome, descrição da tarefa"
       default:
         return "Barra de perquisa..."
     }

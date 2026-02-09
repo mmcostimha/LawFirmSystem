@@ -13,6 +13,7 @@ import { taskModel } from "../../../../models/User/taskModel";
 import apiRequest from "../../../../data/apiRequest";
 //context
 import { useUser } from "../../../../context/userContext";
+import { useFilter } from "../../../../context/filterContext.jsx";
 
 export default function ToDoList(){
 
@@ -22,6 +23,7 @@ export default function ToDoList(){
     const [isLoadingNewTask, setIsLoadingNewTask] = useState(false);
     const sortedItems = [...items].sort((a, b) => new Date(b.data) - new Date(a.data));
     const { token, id } = useUser();
+    const { searchTerm } = useFilter();
     const agrupado = sortedItems.reduce((acc, item) => {
         // Extrai apenas "2026-01-09" da string completa
         const dataApenas = item.creationDate.split('T')[0]; 
@@ -29,6 +31,7 @@ export default function ToDoList(){
         acc[dataApenas].push(item);
         return acc;
     }, {});
+    console.log("Agrupado: ", agrupado);
 
     const formatTaskText = (text) => {
         if (!text) return "";
@@ -51,7 +54,7 @@ export default function ToDoList(){
             ...task,
             task: formatTaskText(task.task), // Aplica a formatação aqui
             creationDate: new Date().toISOString(),
-            clientId: id
+            clientId: id,
         };
 
         setIsLoadingNewTask(true); // Garante que o loading começa aqui
@@ -59,6 +62,7 @@ export default function ToDoList(){
         try {
             const responce = await apiRequest('/api/task', 'POST', formattedTask, token);
             if (responce.status === 200) {
+                // console.log('Task adicionada com sucesso:', responce.data);
                 setItems(prev => [...prev, responce.data]);
                 setNewTask(taskModel); // Limpa o input apenas após o sucesso
             }
@@ -75,11 +79,12 @@ export default function ToDoList(){
             if (!token || !id) return;
             //chamada API aqui
             try {
-                const link = "/api/task/" + id;
+                // const link = "/api/task/" + id;
+                const link = "/api/task";
                 const responce = await apiRequest(link, 'GET', null, token);
                 
                 if(responce.status === 200){
-                    // console.log('Lista de Task: ',responce.data);
+                    console.log('Lista de Task: ',responce.data);
                     setItems(responce.data);
                     setLoading(false);
                 }
@@ -87,7 +92,6 @@ export default function ToDoList(){
                 console.error('Falha ao carregar dados:', err);
             }
         }
-
         loadData();
     }, [token, id]);
 
@@ -98,6 +102,27 @@ export default function ToDoList(){
             addTask(newTask);
         }
     }
+    const itensFiltred = Object.entries(agrupado).reduce((acc, [data, tarefas]) => {
+    
+        // Filtramos o array de tarefas para esta data específica
+        const filtradas = tarefas.filter(item => {
+            const termo = searchTerm.toLowerCase();
+            
+            // Ajustei para 'task', que é o que aparece no seu console log
+            return (
+                item.task?.toLowerCase().includes(termo) ||
+                item.taskOwner?.toLowerCase().includes(termo)
+                // Adicione item.name ou item.phone se eles existirem dentro do objeto da tarefa
+            );
+        });
+
+        // Só adicionamos a data ao resultado se houver alguma tarefa que passou no filtro
+        if (filtradas.length > 0) {
+            acc[data] = filtradas;
+        }
+
+        return acc;
+    }, {});
 
     return <div className={styles.container}>
         <div className={styles.addContentContainer}>
@@ -126,7 +151,7 @@ export default function ToDoList(){
         ) : (
             <div className={styles.ListContainer}>
                 <div className={styles.itemsContainer}>
-                    {Object.entries(agrupado).map(([data, tasks], index) => (
+                    {Object.entries(itensFiltred).map(([data, tasks], index) => (
                         <ListItems 
                             key={index} 
                             data={data} 

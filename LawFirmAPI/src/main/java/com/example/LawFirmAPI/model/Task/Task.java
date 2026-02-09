@@ -61,4 +61,7 @@ public class Task {
         this.state = state;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

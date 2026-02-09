@@ -3,8 +3,6 @@ import { useState } from "react";
 import styles from "./ListItems.module.css"
 //icons
 import { FaTrash, FaRegEdit} from "react-icons/fa";
-import { FiCheck } from "react-icons/fi";
-import { FaCheckDouble } from "react-icons/fa6";
 import { MdOutlineCheckBox,MdOutlineCheckBoxOutlineBlank } from "react-icons/md";
 //api
 import apiRequest from "../../../../data/apiRequest";
@@ -14,9 +12,9 @@ import { useUser } from "../../../../context/userContext";
 
 export default function ListItem({tasks, setTasks,data}){
     
-    const { token } = useUser();
+    const { token, id } = useUser();
 
-    async function alterarEstado(task) {
+    async function alterarEstado(task) {  
         // console.log('Alterando estado da task:', task);
         //faça a chamada para o backend aqui para atualizar o estado da tarefa ⚠️⚠️⚠️
         const link = '/api/task';
@@ -24,11 +22,11 @@ export default function ListItem({tasks, setTasks,data}){
             const responce = await apiRequest(link, 'PUT', task, token);
 
             if (responce.status == 200) {
-                // console.log('Estado da task alterado com sucesso:', responce.data);
+                console.log('Estado da task alterado com sucesso:', responce.data);
                 setTasks(prev =>
                     prev.map(t =>
                         t.id === task.id
-                            ? { ...t, state: t.state === false ? true : false }
+                            ? { ...t, state: t.state= responce.data.state }
                             : t
                     )
                 );
@@ -71,15 +69,19 @@ export default function ListItem({tasks, setTasks,data}){
                 key={task.id}
                 className={styles.taskContainer}
             >
+                <div className={styles.taskOwnerContainer}>
+                    {task.taskOwner}
+                </div>
                 <div className={styles.textContainer} style={
                     {
-                        textDecoration: (task.state === "concluido") ? "line-through" : "none",
+                        textDecoration: (task.state === true) ? "line-through" : "none",
                         color: (task.state === true) ? "gray" : "black"
                     }
                 }>
                     {task.task}
                 </div>
-                <div className={styles.actionsContainer} >
+                {
+                    task.clientId == id && <div className={styles.actionsContainer} >
                     <div className={styles.editIcon} onClick={()=>alterarEstado(task) }>
                          {
                             task.state === true ? <MdOutlineCheckBox /> : <MdOutlineCheckBoxOutlineBlank />
@@ -93,6 +95,8 @@ export default function ListItem({tasks, setTasks,data}){
                     </div>
                    
                 </div>
+                }
+                
             </div>
         ))}
     </div>

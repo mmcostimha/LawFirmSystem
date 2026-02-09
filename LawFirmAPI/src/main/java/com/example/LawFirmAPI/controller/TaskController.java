@@ -2,6 +2,7 @@ package com.example.LawFirmAPI.controller;
 
 
 import com.example.LawFirmAPI.model.Task.Task;
+import com.example.LawFirmAPI.model.Task.TaskCompleteDTO;
 import com.example.LawFirmAPI.model.Task.TaskDTO;
 import com.example.LawFirmAPI.service.Task.TaskService;
 import com.example.LawFirmAPI.service.UserService;
@@ -23,7 +24,7 @@ public class TaskController {
     }
 
     @PostMapping("/task")
-    public TaskDTO newClientTask(@RequestBody TaskDTO taskDTO){
+    public TaskCompleteDTO newClientTask(@RequestBody TaskDTO taskDTO){
         //System.out.println("Creating Task: "+ taskDTO.task() + " for client "+ taskDTO.clientId());
         //System.out.println(".>"+ taskDTO.toString());
         return taskService.newClientTask(taskDTO);
@@ -34,9 +35,14 @@ public class TaskController {
         //System.out.println("Getting Tasks of client:"+ clientId);
         return taskService.getClientTask(clientId);
     }
+    @GetMapping("/task")
+    public List<TaskCompleteDTO> getTasks(){
+        return taskService.getAllTask();
+    }
     @PutMapping("/task")
-    public TaskDTO setTask(@RequestBody TaskDTO taskDTO){
+    public TaskCompleteDTO setTask(@RequestBody TaskDTO taskDTO){
         //System.out.println("Setting Tasks of client:");
+
         return taskService.setTaskById(taskDTO);
     }
 

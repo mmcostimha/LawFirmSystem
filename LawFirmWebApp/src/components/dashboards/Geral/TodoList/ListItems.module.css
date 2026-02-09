@@ -30,6 +30,8 @@
     border-radius: 15px;
     padding-left: 3%;
     background-color: var(--color-list-element-1);
+    /* border: 1px solid black; */
+
 }
 .taskContainer2{
     display: flex;
@@ -41,26 +43,48 @@
     border-radius: 15px;
     padding-left: 3%;
     background-color: var(--color-list-element-1);
+    /* border: 1px solid black; */
+
 
 }
 .textContainer{
     width: 90%;
     min-height: 36px;
     align-content: center;
+    padding-left: 3%;
+    padding-right: 1%;
+    border-left: 1px solid gray;
+    /* border: 1px solid blue; */
 
-    text-decoration: line-through;
 }
 .actionsContainer{
     width: 10%;
-    height: 40px;
+    height: 45px;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
+    /* border: 1px solid green; */
+
 }
 .editIcon{
     cursor: pointer;
     &:hover{
         transform: scale(0.9);
     }
+}
+.taskOwnerContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    padding: 0;
+    margin: 0;
+    /* border: 1px solid red; */
+    text-wrap: none;
+    height: 45px;
+    width: 10%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    
 }

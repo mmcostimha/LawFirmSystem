@@ -23,7 +23,7 @@ export default function LoginFormComponent({setPassRecoveryFormVisible}) {
         // Verificar se há credenciais salvas no localStorage
         const savedUsername = localStorage.getItem('savedUsername');
         const savedPassword = localStorage.getItem('savedPassword');
-        console.log("Saved credentials:", { savedUsername, savedPassword });
+        // console.log("Saved credentials:", { savedUsername, savedPassword });
         if (savedUsername && savedPassword) {
             setUserLogin(prev => ({ ...prev, username: savedUsername, password: savedPassword }));
             // setRememberMe(true);
