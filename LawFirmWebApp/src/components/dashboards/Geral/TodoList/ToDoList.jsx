@@ -21,7 +21,7 @@ export default function ToDoList(){
     const [newTask, setNewTask] = useState(taskModel);
     const [loading , setLoading] = useState(true);
     const [isLoadingNewTask, setIsLoadingNewTask] = useState(false);
-    const sortedItems = [...items].sort((a, b) => new Date(b.data) - new Date(a.data));
+    const sortedItems = [...items].sort((a, b) => new Date(b.data) - new Date(a.data));// garante a ordem das tarefas nos dias
     const { token, id } = useUser();
     const { searchTerm } = useFilter();
     const agrupado = sortedItems.reduce((acc, item) => {
@@ -31,7 +31,7 @@ export default function ToDoList(){
         acc[dataApenas].push(item);
         return acc;
     }, {});
-    console.log("Agrupado: ", agrupado);
+    console.log("Agrupado1: ", agrupado);
 
     const formatTaskText = (text) => {
         if (!text) return "";
@@ -124,6 +124,8 @@ export default function ToDoList(){
         return acc;
     }, {});
 
+    const datasOrdenadas = Object.keys(itensFiltred).sort((a, b) => new Date(a) - new Date(b));// garante a ordem dos blocos conforme o dia
+
     return <div className={styles.container}>
         <div className={styles.addContentContainer}>
             <input type="text" placeholder="Adicionar nova tarefa..." value={newTask.task} onKeyDown={handleEnter} onChange={e => setNewTask(prev => ({ ...prev, task: e.target.value}))}/>
@@ -151,11 +153,11 @@ export default function ToDoList(){
         ) : (
             <div className={styles.ListContainer}>
                 <div className={styles.itemsContainer}>
-                    {Object.entries(itensFiltred).map(([data, tasks], index) => (
+                    {datasOrdenadas.map((data, index) => (
                         <ListItems 
-                            key={index} 
+                            key={data} // Melhor usar a data como key do que o index
                             data={data} 
-                            tasks={tasks} 
+                            tasks={itensFiltred[data]} 
                             setTasks={setItems} 
                             par={index % 2} 
                         />

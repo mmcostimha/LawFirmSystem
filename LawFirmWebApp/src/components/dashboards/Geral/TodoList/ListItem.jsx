@@ -31,14 +31,11 @@ export default function ListItem({tasks, setTasks,data}){
                     )
                 );
             }
-            
         }
         catch (err) {
             console.error('Falha ao alterar estado da task:', err);
             return;
         }
-
-
     }
     async function deleteTask(task) {
         //faça a chamada para o backend aqui para atualizar o estado da tarefa 
