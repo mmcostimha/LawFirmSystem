@@ -44,7 +44,7 @@ public class AsyncSupervisorService {
         String clientPassword = clientEmail.getPassword();
         //String clientPassword = vaultPasswordService.getEmailPassword(clientEmail.getClient_id());
 
-        List<String> subjects = new ArrayList<>();
+        List<String> senders = new ArrayList<>();
 
         String provider = "";
         if (email.contains("gmail")) {
@@ -82,7 +82,8 @@ public class AsyncSupervisorService {
             Message[] messages = inbox.search(recent);
 
             for (Message msg : messages) {
-                subjects.add(msg.getSubject());
+                Address[] in = msg.getFrom();
+                senders.add(in[0].toString());
             }
 
             inbox.close(false);
@@ -95,7 +96,7 @@ public class AsyncSupervisorService {
         catch (Exception e) {
             throw new RuntimeException("Erro ao buscar emails do email " + clientEmail.getEmail(), e);
         }
-        setClientAlarm(clientEmail, subjects, emailSupervised);
+        setClientAlarm(clientEmail, senders, emailSupervised);
         return CompletableFuture.completedFuture(null);
     }
 
@@ -166,17 +167,18 @@ public class AsyncSupervisorService {
 
     public void setClientAlarm(Email clientEmail,List<String> subjects,EmailSupervised emailSupervised){
         for(String subject : subjects){
-            if (subject.equalsIgnoreCase(emailSupervised.getType())){
+            System.out.println("email: "+subject);
+//            if (subject.equalsIgnoreCase()){
+            if (subject.contains(emailSupervised.getType())){
                 clientEmail.setAlarm(true);
                 emailSupervised.setActivationDate();
-                System.out.println("hsiadfbaslkjb"+emailSupervised.getActivationDate());
                 emailRepository.save(clientEmail);
                 emailSupervisorRepository.save(emailSupervised);
-                //System.out.println("O alarm do email "+ clientEmail.getEmail() + " foi acionado");
+                System.out.println("O alarm do email "+ clientEmail.getEmail() + " foi acionado");
                 return;
             }
         }
-        //System.out.println("Nenhum alarm acionado para o email"+ clientEmail.getEmail());
+        System.out.println("Nenhum alarm acionado para o email"+ clientEmail.getEmail());
     }
 
 
