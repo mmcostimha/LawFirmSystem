@@ -24,7 +24,7 @@ Painel administrativo que exibe o status das comunicações e pendências, permi
 ---------------------------------------------------------------------------
 IMPACTO GERADO:
 
--> Economia de Tempo: Redução de 100% no tempo gasto em triagem manual (economia média de 40 minutos diários por administrador).
+-> Economia de Tempo: Redução de 80% no tempo gasto em triagem manual (economia média de 40 minutos diários por administrador).
 
 -> Redução de Erro Humano: Garantia de que nenhuma resposta de autoridades ou prazos críticos passem despercebidos.
 
