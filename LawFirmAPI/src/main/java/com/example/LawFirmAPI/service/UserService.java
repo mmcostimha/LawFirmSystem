@@ -24,7 +24,6 @@ public class UserService {
         //this.vaultPasswordService=vaultPasswordService;
     }
 
-
     public User newUser(UserDTO userRequest){
         String encryptedPassword = passwordEncoder.encode(userRequest.password());
         //System.out.println("Prefixo "+userRequest.prefix());
@@ -41,9 +40,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
     public User getByUsername(String username){
-        return userRepository.findByUsername(username);
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty())
+            throw  new ResourceNotFound("User "+ username +" dont exist.");
+        return optionalUser.get();
     }
 
     public User getById(Long id){
@@ -52,18 +53,21 @@ public class UserService {
            throw  new ResourceNotFound("User "+ id +" dont exist.");
         return userOptional.get();
     }
+
     public List<User> getClientsList(){
         return userRepository.findByRole("client");
     }
+
     public List<User> getAdminsList() {
         return userRepository.findByRole("admin");
     }
 
     public User changeUser(UserDTO newUser){
-        User user = userRepository.findByUsername(newUser.username());
-
+        Optional<User> op_user = userRepository.findByUsername(newUser.username());
+        if (op_user.isEmpty())
+            throw  new ResourceNotFound("User "+ newUser.username() +" dont exist.");
+        User user = op_user.get();
         user.setUser(newUser);
-
         return userRepository.save(user);
     }
 
@@ -79,6 +83,7 @@ public class UserService {
 
         return ResponseEntity.ok().build();
     }
+
     public String generateSecurePassword(String[] names ) {
         String fistPart ="";
         int length = 10 - names.length-1;

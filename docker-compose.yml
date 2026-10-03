@@ -11,7 +11,7 @@ services:
     depends_on:
       - frontend
       - backend
-    restart: always
+    # restart: always
 
   # Banco de Dados (Exemplo com PostgreSQL)
   db:
@@ -24,7 +24,7 @@ services:
       - postgres_data:/var/lib/postgresql/data  # Isso cria uma pasta no seu PC com os dados
     ports:
       - "5432:5432"
-    restart: always  # Adicione esta linha
+    # restart: always  # Adicione esta linha
 
   # PgAdmin para gerenciar o PostgreSQL
   pgadmin:
@@ -32,7 +32,7 @@ services:
     container_name: pgadmin_ui
     profiles:
       - debug  # O container só sobe se você chamar o profile 'debug'
-    restart: always
+    # restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@gmail.com
       PGADMIN_DEFAULT_PASSWORD: admin
@@ -55,7 +55,7 @@ services:
       - EMAIL_USER=testeddd@sapo.pt       # Pega do seu .env local
     depends_on:
       - db
-    restart: always  # Adicione esta linha
+    # restart: always  # Adicione esta linha
 
   # Frontend React
   frontend:
@@ -72,7 +72,7 @@ services:
       - VITE_SERVER_API_URL=http://wagneradvocacia.local/api  # Substitua pelo seu IP local
     depends_on:
       - backend
-    restart: always
+    # restart: always
     
 volumes:
   postgres_data:
