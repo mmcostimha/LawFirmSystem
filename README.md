@@ -51,7 +51,7 @@ METODO DE COFIGURAÇÃO
   EMAIL_PASSWORD= password do meu email 
   SEU_IP_LOCAL= ip do meu PC
 
--> double click no ficheiro .bat
+-> docker compose up / docker compose --profile debug up -d (para debug da db)
 
 -> Nos PCs da rede: C:\Windows\System32\drivers\etc\hosts (admin):
     ip do meu PC lawfirm

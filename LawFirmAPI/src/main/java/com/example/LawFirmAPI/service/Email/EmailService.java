@@ -51,7 +51,11 @@ public class EmailService {
         return emailRepository.save(email);
     }
     public Email getEmailByClientUsername(String username){
-        User user = userRepository.findByUsername(username);
+        Optional<User> op_user = userRepository.findByUsername(username);
+        if (op_user.isEmpty())
+                throw  new ResourceNotFound("User "+ username +" dont exist.");
+
+        User user = op_user.get();
         Email email = emailRepository.findByUser_Id(user.getId());
         //System.out.println("EMAIL ENCONTRADO: " + email.getEmail());
         return email;
