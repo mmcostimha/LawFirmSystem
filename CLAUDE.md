@@ -43,28 +43,29 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#26, com lab
 - Auditoria do código (ver abaixo).
 - Kanban criado com 26 issues.
 - JaCoCo adicionado e cobertura medida.
+- SonarQube no compose (profile `quality`), documentado em `docs/QUALIDADE.md` (na branch `chore/ferramentas-qualidade`). Primeira análise feita a 5 Out.
+- ESLint do frontend medido.
 
 **Branches:**
 | Branch | Conteúdo | No GitHub |
 |---|---|---|
 | `chore/testes-iniciais` | `UserRepositoryTest` (H2) + `UserServiceTest` (Mockito) | ✅ |
-| `chore/ferramentas-qualidade` | JaCoCo no `pom.xml`. Falta adicionar o SonarQube ao compose | ✅ |
-| `docs/auditoria-dia1` | Este `CLAUDE.md`. Falta o `docs/AUDITORIA.md` | — |
+| `chore/ferramentas-qualidade` | JaCoCo no `pom.xml`, SonarQube no compose, `docs/QUALIDADE.md` | ✅ |
+| `docs/auditoria-dia1` | Este `CLAUDE.md`. Falta o `docs/AUDITORIA.md` | ✅ |
+
+As branches estão isoladas: a `chore/ferramentas-qualidade` não tem os testes da `chore/testes-iniciais`. Por isso a análise Sonar deu 0% de cobertura, que é o verdadeiro estado da `main`.
 
 **Próximos passos do Dia 1:**
 1. ⚠️ **Issue #1, urgente:** mudar a password da conta de e-mail que esteve no histórico do Git e verificar se a instância RDS antiga ainda existe.
-2. Na branch `chore/ferramentas-qualidade`, adicionar o SonarQube ao `docker-compose.yml`:
-   - serviço `sonarqube`, imagem `sonarqube:community`, porta 9000;
-   - **profile `quality`** e volumes nomeados `sonarqube_data`, `sonarqube_extensions`, `sonarqube_logs`;
-   - sem `restart: always`.
-3. Correr a análise Sonar e anotar Security, Reliability, Maintainability (smells), Hotspots, Duplications e Technical Debt (separador **Overall Code**).
-4. Contar erros e warnings do `npm run lint` no frontend.
-5. Medir as queries:
+2. ⚠️ Revogar o token do SonarQube, que foi exposto (*My Account → Security*).
+3. Explorar no Sonar as 3 issues de Security e as de Reliability de severidade alta, e ligá-las aos problemas da auditoria (sem corrigir nada ainda).
+4. Contar os segredos no código.
+5. Reproduzir alertas duplicados: criar o mesmo alarme 2× e contar as linhas na BD.
+6. Medir as queries:
    - criar dados de teste (~50 clientes, ~100 alarmes);
    - ativar `hibernate.generate_statistics` só localmente;
    - medir o tempo com `curl -w "%{time_total}"` (média de 5) e correr `EXPLAIN ANALYZE`;
    - endpoints: lista de alarmes do supervisor, lista de e-mails, lista de tarefas.
-6. Reproduzir alertas duplicados (criar o mesmo alarme 2×) e contar segredos no código.
 7. Escrever `docs/AUDITORIA.md` (checklist + prioridades + tabela antes/depois) e abrir PR.
 
 ## Checklist de auditoria (resultado)
@@ -111,14 +112,34 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#26, com lab
 ## Métricas "antes" vs "depois"
 | Métrica | Antes (Dia 1) | Depois (Dia 15) |
 |---|---|---|
-| Cobertura backend: linhas | **9,9%** (62/627) | |
-| Cobertura backend: branches | **2,5%** (2/80) | |
-| Testes backend | 8 (7 ✅, 1 ❌ `contextLoads`) | |
-| Testes frontend | 0 | |
-| Code smells (Sonar) | por medir | |
+| Cobertura backend: linhas | **0%** na `main` (0/626). Com os testes iniciais: 9,9% (62/627) | |
+| Cobertura backend: branches | **0%** na `main` (0/80). Com os testes iniciais: 2,5% (2/80) | |
+| Testes backend | **1** na `main`, que falha (`contextLoads`). Com os testes iniciais: 8 (7 ✅, 1 ❌) | |
+| Testes frontend | **0** | |
+| Sonar: Security | **3 issues, nota D** | |
+| Sonar: Reliability | **12 issues, nota D** | |
+| Sonar: Maintainability (code smells) | **125 issues, nota A** | |
+| Sonar: Duplications | **0,0%** (em 2,3k linhas) | |
+| ESLint frontend | **43 problemas** (39 errors, 4 warnings) | |
 | Tempo da query principal (ms) / nº de queries | por medir | |
 | Segredos no código | por medir (estimativa ≈ 8) | |
 | Alertas duplicados | por medir | |
+
+**Notas sobre as métricas:**
+- **Cobertura:** o "antes" real é o da `main` (0%). Os 9,9% já incluem a primeira melhoria (os testes iniciais).
+- **Sonar Duplications a 0%:** o Sonar só deteta blocos idênticos com cerca de 10 instruções ou mais. Os duplicados encontrados na auditoria são "quase iguais" e não são apanhados.
+- **Security Hotspots:** nesta versão do Sonar (26.9) estão marcados como *Deprecated* e integrados nas issues de Security.
+- **Nota A em Maintainability:** mede a dívida técnica relativa ao tamanho do código, não o número de smells.
+- **ESLint** (43 problemas):
+  - `no-unused-vars`: 33;
+  - `react-hooks/exhaustive-deps`: 4;
+  - `no-case-declarations`: 4 (em `formValidation.jsx`);
+  - `react-refresh/only-export-components`: 2 (contexts).
+- **Possíveis bugs que o ESLint revelou:**
+  - `handleSubmit` nunca usado em `RegisterFormComponent.jsx`;
+  - estado `error` nunca mostrado no login nem no registo;
+  - `use` importado por engano em 5 ficheiros;
+  - `useEffect` sem `token` nas dependências, o que dá *stale closure*.
 
 O `contextLoads` falha com `ConfigDataLocationNotFoundException: 'vault://'`. O `application-test.properties` tem `spring.cloud.vault.enabled=false` e, ao mesmo tempo, `spring.config.import=vault://`. Possível correção: `optional:vault://` ou remover a linha.
 
@@ -128,9 +149,13 @@ O `contextLoads` falha com `ConfigDataLocationNotFoundException: 'vault://'`. O 
 .\mvnw.cmd test "-Dmaven.test.failure.ignore=true"
 start target\site\jacoco\index.html
 
-# SonarQube (com o Docker Desktop ligado)
+# SonarQube (com o Docker Desktop ligado; o serviço está no compose da branch chore/ferramentas-qualidade)
 docker compose --profile quality up -d sonarqube
-.\mvnw.cmd sonar:sonar "-Dsonar.projectKey=LawFirmAPI" "-Dsonar.host.url=http://localhost:9000" "-Dsonar.token=<token>"
+$env:SONAR_TOKEN = "<token>"
+.\mvnw.cmd clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar "-Dmaven.test.failure.ignore=true" "-Dsonar.projectKey=LawFirmAPI" "-Dsonar.host.url=http://localhost:9000"
+
+# Lint do frontend (dentro de LawFirmWebApp)
+npm run lint
 
 # Kanban
 gh issue list --label P0
