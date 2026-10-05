@@ -160,6 +160,9 @@ npm run lint
 # Kanban
 gh issue list --label P0
 gh project view 1 --owner mmcostimha --web
+# Mover card: project-id PVT_kwHOCdgd7M4Blmow · campo Status PVTSSF_lAHOCdgd7M4BlmowzhkS1d0
+# opções: Todo f75ad846 · In Progress 47fc9ee4 · Done 98236657
+# gh project item-edit --id <item-id> --project-id <project-id> --field-id <campo> --single-select-option-id <opção>
 ```
 
 ## O que NÃO está no Git (copiar à mão entre PCs)
