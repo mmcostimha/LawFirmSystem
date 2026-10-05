@@ -41,6 +41,19 @@ services:
       - "5050:80"
     depends_on:
       - db
+
+  # SonarQube - análise de qualidade do código (ver docs/QUALIDADE.md)
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    profiles:
+      - quality
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
     
   # Backend Spring Boot
   backend:
@@ -76,3 +89,6 @@ services:
     
 volumes:
   postgres_data:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:
