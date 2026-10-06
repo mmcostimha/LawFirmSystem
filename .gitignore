@@ -213,4 +213,7 @@ psd
 thumb
 sketch
 
+target/
+.idea/
+postgres_data/ 
 # End of https://www.toptal.com/developers/gitignore/api/python,react,java
