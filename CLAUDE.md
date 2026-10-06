@@ -36,37 +36,31 @@ Contexto para o Claude Code (e para mim) continuar o trabalho em qualquer PC.
 | 14 | GitHub Actions, rebase/conflitos, Scrum, Azure | CI verde |
 | 15 | Métricas "depois", pitch de 2 min, perguntas de entrevista | Portefólio pronto |
 
-Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#26, com labels `P0`–`P3` e `dia-N`).
+Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com labels `P0`–`P3` e `dia-N`). A #27 é o card do Dia 1.
 
-## Estado atual (Dia 1, em curso)
+## Estado atual (Dia 1 concluído, falta o PR da `docs/auditoria-dia1`)
 **Feito:**
-- Auditoria do código (ver abaixo).
-- Kanban criado com 26 issues.
-- JaCoCo adicionado e cobertura medida.
-- SonarQube no compose (profile `quality`), documentado em `docs/QUALIDADE.md` (na branch `chore/ferramentas-qualidade`). Primeira análise feita a 5 Out.
-- ESLint do frontend medido.
+- Auditoria completa em [`docs/AUDITORIA.md`](docs/AUDITORIA.md): checklist, problemas priorizados, métricas "antes".
+- Kanban: 27 issues.
+- PR #28 (testes iniciais) e PR #29 (JaCoCo + SonarQube + [`docs/QUALIDADE.md`](docs/QUALIDADE.md)) integrados na `main`.
+- Benchmark repetível em [`scripts/benchmark/`](scripts/benchmark/README.md) (seed, medição e procedimento).
 
 **Branches:**
-| Branch | Conteúdo | No GitHub |
-|---|---|---|
-| `chore/testes-iniciais` | `UserRepositoryTest` (H2) + `UserServiceTest` (Mockito) | ✅ |
-| `chore/ferramentas-qualidade` | JaCoCo no `pom.xml`, SonarQube no compose, `docs/QUALIDADE.md` | ✅ |
-| `docs/auditoria-dia1` | Este `CLAUDE.md`. Falta o `docs/AUDITORIA.md` | ✅ |
+| Branch | Conteúdo |
+|---|---|
+| `docs/auditoria-dia1` | `CLAUDE.md`, `docs/AUDITORIA.md`, `scripts/benchmark/`. O PR fecha a #27 |
+| *stash* `dia2: segredos` | Trabalho iniciado do Dia 2 (compose com `${}`, properties limpos, `.env.exemple`). Recuperar com `git switch -c fix/segredos-env main` seguido de `git stash pop` |
 
-As branches estão isoladas: a `chore/ferramentas-qualidade` não tem os testes da `chore/testes-iniciais`. Por isso a análise Sonar deu 0% de cobertura, que é o verdadeiro estado da `main`.
+**Pendentes fora do código:**
+1. ⚠️ **Issue #1:** mudar a password da conta de e-mail exposta e verificar se a instância RDS antiga ainda existe.
+2. ⚠️ Revogar o token do SonarQube exposto (*My Account → Security*).
+3. Ativar o Secret Scanning e o Push Protection no GitHub.
+4. Opcional: explorar no Sonar as issues de Security e de Reliability de severidade alta.
 
-**Próximos passos do Dia 1:**
-1. ⚠️ **Issue #1, urgente:** mudar a password da conta de e-mail que esteve no histórico do Git e verificar se a instância RDS antiga ainda existe.
-2. ⚠️ Revogar o token do SonarQube, que foi exposto (*My Account → Security*).
-3. Explorar no Sonar as 3 issues de Security e as de Reliability de severidade alta, e ligá-las aos problemas da auditoria (sem corrigir nada ainda).
-4. Contar os segredos no código.
-5. Reproduzir alertas duplicados: criar o mesmo alarme 2× e contar as linhas na BD.
-6. Medir as queries:
-   - criar dados de teste (~50 clientes, ~100 alarmes);
-   - ativar `hibernate.generate_statistics` só localmente;
-   - medir o tempo com `curl -w "%{time_total}"` (média de 5) e correr `EXPLAIN ANALYZE`;
-   - endpoints: lista de alarmes do supervisor, lista de e-mails, lista de tarefas.
-7. Escrever `docs/AUDITORIA.md` (checklist + prioridades + tabela antes/depois) e abrir PR.
+**Próximo: Dia 2** (issues #1, #2, #3). Recuperar o stash e corrigir no trabalho dos segredos:
+- os espaços depois do `=` no compose (`DB_USER= ${...}` → `DB_USER=${...}`);
+- renomear `.env.exemple` para `.env.example`, sem a linha só com `=`, sem espaços nas chaves e sem `SONAR_PASSWORD`;
+- os segredos restantes: a password do pgAdmin e os do `application-test.properties`.
 
 ## Checklist de auditoria (resultado)
 | Pergunta | Resposta |
@@ -121,9 +115,11 @@ As branches estão isoladas: a `chore/ferramentas-qualidade` não tem os testes 
 | Sonar: Maintainability (code smells) | **125 issues, nota A** | |
 | Sonar: Duplications | **0,0%** (em 2,3k linhas) | |
 | ESLint frontend | **43 problemas** (39 errors, 4 warnings) | |
-| Tempo da query principal (ms) / nº de queries | por medir | |
-| Segredos no código | por medir (estimativa ≈ 8) | |
-| Alertas duplicados | por medir | |
+| `GET /api/supervisor`: tempo / nº de queries | **75,9 ms / 51** | |
+| `GET /api/email/list`: tempo / nº de queries | **55,1 ms / 51** | |
+| `GET /api/task`: tempo / nº de queries | **63,9 ms / 51** | |
+| Segredos em ficheiros versionados | **8** | |
+| Alertas duplicados | **Aceites** (o mesmo alarme 2× → 2 linhas) | |
 
 **Notas sobre as métricas:**
 - **Cobertura:** o "antes" real é o da `main` (0%). Os 9,9% já incluem a primeira melhoria (os testes iniciais).
