@@ -4,20 +4,17 @@ import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailActivatedDTO;
 import com.example.LawFirmAPI.model.Email.EmailDTO;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
-import com.example.LawFirmAPI.repository.UserRepository;
-import com.example.LawFirmAPI.service.Email.AsyncSupervisorService;
 import com.example.LawFirmAPI.service.Email.EmailService;
 import com.example.LawFirmAPI.service.Email.EmailSupervisorService;
 import com.example.LawFirmAPI.service.UserService;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -25,15 +22,13 @@ import java.util.Optional;
 public class EmailSupervisorController {
 
     private final EmailSupervisorService emailSupervisorService;
-    private final AsyncSupervisorService asyncSupervisorService;
     private final UserService userService;
     private final EmailService emailService;
 
-    public EmailSupervisorController(EmailSupervisorService emailSupervisorService, EmailService emailService,UserService userService,AsyncSupervisorService asyncSupervisorService){
+    public EmailSupervisorController(EmailSupervisorService emailSupervisorService, EmailService emailService,UserService userService){
         this.emailSupervisorService=emailSupervisorService;
         this.emailService= emailService;
         this.userService = userService;
-        this.asyncSupervisorService = asyncSupervisorService;
 
     }
     //Add a supervisor type to a CLient
@@ -117,13 +112,19 @@ public class EmailSupervisorController {
     }
 
     @PostMapping("/supervisor/teste")
-    public  ResponseEntity<?> emailValidator(@RequestBody EmailDTO email){
-
-        return asyncSupervisorService.fetchSubjectsEmailValidation(email);
+    public ResponseEntity<List<String>> emailValidator(@RequestBody EmailDTO email) {
+        try {
+            return ResponseEntity.ok(emailSupervisorService.fetchRecentSubjects(email.email(), email.password()));
+        } catch (AuthenticationFailedException e) {
+            return ResponseEntity.status(403).build();
+        } catch (MessagingException e) {
+            throw new RuntimeException("Erro ao buscar emails de: " + email.email(), e);
+        }
     }
 
     @PostMapping("/supervisor/check")
-    public  ResponseEntity<?> checkEmails() throws Exception {
-        return emailSupervisorService.forcedCheckEmails();
+    public ResponseEntity<Void> checkEmails() {
+        emailSupervisorService.runCheck();
+        return ResponseEntity.ok().build();
     }
 ;}

@@ -2,30 +2,37 @@ package com.example.LawFirmAPI.service.Email;
 
 import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.Email.Email;
-import com.example.LawFirmAPI.model.Email.EmailDTO;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
-import com.example.LawFirmAPI.repository.EmailRepository;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
+import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.MessagingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class EmailSupervisorService {
 
     private final EmailSupervisorRepository emailSupervisorRepository;
-    private final AsyncSupervisorService asyncSupervisorService;
-    private final EmailRepository emailRepository;
+    private final ImapMailReader imapMailReader;
+    private final AlarmService alarmService;
+    private final EmailClassifier emailClassifier;
+    private static final Logger log = LoggerFactory.getLogger(EmailSupervisorService.class);
 
     public EmailSupervisorService(EmailSupervisorRepository emailSupervisorRepository,
-                                  AsyncSupervisorService asyncSupervisorService,
-                                  EmailRepository emailRepository){
+                                  ImapMailReader imapMailReader,
+                                  AlarmService alarmService,
+                                  EmailClassifier emailClassifier){
         this.emailSupervisorRepository = emailSupervisorRepository;
-        this.asyncSupervisorService=asyncSupervisorService;
-        this.emailRepository = emailRepository;
+        this.imapMailReader = imapMailReader;
+        this.alarmService = alarmService;
+        this.emailClassifier =emailClassifier;
     }
 
     public EmailSupervised addToCheckList(Email email,String type){
@@ -33,7 +40,6 @@ public class EmailSupervisorService {
         EmailSupervised emailSupervised = new EmailSupervised(email, type);
         return emailSupervisorRepository.save(emailSupervised);
     }
-
     public ResponseEntity<EmailSupervised> deleteFromCheckList(Email email,String type){
         EmailSupervised emailSupervised = new EmailSupervised(email, type);
 
@@ -49,16 +55,12 @@ public class EmailSupervisorService {
         emailSupervisorRepository.delete(toDelete);
         return ResponseEntity.ok(toDelete);
     }
-
     public List<EmailSupervised> getEmailSupervisedList(){
        return emailSupervisorRepository.findAll();
     }
-
     public Optional<EmailSupervised> getAlarmById(Long id ){
         return  emailSupervisorRepository.findById(id);
     }
-
-
     public ResponseEntity<EmailSupervised> deleteEmailSupervisedById(Long id){
 
         Optional<EmailSupervised> alarm_aux = emailSupervisorRepository.findById(id);
@@ -76,43 +78,46 @@ public class EmailSupervisorService {
     }
 
     @Scheduled(cron = "${spring.task2.scheduling.cron}")
-    public void checkEmails() throws Exception {
-        List<EmailSupervised> listEmail = emailSupervisorRepository.findAll();
+    public void runCheck(){
+        List<EmailSupervised> listSupervisedEmail = emailSupervisorRepository.findAll();
 
-        if(listEmail.isEmpty())
-            //System.out.println("Dont exist supervised emails");
+        if(!listSupervisedEmail.isEmpty()){
+            for(EmailSupervised emailSupervised : listSupervisedEmail){
+                try{
+                    checkMailbox(emailSupervised);
+
+                }catch (Exception e){
+                    log.error("Falha ao verificar a caixa {}", emailSupervised.getEmail().getEmail(), e);
+                }
+            }
+        }
+    }
+    private void checkMailbox(EmailSupervised emailSupervised) throws MessagingException{
+
+        Email email = emailSupervised.getEmail();
+
+        if (email.getAlarm()){
             return;
-        else{
-            // dispara todas as execuções em paralelo
-            List<CompletableFuture<Void>> futures = listEmail.stream()
-                    .map(asyncSupervisorService::fetchSubjectsFromLast24Hours)
-                    .toList();
-            // espera todas terminarem antes de imprimir "Acabei"
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         }
-        //System.out.println("Acabei");
-    }
-    public  ResponseEntity<?> forcedCheckEmails() throws Exception {
-        List<EmailSupervised> listEmail = emailSupervisorRepository.findAll();
 
-        if(listEmail.isEmpty())
-            //System.out.println("Dont exist supervised emails");
-            return ResponseEntity.ok().build() ;
-        else{
-            // dispara todas as execuções em paralelo
-            List<CompletableFuture<Void>> futures = listEmail.stream()
-                    .map(asyncSupervisorService::fetchSubjectsFromLast24Hours)
-                    .toList();
-            // espera todas terminarem antes de imprimir "Acabei"
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-        }
-        //System.out.println("Acabei");
-        return ResponseEntity.ok().build();
+        Instant since = Instant.now().minus(Duration.ofHours(24));
+        List<MailMessage> messages =imapMailReader.fetchSince(email.getEmail(),email.getPassword(), since);
+
+        List<String> sender = messages.stream()
+                .map(MailMessage :: from)
+                .toList();
+
+        if(emailClassifier.shouldTriggerAlarm(sender,emailSupervised.getType()))
+            alarmService.activateAlarm(emailSupervised);
     }
 
-    public void checkEmail(EmailDTO email) throws Exception {
-        //asyncSupervisorService.fetchSubjectsFromLast24Hours()
+    public List<String> fetchRecentSubjects(String email, String password) throws AuthenticationFailedException, MessagingException{
 
+        Instant since = Instant.now().minus(Duration.ofHours(24));
+        List<MailMessage> messages =imapMailReader.fetchSince(email,password, since);
 
+        return messages.stream()
+                .map(MailMessage :: subject)
+                .toList();
     }
 }
