@@ -2,7 +2,6 @@ package com.example.LawFirmAPI.service.Email;
 
 import java.time.Instant;
 import java.util.*;
-
 import jakarta.mail.*;
 import jakarta.mail.search.ComparisonTerm;
 import jakarta.mail.search.ReceivedDateTerm;
@@ -54,7 +53,7 @@ public class ImapMailReader {
     }
 
     private String resolveHost(String email) {
-        if (email.endsWith("@gmail.com")) {
+        if (email.toLowerCase().endsWith("@gmail.com")) {
             return GMAIL_HOST;
         }
         throw new IllegalArgumentException("Fornecedor de e-mail não suportado: só Gmail");

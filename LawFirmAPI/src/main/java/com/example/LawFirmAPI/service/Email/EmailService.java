@@ -5,7 +5,6 @@ import com.example.LawFirmAPI.model.Email.*;
 import com.example.LawFirmAPI.model.User.User;
 import com.example.LawFirmAPI.repository.EmailRepository;
 import com.example.LawFirmAPI.repository.UserRepository;
-//import com.example.LawFirmAPI.service.VaultPasswordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,6 @@ import java.util.Optional;
 @Service
 public class EmailService {
 
-    //private final VaultPasswordService vaultPasswordService;
     private final UserRepository userRepository;
     private final EmailRepository emailRepository;
 
