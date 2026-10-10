@@ -38,29 +38,42 @@ Contexto para o Claude Code (e para mim) continuar o trabalho em qualquer PC.
 
 Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com labels `P0`–`P3` e `dia-N`). A #27 é o card do Dia 1.
 
-## Estado atual (Dia 1 concluído, falta o PR da `docs/auditoria-dia1`)
-**Feito:**
+## Estado atual (Dias 1–3 concluídos)
+> Atualizar esta secção no fim de cada dia, no PR desse dia.
+
+**Dia 1: auditoria** (PRs #28–#31)
 - Auditoria completa em [`docs/AUDITORIA.md`](docs/AUDITORIA.md): checklist, problemas priorizados, métricas "antes".
 - Kanban: 27 issues.
-- PR #28 (testes iniciais) e PR #29 (JaCoCo + SonarQube + [`docs/QUALIDADE.md`](docs/QUALIDADE.md)) integrados na `main`.
+- Testes iniciais (#28); JaCoCo + SonarQube + [`docs/QUALIDADE.md`](docs/QUALIDADE.md) (#29).
 - Benchmark repetível em [`scripts/benchmark/`](scripts/benchmark/README.md) (seed, medição e procedimento).
+- Perguntas de entrevista do Dia 1 (#31).
 
-**Branches:**
-| Branch | Conteúdo |
-|---|---|
-| `docs/auditoria-dia1` | `CLAUDE.md`, `docs/AUDITORIA.md`, `scripts/benchmark/`. O PR fecha a #27 |
-| *stash* `dia2: segredos` | Trabalho iniciado do Dia 2 (compose com `${}`, properties limpos, `.env.exemple`). Recuperar com `git switch -c fix/segredos-env main` seguido de `git stash pop` |
+**Dia 2: segredos** (PR #32, fecha a #2, refs #3)
+- O compose e os properties usam `${VAR}`. Há um `.env.example` na raiz e outro em `LawFirmAPI/`.
+- Removida a configuração do Vault nos testes, o que corrige o `contextLoads`.
+- `.dockerignore` para o `.env` não entrar na imagem.
+- BD, pgAdmin e Sonar só em `127.0.0.1`; portas configuráveis.
+- `postgres_data/` removida do repo (os dados ficam no volume nomeado). `target/` e `.idea/` passam a ser ignorados.
+
+**Dia 3: fluxo de e-mail em camadas** (PRs #33–#35)
+- `EmailClassifier`: classe pura com testes unitários (`EmailClassifierTest`). Também passa a aceitar endereços Gmail com maiúsculas.
+- `ImapMailReader` + record `MailMessage`: lógica IMAP numa só classe, com `try-with-resources` no `Store`.
+- `EmailSupervisorService.runCheck()` (`@Scheduled`, `spring.task2.scheduling.cron`) é o orquestrador: lê, classifica e chama o `AlarmService`. Uma falha numa caixa é registada com SLF4J e não aborta as restantes. Testado em `EmailSupervisorServiceTest` (Mockito).
+- `AsyncSupervisorService` removido.
+
+**Testes backend atuais:** `LawFirmApiApplicationTests`, `UserRepositoryTest`, `UserServiceTest`, `EmailClassifierTest`, `EmailSupervisorServiceTest`.
 
 **Pendentes fora do código:**
-1. ⚠️ **Issue #1:** mudar a password da conta de e-mail exposta e verificar se a instância RDS antiga ainda existe.
-2. ⚠️ Revogar o token do SonarQube exposto (*My Account → Security*).
-3. Ativar o Secret Scanning e o Push Protection no GitHub.
-4. Opcional: explorar no Sonar as issues de Security e de Reliability de severidade alta.
+- ✅ Password da conta de e-mail exposta mudada e instância RDS antiga verificada (issue #1).
+- ✅ Token do SonarQube exposto revogado.
+- ✅ Secret Scanning e Push Protection ativos no GitHub.
+- ✅ Issues de Security/Reliability de severidade alta exploradas no Sonar.
 
-**Próximo: Dia 2** (issues #1, #2, #3). Recuperar o stash e corrigir no trabalho dos segredos:
-- os espaços depois do `=` no compose (`DB_USER= ${...}` → `DB_USER=${...}`);
-- renomear `.env.exemple` para `.env.example`, sem a linha só com `=`, sem espaços nas chaves e sem `SONAR_PASSWORD`;
-- os segredos restantes: a password do pgAdmin e os do `application-test.properties`.
+**Limpeza de Git:** os PRs foram integrados com *squash*, por isso o `git branch --merged` não os mostra. As branches `docs/auditoria-dia1`, `chore/ferramentas-qualidade` e `origin/fix/segredos-env` já estão na `main` e podem ser apagadas. Há também um stash `!!GitHub_Desktop<main>`: rever com `git stash show -p` antes de descartar.
+
+**Próximo: Dia 4.** JUnit + Mockito, exceções custom e `@ControllerAdvice`. Entregável: mais testes verdes e erros tratados globalmente.
+- Pontos de partida: em `deleteEmailSupervisedById` há um `RuntimeException("Alarme não encontrado")` a substituir por uma exceção custom. Há também services que devolvem `ResponseEntity`, o que deve ficar só no controller.
+- Confirmar que o `application-test.properties` tem `spring.task2.scheduling.cron`. Neste momento só tem `task` e `task1`, e o placeholder em falta pode partir o `contextLoads`.
 
 ## Checklist de auditoria (resultado)
 | Pergunta | Resposta |
