@@ -3,15 +3,18 @@ package com.example.LawFirmAPI.service.Email;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.List;
 
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -125,6 +128,34 @@ public class EmailSupervisorServiceTest {
         //Assert
         verify(alarmService, never()).activateAlarm(emailSupervised1);
         verify(alarmService).activateAlarm(emailSupervised2);
+    }
 
+    @Test
+    public void EmailSupervisorService_FetchRecentSubjects_ReturnsSubjects() throws Exception {
+
+        //Arrange
+        when(imapMailReader.fetchSince(eq("client1@teste.com"),eq("passe1"),any()))
+                .thenReturn(List.of(
+                        new MailMessage("teste@tribunal","Citação"),
+                        new MailMessage("teste@tribunal","Promoções"))
+                );
+
+        //Act
+        List<String> subjects =emailSupervisorService.fetchRecentSubjects("client1@teste.com","passe1");
+
+        //Assert
+        assertThat(subjects).containsExactly("Citação", "Promoções");
+
+    }
+    @Test
+    public void EmailSupervisorService_FetchRecentSubjects_PropagatesAuthenticationFailure_WhenEmailReaderFails() throws Exception {
+
+        //Arrange
+        when(imapMailReader.fetchSince(eq("client1@teste.com"),eq("passe1"),any()))
+                .thenThrow(new AuthenticationFailedException("credenciais inválidas"));
+
+        //Act and Assert
+        assertThatThrownBy(() -> emailSupervisorService.fetchRecentSubjects("client1@teste.com", "passe1"))
+                .isInstanceOf(AuthenticationFailedException.class);
     }
 }
