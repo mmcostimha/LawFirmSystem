@@ -1,5 +1,6 @@
 package com.example.LawFirmAPI.service;
 
+import com.example.LawFirmAPI.exceptions.ConflictException;
 import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.User.User;
 import com.example.LawFirmAPI.model.User.UserDTO.UserDTO;
@@ -24,9 +25,11 @@ public class UserService {
         //this.vaultPasswordService=vaultPasswordService;
     }
 
-    public User newUser(UserDTO userRequest){
+    public User newUser(UserDTO userRequest) {
+        if (userRepository.existsByUsername(userRequest.username()))
+            throw new ConflictException("Já existe um utilizador com o username " + userRequest.username());
+
         String encryptedPassword = passwordEncoder.encode(userRequest.password());
-        //System.out.println("Prefixo "+userRequest.prefix());
         UserDTO newUser = new UserDTO(
                 userRequest.name(),
                 userRequest.email(),
