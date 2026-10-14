@@ -38,7 +38,7 @@ Contexto para o Claude Code (e para mim) continuar o trabalho em qualquer PC.
 
 Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com labels `P0`–`P3` e `dia-N`). A #27 é o card do Dia 1.
 
-## Estado atual (Dias 1–3 concluídos)
+## Estado atual (Dias 1–3 concluídos; Dia 4 em curso)
 > Atualizar esta secção no fim de cada dia, no PR desse dia.
 
 **Dia 1: auditoria** (PRs #28–#31)
@@ -61,7 +61,16 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com lab
 - `EmailSupervisorService.runCheck()` (`@Scheduled`, `spring.task2.scheduling.cron`) é o orquestrador: lê, classifica e chama o `AlarmService`. Uma falha numa caixa é registada com SLF4J e não aborta as restantes. Testado em `EmailSupervisorServiceTest` (Mockito).
 - `AsyncSupervisorService` removido.
 
-**Testes backend atuais:** `LawFirmApiApplicationTests`, `UserRepositoryTest`, `UserServiceTest`, `EmailClassifierTest`, `EmailSupervisorServiceTest`.
+**Dia 4: testes + exceções** (issues #6 e #7)
+- **#6 fechada** (PR #37): testes do `AlarmService` e do `fetchRecentSubjects`.
+- **#7 em curso**, na branch `feat/excecoes-dominio` (PR ainda por abrir, vai com `Refs #7`). Já feito nesta branch:
+  - `GlobalExceptionHandler` devolve `ProblemDetail` (RFC 9457) em todos os handlers, através de um helper `problem(status, title, detail)` com `timestamp`.
+  - 404 `ResourceNotFound`, 409 `ConflictException` (nova), 409 `DataIntegrityViolationException` (a do Spring, `org.springframework.dao`), 500 genérico.
+  - O 409 de integridade e o 500 têm `detail` **fixo**: a mensagem original só vai para o log (`warn` / `error`), para não expor SQL nem dados.
+  - `UserRepository.existsByUsername` + `UserService.newUser` lança `ConflictException` **antes** do BCrypt.
+  - Testes: `GlobalExceptionHandlerTest` (sem Spring, com `doesNotContain` a provar que não há fuga) e o caso do duplicado no `UserServiceTest` (`never().save`).
+
+**Testes backend atuais:** `LawFirmApiApplicationTests`, `UserRepositoryTest`, `UserServiceTest`, `EmailClassifierTest`, `EmailSupervisorServiceTest`, `AlarmServiceTest`, `GlobalExceptionHandlerTest`.
 
 **Pendentes fora do código:**
 - ✅ Password da conta de e-mail exposta mudada e instância RDS antiga verificada (issue #1).
@@ -69,11 +78,41 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com lab
 - ✅ Secret Scanning e Push Protection ativos no GitHub.
 - ✅ Issues de Security/Reliability de severidade alta exploradas no Sonar.
 
-**Limpeza de Git:** os PRs foram integrados com *squash*, por isso o `git branch --merged` não os mostra. As branches `docs/auditoria-dia1`, `chore/ferramentas-qualidade` e `origin/fix/segredos-env` já estão na `main` e podem ser apagadas. Há também um stash `!!GitHub_Desktop<main>`: rever com `git stash show -p` antes de descartar.
+**Limpeza de Git:** os PRs foram integrados com *squash*, por isso o `git branch --merged` não os mostra. Podem ser apagadas a `docs/atualizar-claude-md` (local e remota, #36 integrado) e a `origin/fix/segredos-env` (#32). Há também um stash `!!GitHub_Desktop<main>`: rever com `git stash show -p` antes de descartar.
 
-**Próximo: Dia 4.** JUnit + Mockito, exceções custom e `@ControllerAdvice`. Entregável: mais testes verdes e erros tratados globalmente.
-- Pontos de partida: em `deleteEmailSupervisedById` há um `RuntimeException("Alarme não encontrado")` a substituir por uma exceção custom. Há também services que devolvem `ResponseEntity`, o que deve ficar só no controller.
-- Confirmar que o `application-test.properties` tem `spring.task2.scheduling.cron`. Neste momento só tem `task` e `task1`, e o placeholder em falta pode partir o `contextLoads`.
+**Próximo: continuar a #7 na branch `feat/excecoes-dominio`**
+Retomar com `git fetch`, `git switch feat/excecoes-dominio`, `git pull` e `.\mvnw.cmd test` (tem de estar verde antes de mexer).
+
+*Ainda neste PR (formato e status de todos os erros):*
+1. `MailboxAuthenticationException` → **422**: traduzir a `AuthenticationFailedException` no `ImapMailReader` (com `cause`) e tirar o `try/catch` do `EmailSupervisorController.emailValidator` (hoje devolve 403 vazio). Nota: o `fetchRecentSubjects` está testado (PR #37) para propagar a `AuthenticationFailedException`; esse teste tem de ser atualizado.
+2. `UnsupportedMailProviderException` → **400**: em vez do `IllegalArgumentException("só Gmail")` no `ImapMailReader`.
+3. Outras `MessagingException` do IMAP → **502** (servidor externo falhou), em vez de `RuntimeException` → 500.
+4. `RuntimeException("Alarme não encontrado")` em `EmailSupervisorService.deleteEmailSupervisedById` → `ResourceNotFound` (404).
+5. `GlobalExceptionHandler extends ResponseEntityExceptionHandler`: JSON inválido → 400, método errado → 405, etc., em `ProblemDetail`. Sem isto, o handler de `Exception` apanha-as primeiro e devolve 500.
+6. Handler da `MethodArgumentTypeMismatchException` → 400 (ex.: `/supervisor/abc/X`).
+7. Handler da `AuthenticationException` → **401**: hoje um login com a password errada dá 500, porque o `authenticate()` corre dentro do controller.
+8. Testes para cada um, no `GlobalExceptionHandlerTest`, com valores distintos e `doesNotContain` quando a mensagem vem de uma biblioteca.
+9. Abrir o PR com `Refs #7`.
+
+*PR seguinte, `refactor/email-optional` (fecha a #7):*
+- `EmailRepository.findByUser_Id` / `findByEmail` (e `UserRepository.findByEmail`) passam a devolver `Optional`.
+- `EmailController.registerClientEmail` deixa de usar `try/catch (Exception)`: hoje o "não existe → criar" depende de um **NPE** no `changeClientEmail`.
+- NPE → 404 em `GET /email/id/{id}`, `GET /email/username/{u}` (hoje um e-mail inválido devolve 200 com corpo vazio), `addToCheckList`, `turnOffAlarm` e `setValidEmail`.
+- Teste que prove que um erro de BD **não** cria um e-mail novo.
+
+*Fora da #7 (não misturar):*
+- Services que devolvem `ResponseEntity` (`UserService`, `EmailService`, `TaskService`, `EmailSupervisorService`) → Dia 5 (#8).
+- `RecoveryService.codeCreator` engole a `MessagingException` com `printStackTrace` → #17.
+- `register` com `phone` < 3 caracteres ou `name` vazio → `StringIndexOutOfBounds` → `@Valid` no Dia 5 (#8).
+- Colisão do username gerado no registo → já anotado na checklist da #17 (P3).
+- Exceções nos filtros (`JwtAuthFilter`) não chegam ao `@ControllerAdvice` → #18, Dia 10.
+
+**Decisões tomadas no Dia 4** (para não as reabrir):
+- Exceções de domínio não conhecem HTTP; o mapeamento exceção → status fica só no `GlobalExceptionHandler`.
+- `detail` com `ex.getMessage()` só para exceções **nossas**. As de biblioteca e as desconhecidas levam um texto fixo, e a mensagem vai para o log.
+- Duplicados: `existsBy` para dar uma mensagem clara + o handler da `DataIntegrityViolationException` para a race condition (só o UNIQUE da BD é atómico).
+- Duplicado = `log.warn` (comportamento normal); 500 = `log.error`.
+- Credenciais IMAP do cliente inválidas = 422, não 403 (o 403 é para permissões do utilizador da API). O frontend só verifica `status === 200`, por isso não parte.
 
 ## Checklist de auditoria (resultado)
 | Pergunta | Resposta |
@@ -150,7 +189,7 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com lab
   - `use` importado por engano em 5 ficheiros;
   - `useEffect` sem `token` nas dependências, o que dá *stale closure*.
 
-O `contextLoads` falha com `ConfigDataLocationNotFoundException: 'vault://'`. O `application-test.properties` tem `spring.cloud.vault.enabled=false` e, ao mesmo tempo, `spring.config.import=vault://`. Possível correção: `optional:vault://` ou remover a linha.
+No Dia 1, o `contextLoads` falhava com `ConfigDataLocationNotFoundException: 'vault://'`. Foi corrigido no Dia 2 (#32), com a remoção da configuração do Vault dos testes. Nota: o `@ActiveProfiles("test")` **sobrepõe** o `application-test.properties` ao `application.properties`, não o substitui. Por isso, as propriedades que só existem no base (ex.: `spring.task2.scheduling.cron`) também ficam disponíveis nos testes.
 
 ## Comandos úteis
 ```powershell
@@ -158,7 +197,7 @@ O `contextLoads` falha com `ConfigDataLocationNotFoundException: 'vault://'`. O 
 .\mvnw.cmd test "-Dmaven.test.failure.ignore=true"
 start target\site\jacoco\index.html
 
-# SonarQube (com o Docker Desktop ligado; o serviço está no compose da branch chore/ferramentas-qualidade)
+# SonarQube (com o Docker Desktop ligado; serviço no docker-compose.yml, profile quality)
 docker compose --profile quality up -d sonarqube
 $env:SONAR_TOKEN = "<token>"
 .\mvnw.cmd clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar "-Dmaven.test.failure.ignore=true" "-Dsonar.projectKey=LawFirmAPI" "-Dsonar.host.url=http://localhost:9000"
@@ -178,3 +217,7 @@ gh project view 1 --owner mmcostimha --web
 - `.env` (raiz) e `LawFirmAPI/.env`: segredos.
 - `plano_15_dias.pdf`: plano original.
 - Token do SonarQube: gerar um novo em cada máquina.
+- `gh`: instalar (`winget install --id GitHub.cli`) e fazer `gh auth login` em cada máquina.
+- O histórico das conversas com o Claude e a memória dele são locais a cada PC. O contexto passa **só** por este ficheiro: atualizar a secção "Próximo" antes de mudar de PC.
+
+**Mudar de PC:** no PC de saída, `git status` limpo e depois `git push`. No PC de chegada, `git fetch`, `git switch <branch>`, `git pull` e `.\mvnw.cmd test`. Nunca trabalhar na mesma branch em dois PCs sem fazer push/pull.
