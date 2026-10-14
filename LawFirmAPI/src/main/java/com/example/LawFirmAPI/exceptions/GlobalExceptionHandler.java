@@ -40,9 +40,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGenericException(Exception  ex){
-        log.error("Excepcao gernerica: ",ex);
+        log.error("Erro não tratado: ",ex);
 
-        return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Erro não tratado", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
+        return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor", "Ocorreu um erro inesperado.");
 
     }
 }
