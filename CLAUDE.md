@@ -36,9 +36,23 @@ Contexto para o Claude Code (e para mim) continuar o trabalho em qualquer PC.
 | 14 | GitHub Actions, rebase/conflitos, Scrum, Azure | CI verde |
 | 15 | Métricas "depois", pitch de 2 min, perguntas de entrevista | Portefólio pronto |
 
+### Plano reduzido (decidido a 14 Out, por atraso)
+O Dia 4 só terminou a 14 Out. Em vez de prolongar o plano todo, ficam 6 dias (14–19 Out), escolhidos por risco e por valor para o portefólio:
+
+| Dia | Data | Trabalho | Entregável |
+|---|---|---|---|
+| A | 14 Out | Fechar a #7 com o mínimo: 404 no alarme + `registerClientEmail` sem NPE | Dia 4 fechado |
+| B | 15 Out | Segurança P0: registo sem papéis privilegiados, validar o código de recuperação, fechar o Actuator, `@Valid` no registo | P0 da auditoria resolvidos |
+| C | 16 Out | GitHub Actions com os testes em cada PR + selo no README; começar o README | CI verde |
+| D | 17 Out | SQL I (Dia 8): `JOIN`, `GROUP BY`/`HAVING`, CTEs sobre os dados do projeto | `queries.sql` comentado |
+| E | 18 Out | SQL II (Dia 9): window functions, índices, `EXPLAIN ANALYZE` + correção do N+1 com `JOIN FETCH`, medida com `scripts/benchmark/` | Relatório antes/depois |
+| F | 19 Out | Métricas "depois", README final, pitch de 2 min | Portefólio pronto |
+
+**Fica de fora (dívida técnica, com issues):** Flyway e retry IMAP (Dia 6), Testcontainers e GreenMail (Dia 7, inclui os testes do `ImapMailReader`), TypeScript e tempo real (Dias 11–12), testes do frontend.
+
 Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com labels `P0`–`P3` e `dia-N`). A #27 é o card do Dia 1.
 
-## Estado atual (Dias 1–3 concluídos; Dia 4 em curso)
+## Estado atual (Dias 1–3 concluídos; Dia 4 a fechar no Dia A do plano reduzido)
 > Atualizar esta secção no fim de cada dia, no PR desse dia.
 
 **Dia 1: auditoria** (PRs #28–#31)
@@ -69,6 +83,7 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com lab
   - O 409 de integridade e o 500 têm `detail` **fixo**: a mensagem original só vai para o log (`warn` / `error`), para não expor SQL nem dados.
   - `UserRepository.existsByUsername` + `UserService.newUser` lança `ConflictException` **antes** do BCrypt.
   - Testes: `GlobalExceptionHandlerTest` (sem Spring, com `doesNotContain` a provar que não há fuga) e o caso do duplicado no `UserServiceTest` (`never().save`).
+  - Erros do IMAP traduzidos no `ImapMailReader` para exceções de domínio (com `cause`): `MailboxAuthenticationException` → **422**, `UnsupportedMailProviderException` → **400**, `MailServerException` → **502**. O `fetchSince` deixou de declarar `throws MessagingException`, e o `try/catch` do `emailValidator` saiu do controller. Fora do `ImapMailReader`, a aplicação já não conhece o `jakarta.mail` (exceto o `RecoveryService`, que envia e-mails).
 
 **Testes backend atuais:** `LawFirmApiApplicationTests`, `UserRepositoryTest`, `UserServiceTest`, `EmailClassifierTest`, `EmailSupervisorServiceTest`, `AlarmServiceTest`, `GlobalExceptionHandlerTest`.
 
@@ -80,25 +95,27 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com lab
 
 **Limpeza de Git:** os PRs foram integrados com *squash*, por isso o `git branch --merged` não os mostra. Podem ser apagadas a `docs/atualizar-claude-md` (local e remota, #36 integrado) e a `origin/fix/segredos-env` (#32). Há também um stash `!!GitHub_Desktop<main>`: rever com `git stash show -p` antes de descartar.
 
-**Próximo: continuar a #7 na branch `feat/excecoes-dominio`**
-Retomar com `git fetch`, `git switch feat/excecoes-dominio`, `git pull` e `.\mvnw.cmd test` (tem de estar verde antes de mexer).
+**Próximo: Dia A do plano reduzido (fechar a #7) na branch `feat/excecoes-dominio`**
+Retomar com `git fetch`, `git switch feat/excecoes-dominio`, `git pull` e `.\mvnw.cmd test`. O `contextLoads` precisa do Postgres: ligar o Docker Desktop e `docker compose up -d db` antes (sem isso, falha com `Connection to localhost:5432 refused`). Tudo tem de estar verde (31 testes) antes de mexer.
 
-*Ainda neste PR (formato e status de todos os erros):*
-1. `MailboxAuthenticationException` → **422**: traduzir a `AuthenticationFailedException` no `ImapMailReader` (com `cause`) e tirar o `try/catch` do `EmailSupervisorController.emailValidator` (hoje devolve 403 vazio). Nota: o `fetchRecentSubjects` está testado (PR #37) para propagar a `AuthenticationFailedException`; esse teste tem de ser atualizado.
-2. `UnsupportedMailProviderException` → **400**: em vez do `IllegalArgumentException("só Gmail")` no `ImapMailReader`.
-3. Outras `MessagingException` do IMAP → **502** (servidor externo falhou), em vez de `RuntimeException` → 500.
-4. `RuntimeException("Alarme não encontrado")` em `EmailSupervisorService.deleteEmailSupervisedById` → `ResourceNotFound` (404).
-5. `GlobalExceptionHandler extends ResponseEntityExceptionHandler`: JSON inválido → 400, método errado → 405, etc., em `ProblemDetail`. Sem isto, o handler de `Exception` apanha-as primeiro e devolve 500.
-6. Handler da `MethodArgumentTypeMismatchException` → 400 (ex.: `/supervisor/abc/X`).
-7. Handler da `AuthenticationException` → **401**: hoje um login com a password errada dá 500, porque o `authenticate()` corre dentro do controller.
-8. Testes para cada um, no `GlobalExceptionHandlerTest`, com valores distintos e `doesNotContain` quando a mensagem vem de uma biblioteca.
-9. Abrir o PR com `Refs #7`.
+*Ainda neste PR:*
+1. `RuntimeException("Alarme não encontrado")` em `EmailSupervisorService.deleteEmailSupervisedById` → `ResourceNotFound` (404), com teste.
+2. Abrir o PR com `Refs #7`.
 
-*PR seguinte, `refactor/email-optional` (fecha a #7):*
-- `EmailRepository.findByUser_Id` / `findByEmail` (e `UserRepository.findByEmail`) passam a devolver `Optional`.
+*PR seguinte, `refactor/registo-email` (fecha a #7), reduzido ao que a 3.ª checkbox pede:*
+- `EmailRepository.findByUser_Id` passa a devolver `Optional`.
 - `EmailController.registerClientEmail` deixa de usar `try/catch (Exception)`: hoje o "não existe → criar" depende de um **NPE** no `changeClientEmail`.
-- NPE → 404 em `GET /email/id/{id}`, `GET /email/username/{u}` (hoje um e-mail inválido devolve 200 com corpo vazio), `addToCheckList`, `turnOffAlarm` e `setValidEmail`.
 - Teste que prove que um erro de BD **não** cria um e-mail novo.
+
+*Cortado da #7, para a #8 (Dia 5). Ainda por passar para a issue no GitHub:*
+- `GlobalExceptionHandler extends ResponseEntityExceptionHandler`: JSON inválido → 400, método errado → 405, em `ProblemDetail`. Sem isto, o handler de `Exception` apanha-as primeiro e devolve 500.
+- Handler da `MethodArgumentTypeMismatchException` → 400 (ex.: `/supervisor/abc/X`).
+- Handler da `AuthenticationException` → **401**: hoje um login com a password errada dá 500, porque o `authenticate()` corre dentro do controller.
+- NPE → 404 em `GET /email/id/{id}`, `GET /email/username/{u}` (hoje um e-mail inválido devolve 200 com corpo vazio), `addToCheckList`, `turnOffAlarm` e `setValidEmail`.
+
+*Outras pendências pequenas:*
+- Comentar na #6 a decisão "o alarme só considera o remetente; a configuração das regras fica para a #12".
+- Testes do `ImapMailReader` (tradução das exceções 400/422/502) ficam para o GreenMail (Dia 7, fora do plano reduzido).
 
 *Fora da #7 (não misturar):*
 - Services que devolvem `ResponseEntity` (`UserService`, `EmailService`, `TaskService`, `EmailSupervisorService`) → Dia 5 (#8).
@@ -113,6 +130,8 @@ Retomar com `git fetch`, `git switch feat/excecoes-dominio`, `git pull` e `.\mvn
 - Duplicados: `existsBy` para dar uma mensagem clara + o handler da `DataIntegrityViolationException` para a race condition (só o UNIQUE da BD é atómico).
 - Duplicado = `log.warn` (comportamento normal); 500 = `log.error`.
 - Credenciais IMAP do cliente inválidas = 422, não 403 (o 403 é para permissões do utilizador da API). O frontend só verifica `status === 200`, por isso não parte.
+- Erros esperados (422, 400) = `log.warn` só com a mensagem, sem stack trace. Falha do servidor externo (502) = `log.warn` com a exceção, porque o `Caused by:` diz o motivo (timeout, DNS, TLS).
+- O alarme considera **apenas o remetente**, não o assunto.
 
 ## Checklist de auditoria (resultado)
 | Pergunta | Resposta |
