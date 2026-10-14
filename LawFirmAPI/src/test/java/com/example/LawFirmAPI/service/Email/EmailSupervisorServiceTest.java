@@ -1,10 +1,10 @@
 package com.example.LawFirmAPI.service.Email;
 
+import com.example.LawFirmAPI.exceptions.MailServerException;
+import com.example.LawFirmAPI.exceptions.MailboxAuthenticationException;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
-import jakarta.mail.AuthenticationFailedException;
-import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -117,7 +117,7 @@ public class EmailSupervisorServiceTest {
                 .thenReturn(List.of(emailSupervised1,emailSupervised2));
 
         when(imapMailReader.fetchSince(eq("client1@gmail.com"), any(), any()))
-                .thenThrow(new MessagingException("servidor em baixo"));
+                .thenThrow(new MailServerException("servidor em baixo"));
 
         when(imapMailReader.fetchSince(eq("client2@gmail.com"), any(), any()))
                 .thenReturn(List.of(new MailMessage("notificacoes@tribunal.com","Citacoes")));
@@ -152,10 +152,10 @@ public class EmailSupervisorServiceTest {
 
         //Arrange
         when(imapMailReader.fetchSince(eq("client1@teste.com"),eq("passe1"),any()))
-                .thenThrow(new AuthenticationFailedException("credenciais inválidas"));
+                .thenThrow(new MailboxAuthenticationException("credenciais inválidas"));
 
         //Act and Assert
         assertThatThrownBy(() -> emailSupervisorService.fetchRecentSubjects("client1@teste.com", "passe1"))
-                .isInstanceOf(AuthenticationFailedException.class);
+                .isInstanceOf(MailboxAuthenticationException.class);
     }
 }

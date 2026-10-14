@@ -2,6 +2,10 @@ package com.example.LawFirmAPI.service.Email;
 
 import java.time.Instant;
 import java.util.*;
+
+import com.example.LawFirmAPI.exceptions.MailServerException;
+import com.example.LawFirmAPI.exceptions.MailboxAuthenticationException;
+import com.example.LawFirmAPI.exceptions.UnsupportedMailProviderException;
 import jakarta.mail.*;
 import jakarta.mail.search.ComparisonTerm;
 import jakarta.mail.search.ReceivedDateTerm;
@@ -12,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class ImapMailReader {
     private static final String GMAIL_HOST = "imap.gmail.com";
 
-    public List<MailMessage> fetchSince(String email, String password, Instant since)throws MessagingException {
+    public List<MailMessage> fetchSince(String email, String password, Instant since) {
 
         String provider = resolveHost( email);
         Properties props = new Properties();
@@ -33,6 +37,10 @@ public class ImapMailReader {
             }
             inbox.close(false);
             return result;
+        } catch (AuthenticationFailedException e) {
+            throw new MailboxAuthenticationException("Credenciais inválidas para " + email, e);
+        } catch (MessagingException e) {
+            throw new MailServerException("Falha ao ler a caixa " + email, e);
         }
     }
     private void IMAPConfig(Properties props, String provider){
@@ -51,11 +59,10 @@ public class ImapMailReader {
         }
         return from[0].toString();
     }
-
     private String resolveHost(String email) {
         if (email.toLowerCase().endsWith("@gmail.com")) {
             return GMAIL_HOST;
         }
-        throw new IllegalArgumentException("Fornecedor de e-mail não suportado: só Gmail");
+        throw new UnsupportedMailProviderException("Fornecedor de e-mail não suportado: só Gmail");
     }
 }

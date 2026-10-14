@@ -38,6 +38,27 @@ public class GlobalExceptionHandler {
         return problem(HttpStatus.CONFLICT, "Recurso duplicado", "O recurso já existe");
     }
 
+    @ExceptionHandler(MailboxAuthenticationException.class)
+    public ProblemDetail handleMailboxAuthenticationException(MailboxAuthenticationException ex){
+        log.warn("Erro nas credenciais de autenticacao: {}", ex.getMessage());
+
+        return problem(HttpStatus.UNPROCESSABLE_ENTITY, "Credenciais da caixa de correio inválidas", "Credenciais inválidas");
+    }
+
+    @ExceptionHandler(MailServerException.class)
+    public ProblemDetail handleMailServerException(MailServerException ex){
+        log.warn("Erro na comunicacao com o servidor:", ex);
+
+        return problem(HttpStatus.BAD_GATEWAY, "Servidor de e-mail indisponível.", "Falha ao ler uma caixa");
+    }
+
+    @ExceptionHandler(UnsupportedMailProviderException.class)
+    public ProblemDetail handleUnsupportedMailProviderException(UnsupportedMailProviderException ex){
+        log.warn("Fornecedor de e-mail não suportado: {}", ex.getMessage());
+
+        return problem(HttpStatus.BAD_REQUEST, "Fornecedor de email não suportado.", ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleGenericException(Exception  ex){
         log.error("Erro não tratado: ",ex);
