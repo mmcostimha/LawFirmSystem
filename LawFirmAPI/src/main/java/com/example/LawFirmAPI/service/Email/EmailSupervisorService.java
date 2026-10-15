@@ -63,14 +63,12 @@ public class EmailSupervisorService {
 
         Optional<EmailSupervised> alarm_aux = emailSupervisorRepository.findById(id);
 
-        // Opção 1: Lançar exceção se não encontrar (Melhor prática)
-        EmailSupervised alarm = alarm_aux.orElseThrow(() -> new RuntimeException("Alarme não encontrado"));
+        EmailSupervised alarm = alarm_aux.orElseThrow(() -> new ResourceNotFound("Alarme "+ id +" não encontrado"));
 
         Email email = alarm.getEmail();
 
         email.setAlarm(false);
 
-        // Delete
         emailSupervisorRepository.delete(alarm);
         return ResponseEntity.ok(alarm);
     }
