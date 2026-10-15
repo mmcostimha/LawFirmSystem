@@ -1,16 +1,18 @@
 package com.example.LawFirmAPI.service.Email;
 
+import com.example.LawFirmAPI.exceptions.MailServerException;
+import com.example.LawFirmAPI.exceptions.MailboxAuthenticationException;
+import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
-import jakarta.mail.AuthenticationFailedException;
-import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
+import java.util.Optional;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -117,7 +119,7 @@ public class EmailSupervisorServiceTest {
                 .thenReturn(List.of(emailSupervised1,emailSupervised2));
 
         when(imapMailReader.fetchSince(eq("client1@gmail.com"), any(), any()))
-                .thenThrow(new MessagingException("servidor em baixo"));
+                .thenThrow(new MailServerException("servidor em baixo"));
 
         when(imapMailReader.fetchSince(eq("client2@gmail.com"), any(), any()))
                 .thenReturn(List.of(new MailMessage("notificacoes@tribunal.com","Citacoes")));
@@ -147,15 +149,27 @@ public class EmailSupervisorServiceTest {
         assertThat(subjects).containsExactly("Citação", "Promoções");
 
     }
+
     @Test
     public void EmailSupervisorService_FetchRecentSubjects_PropagatesAuthenticationFailure_WhenEmailReaderFails() throws Exception {
 
         //Arrange
         when(imapMailReader.fetchSince(eq("client1@teste.com"),eq("passe1"),any()))
-                .thenThrow(new AuthenticationFailedException("credenciais inválidas"));
+                .thenThrow(new MailboxAuthenticationException("credenciais inválidas"));
 
         //Act and Assert
         assertThatThrownBy(() -> emailSupervisorService.fetchRecentSubjects("client1@teste.com", "passe1"))
-                .isInstanceOf(AuthenticationFailedException.class);
+                .isInstanceOf(MailboxAuthenticationException.class);
+    }
+
+    @Test
+    public void EmailSupervisorService_DeleteEmailSupervisedById_ThrowsResourceNotFound_WhenAlarmDoesNotExist(){
+        //Arrange
+        when(emailSupervisorRepository.findById(99L)).thenReturn(Optional.empty());
+
+        //Act and Assert
+        assertThatThrownBy(() -> emailSupervisorService.deleteEmailSupervisedById(99L))
+                .isInstanceOf(ResourceNotFound.class);
+        verify(emailSupervisorRepository,never()).delete(any());
     }
 }

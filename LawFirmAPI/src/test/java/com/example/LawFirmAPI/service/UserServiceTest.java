@@ -1,5 +1,6 @@
 package com.example.LawFirmAPI.service;
 
+import com.example.LawFirmAPI.exceptions.ConflictException;
 import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.User.User;
 import com.example.LawFirmAPI.model.User.UserDTO.UserDTO;
@@ -28,6 +29,7 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+
     @Test
     public void UserService_NewUser_ReturnsUser(){
         //Arrange
@@ -41,13 +43,32 @@ public class UserServiceTest {
                 "12345678"
         );
         User user = new User(userDTO);
+        when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
 
         //Act
-        when(userRepository.save(Mockito.any(User.class))).thenReturn(user);
         User savedUser = userService.newUser(userDTO);
 
         //Assert
         Assertions.assertThat(savedUser).isNotNull();
+    }
+
+    @Test
+    public void UserService_NewUser_ThrowConflictException_WhenUserNameAlreadyExists(){
+        //Arrange
+        UserDTO userDTO = new UserDTO(
+                "Teste Name",
+                "teste@gmail.com",
+                "988888888",
+                "+135",
+                "admin",
+                "TesteUsernamer",
+                "12345678"
+        );
+        when(userRepository.existsByUsername("TesteUsernamer")).thenReturn(true);
+
+        //Act and Assert
+        Assertions.assertThatThrownBy(() -> userService.newUser(userDTO)).isInstanceOf(ConflictException.class);
+        verify(userRepository, never()).save(any());
     }
 
     @Test

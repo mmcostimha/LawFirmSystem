@@ -22,13 +22,7 @@ public class EmailController {
     //Create Email for a client
     @PostMapping("/email")
     public Email registerClientEmail(@RequestBody EmailDTO request){
-        //System.out.println("Email recebido: "+ request.email() + " com id de client "+ request.client_id());
-        try {
-            Email emailReceived = emailService.getEmailByClientId(request.client_id());
-            return emailService.changeClientEmail(request);
-        } catch (Exception e){
-            return emailService.newClientEmail(request);
-        }
+        return emailService.saveClientEmail(request);
     }
 
     //Change email of a Client
@@ -45,6 +39,7 @@ public class EmailController {
             return emailAsked;
         return null;
     }
+
     // Get Email By the Client Id
     @GetMapping("/email/id/{id}")
     public Email getClientEmail(@PathVariable Long id){

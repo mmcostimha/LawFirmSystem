@@ -4,8 +4,6 @@ import com.example.LawFirmAPI.exceptions.ResourceNotFound;
 import com.example.LawFirmAPI.model.Email.Email;
 import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.repository.EmailSupervisorRepository;
-import jakarta.mail.AuthenticationFailedException;
-import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -65,14 +63,12 @@ public class EmailSupervisorService {
 
         Optional<EmailSupervised> alarm_aux = emailSupervisorRepository.findById(id);
 
-        // Opção 1: Lançar exceção se não encontrar (Melhor prática)
-        EmailSupervised alarm = alarm_aux.orElseThrow(() -> new RuntimeException("Alarme não encontrado"));
+        EmailSupervised alarm = alarm_aux.orElseThrow(() -> new ResourceNotFound("Alarme "+ id +" não encontrado"));
 
         Email email = alarm.getEmail();
 
         email.setAlarm(false);
 
-        // Delete
         emailSupervisorRepository.delete(alarm);
         return ResponseEntity.ok(alarm);
     }
@@ -92,7 +88,7 @@ public class EmailSupervisorService {
             }
         }
     }
-    private void checkMailbox(EmailSupervised emailSupervised) throws MessagingException{
+    private void checkMailbox(EmailSupervised emailSupervised) {
 
         Email email = emailSupervised.getEmail();
 
@@ -111,7 +107,7 @@ public class EmailSupervisorService {
             alarmService.activateAlarm(emailSupervised);
     }
 
-    public List<String> fetchRecentSubjects(String email, String password) throws AuthenticationFailedException, MessagingException{
+    public List<String> fetchRecentSubjects(String email, String password){
 
         Instant since = Instant.now().minus(Duration.ofHours(24));
         List<MailMessage> messages =imapMailReader.fetchSince(email,password, since);

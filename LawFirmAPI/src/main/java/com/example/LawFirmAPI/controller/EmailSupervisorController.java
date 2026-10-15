@@ -7,8 +7,6 @@ import com.example.LawFirmAPI.model.Email.EmailSupervised;
 import com.example.LawFirmAPI.service.Email.EmailService;
 import com.example.LawFirmAPI.service.Email.EmailSupervisorService;
 import com.example.LawFirmAPI.service.UserService;
-import jakarta.mail.AuthenticationFailedException;
-import jakarta.mail.MessagingException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -113,13 +111,7 @@ public class EmailSupervisorController {
 
     @PostMapping("/supervisor/teste")
     public ResponseEntity<List<String>> emailValidator(@RequestBody EmailDTO email) {
-        try {
-            return ResponseEntity.ok(emailSupervisorService.fetchRecentSubjects(email.email(), email.password()));
-        } catch (AuthenticationFailedException e) {
-            return ResponseEntity.status(403).build();
-        } catch (MessagingException e) {
-            throw new RuntimeException("Erro ao buscar emails de: " + email.email(), e);
-        }
+        return ResponseEntity.ok(emailSupervisorService.fetchRecentSubjects(email.email(), email.password()));
     }
 
     @PostMapping("/supervisor/check")

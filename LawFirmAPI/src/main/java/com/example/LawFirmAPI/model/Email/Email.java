@@ -68,6 +68,9 @@ public class Email {
     public String getPassword() {
         return password;
     }
+    public User getUser(){
+        return user;
+    }
 
     //setter
     public void setEmail(String email) {
