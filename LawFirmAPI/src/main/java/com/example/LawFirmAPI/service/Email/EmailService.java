@@ -48,6 +48,7 @@ public class EmailService {
 
         return emailRepository.save(email);
     }
+
     public Email getEmailByClientUsername(String username){
         Optional<User> op_user = userRepository.findByUsername(username);
         if (op_user.isEmpty())
@@ -62,12 +63,15 @@ public class EmailService {
     public Email getEmailByClientId(Long clientId){
         return emailRepository.findByUser_Id(clientId);
     }
+
     public Email getEmailByClientEmail(String email){
         return emailRepository.findByEmail(email);
     }
+
     public boolean emailExist(Email email){
         return emailRepository.existsById(email.getId());
     }
+
     public boolean emailIsValid(Email email){
         return email.getValid();
     }
@@ -78,6 +82,7 @@ public class EmailService {
         email.setAlarm(false);
         return ResponseEntity.ok(emailRepository.save(email));
     }
+
     public ResponseEntity<Email> setValidEmailByUsername(String username, boolean bool) {
         Email email = getEmailByClientUsername(username);
 
@@ -108,5 +113,11 @@ public class EmailService {
         return dtoListClientEmail;
     }
 
+    public Email saveClientEmail(EmailDTO request) {
+        if (emailRepository.existsByUser_Id(request.client_id())) {
+            return changeClientEmail(request);
+        }
+        return newClientEmail(request);
+    }
 
 }
