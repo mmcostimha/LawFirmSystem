@@ -52,7 +52,7 @@ O Dia 4 só terminou a 14 Out. Em vez de prolongar o plano todo, ficam 6 dias (1
 
 Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com labels `P0`–`P3` e `dia-N`). A #27 é o card do Dia 1.
 
-## Estado atual (Dias 1–3 concluídos; Dia 4 a fechar no Dia A do plano reduzido)
+## Estado atual (Dias 1–4 concluídos; a seguir o Dia B do plano reduzido)
 > Atualizar esta secção no fim de cada dia, no PR desse dia.
 
 **Dia 1: auditoria** (PRs #28–#31)
@@ -77,15 +77,17 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com lab
 
 **Dia 4: testes + exceções** (issues #6 e #7)
 - **#6 fechada** (PR #37): testes do `AlarmService` e do `fetchRecentSubjects`.
-- **#7 em curso**, na branch `feat/excecoes-dominio` (PR ainda por abrir, vai com `Refs #7`). Já feito nesta branch:
+- **#7 fechada** (PR da branch `feat/excecoes-dominio`, com `Closes #7`, num só PR em vez de dois, por causa do atraso):
   - `GlobalExceptionHandler` devolve `ProblemDetail` (RFC 9457) em todos os handlers, através de um helper `problem(status, title, detail)` com `timestamp`.
   - 404 `ResourceNotFound`, 409 `ConflictException` (nova), 409 `DataIntegrityViolationException` (a do Spring, `org.springframework.dao`), 500 genérico.
   - O 409 de integridade e o 500 têm `detail` **fixo**: a mensagem original só vai para o log (`warn` / `error`), para não expor SQL nem dados.
   - `UserRepository.existsByUsername` + `UserService.newUser` lança `ConflictException` **antes** do BCrypt.
   - Testes: `GlobalExceptionHandlerTest` (sem Spring, com `doesNotContain` a provar que não há fuga) e o caso do duplicado no `UserServiceTest` (`never().save`).
   - Erros do IMAP traduzidos no `ImapMailReader` para exceções de domínio (com `cause`): `MailboxAuthenticationException` → **422**, `UnsupportedMailProviderException` → **400**, `MailServerException` → **502**. O `fetchSince` deixou de declarar `throws MessagingException`, e o `try/catch` do `emailValidator` saiu do controller. Fora do `ImapMailReader`, a aplicação já não conhece o `jakarta.mail` (exceto o `RecoveryService`, que envia e-mails).
+  - Apagar um alarme inexistente (`deleteEmailSupervisedById`) devolve 404 (`ResourceNotFound`) em vez de 500.
+  - `POST /email` (`registerClientEmail`) deixou de usar um NPE como `if`: o `EmailService.saveClientEmail` decide com `EmailRepository.existsByUser_Id` se atualiza ou cria. Uma falha da BD sobe como erro e já não cria um e-mail novo (provado em `EmailServiceTest`).
 
-**Testes backend atuais:** `LawFirmApiApplicationTests`, `UserRepositoryTest`, `UserServiceTest`, `EmailClassifierTest`, `EmailSupervisorServiceTest`, `AlarmServiceTest`, `GlobalExceptionHandlerTest`.
+**Testes backend atuais:** `LawFirmApiApplicationTests`, `UserRepositoryTest`, `UserServiceTest`, `EmailClassifierTest`, `EmailSupervisorServiceTest`, `AlarmServiceTest`, `EmailServiceTest`, `GlobalExceptionHandlerTest`.
 
 **Pendentes fora do código:**
 - ✅ Password da conta de e-mail exposta mudada e instância RDS antiga verificada (issue #1).
@@ -95,23 +97,20 @@ Kanban: https://github.com/users/mmcostimha/projects/1 (issues #1–#27, com lab
 
 **Limpeza de Git:** os PRs foram integrados com *squash*, por isso o `git branch --merged` não os mostra. Podem ser apagadas a `docs/atualizar-claude-md` (local e remota, #36 integrado) e a `origin/fix/segredos-env` (#32). Há também um stash `!!GitHub_Desktop<main>`: rever com `git stash show -p` antes de descartar.
 
-**Próximo: Dia A do plano reduzido (fechar a #7) na branch `feat/excecoes-dominio`**
-Retomar com `git fetch`, `git switch feat/excecoes-dominio`, `git pull` e `.\mvnw.cmd test`. O `contextLoads` precisa do Postgres: ligar o Docker Desktop e `docker compose up -d db` antes (sem isso, falha com `Connection to localhost:5432 refused`). Tudo tem de estar verde (31 testes) antes de mexer.
+**Próximo: Dia B do plano reduzido (segurança P0)**
+Partir da `main` atualizada (`git switch main`, `git pull`) e criar uma branch por melhoria. O `contextLoads` precisa do Postgres: ligar o Docker Desktop e `docker compose up -d db` antes de `.\mvnw.cmd test` (sem isso, falha com `Connection to localhost:5432 refused`). Tudo tem de estar verde antes de mexer.
 
-*Ainda neste PR:*
-1. `RuntimeException("Alarme não encontrado")` em `EmailSupervisorService.deleteEmailSupervisedById` → `ResourceNotFound` (404), com teste.
-2. Abrir o PR com `Refs #7`.
-
-*PR seguinte, `refactor/registo-email` (fecha a #7), reduzido ao que a 3.ª checkbox pede:*
-- `EmailRepository.findByUser_Id` passa a devolver `Optional`.
-- `EmailController.registerClientEmail` deixa de usar `try/catch (Exception)`: hoje o "não existe → criar" depende de um **NPE** no `changeClientEmail`.
-- Teste que prove que um erro de BD **não** cria um e-mail novo.
+Issues P0 do Dia 10 a atacar (por esta ordem, do mais grave para o menos):
+1. **#17**: o registo público permite escolher papéis privilegiados (P0 n.º 3) e a recuperação de password não valida o código (P0 n.º 2). Inclui o `@Valid` no registo (`phone` < 3 caracteres ou `name` vazio → `StringIndexOutOfBounds`).
+2. **#18** (só a parte do Actuator): fechar a exposição total (P0 n.º 6).
+3. Ficam para depois, se houver tempo: o resto da #18 (roles, `@PreAuthorize`, JWT, CORS) e a #19 (encriptar as credenciais das caixas).
 
 *Cortado da #7, para a #8 (Dia 5). Ainda por passar para a issue no GitHub:*
 - `GlobalExceptionHandler extends ResponseEntityExceptionHandler`: JSON inválido → 400, método errado → 405, em `ProblemDetail`. Sem isto, o handler de `Exception` apanha-as primeiro e devolve 500.
 - Handler da `MethodArgumentTypeMismatchException` → 400 (ex.: `/supervisor/abc/X`).
 - Handler da `AuthenticationException` → **401**: hoje um login com a password errada dá 500, porque o `authenticate()` corre dentro do controller.
 - NPE → 404 em `GET /email/id/{id}`, `GET /email/username/{u}` (hoje um e-mail inválido devolve 200 com corpo vazio), `addToCheckList`, `turnOffAlarm` e `setValidEmail`.
+- `PUT /email`: tem o mesmo NPE (cliente sem e-mail → 500) e o frontend não o usa. Corrigir ou remover. Nota REST: o "criar ou atualizar" do `POST /email` seria, por convenção, um `PUT` (idempotente); mudar isto obriga a mudar o frontend.
 
 *Outras pendências pequenas:*
 - Comentar na #6 a decisão "o alarme só considera o remetente; a configuração das regras fica para a #12".
